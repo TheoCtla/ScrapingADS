@@ -1,1 +1,57 @@
-/* Styles pour DateRangePicker - à remplir plus tard */ 
+/* Container pour aligner les champs horizontalement */
+.date-container {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.date-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.date-label {
+    white-space: nowrap;
+    color: white;
+    font-size: 14px;
+}
+
+#start_date {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ffffff;
+    border-radius: 5px;
+    height: 40px;
+    box-sizing: border-box;
+    background-color: transparent;
+    color: white;
+}
+
+#end_date {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ffffff;
+    border-radius: 5px;
+    height: 40px;
+    box-sizing: border-box;
+    background-color: transparent;
+    color: white;
+}
+
+#sheet_month {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #fff;
+    border-radius: 5px;
+    height: 40px;
+    box-sizing: border-box;
+    background-color: transparent;
+    color: white;
+}
+
+#sheet_month::placeholder {
+    color: #fff;
+}

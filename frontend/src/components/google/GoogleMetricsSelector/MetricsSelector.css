@@ -1,1 +1,152 @@
-/* Styles pour MetricsSelector - à remplir plus tard */ 
+/* MetricsSelector Styles - Dark Theme */
+.metrics-selector-container {
+  margin: 5px 0;
+}
+
+.metrics-title {
+  font-family: 'Proxima Nova', sans-serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: white;
+  margin-bottom: 5px;
+}
+
+.metrics-description {
+  font-family: 'Proxima Nova', sans-serif;
+  font-size: 0.9rem;
+  color: white;
+  margin-bottom: 5px;
+}
+
+.select-all-button {
+  background-color: transparent;
+  border: 1px solid white;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  margin-bottom: 10px;
+  margin-left: 10px;
+  outline: none;
+  width: 160px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.select-all-button:hover {
+  background-color: rgb(66, 133, 244);
+  color: white;
+  border-color: rgb(66, 133, 244);
+  transform: translateY(-1px);
+}
+
+.select-all-button:active {
+  transform: translateY(0);
+}
+
+.select-all-button.selected {
+  background-color: rgb(66, 133, 244);
+  color: white;
+  border-color: rgb(66, 133, 244);
+}
+
+.metrics-channels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.channel-group {
+  margin-bottom: 10px;
+}
+
+.channel-title {
+  font-family: 'Proxima Nova', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  color: white;
+  margin-bottom: 5px;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.channel-group:last-child .metrics-grid {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(4, auto);
+  align-items: start;
+}
+
+.channel-group:last-child .metric-item:nth-child(-n+3) {
+  grid-column: 1;
+}
+
+.channel-group:last-child .metric-item:nth-child(n+4) {
+  grid-column: 2;
+}
+
+.channel-group:last-child .metric-item:nth-child(1) {
+  grid-row: 1;
+}
+
+.channel-group:last-child .metric-item:nth-child(2) {
+  grid-row: 2;
+}
+
+.channel-group:last-child .metric-item:nth-child(3) {
+  grid-row: 3;
+}
+
+.channel-group:last-child .metric-item:nth-child(4) {
+  grid-row: 1;
+}
+
+.channel-group:last-child .metric-item:nth-child(5) {
+  grid-row: 2;
+}
+
+.channel-group:last-child .metric-item:nth-child(6) {
+  grid-row: 3;
+}
+
+.channel-group:last-child .metric-item:nth-child(7) {
+  grid-row: 4;
+}
+
+.metric-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.metric-checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: white;
+  cursor: pointer;
+}
+
+.metric-label {
+  font-family: 'Proxima Nova', sans-serif;
+  font-size: 0.85rem;
+  color: white;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .metrics-channels {
+    grid-template-columns: 1fr;
+  }
+  
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+} 

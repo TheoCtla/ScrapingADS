@@ -1,42 +1,74 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+body {
+  background-color: #191919;
+  font-family: 'Proxima Nova', sans-serif;
+  font-weight: 400;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0px 10px;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Container principal pour tous les champs de date */
+.period-inputs-container {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 15px;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Style pour le champ "Mois pour le Google Sheet" */
+.sheet-month-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.sheet-month-label {
+  white-space: nowrap;
+  color: white;
+  font-size: 14px;
 }
 
-.card {
-  padding: 2em;
+/* Section Templates */
+.templates-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 15px 0;
 }
 
-.read-the-docs {
-  color: #888;
+.templates-label {
+  font-weight: bold;
+  font-size: 16px;
+  color: white;
+  margin-right: 10px;
+}
+
+.template-button {
+  background-color: transparent;
+  border: 1px solid white;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.template-button:hover {
+  background-color: rgb(66, 133, 244);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.template-button:active {
+  transform: translateY(0);
+}
+
+.template-button.selected {
+  background-color: rgb(66, 133, 244);
+  color: white;
+  border-color: rgb(66, 133, 244);
 }

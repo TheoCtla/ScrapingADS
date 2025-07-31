@@ -4,20 +4,24 @@ import './DateRangePicker.css';
 interface DateRangePickerProps {
   startDate: string;
   endDate: string;
+  sheetMonth: string;
   onStartDateChange: (date: string) => void;
   onEndDateChange: (date: string) => void;
+  onSheetMonthChange: (month: string) => void;
 }
 
-export default function DateRangePicker({ 
-  startDate, 
-  endDate, 
-  onStartDateChange, 
-  onEndDateChange 
+export default function DateRangePicker({
+  startDate,
+  endDate,
+  sheetMonth,
+  onStartDateChange,
+  onEndDateChange,
+  onSheetMonthChange
 }: DateRangePickerProps) {
   return (
-    <>
-      <div>
-        <label htmlFor="start_date">Start Date:</label>
+    <div className="date-container">
+      <div className="date-group">
+        <label className="date-label" htmlFor="start_date">Start Date :</label>
         <input
           type="date"
           id="start_date"
@@ -25,8 +29,8 @@ export default function DateRangePicker({
           onChange={(e) => onStartDateChange(e.target.value)}
         />
       </div>
-      <div>
-        <label htmlFor="end_date">End Date:</label>
+      <div className="date-group">
+        <label className="date-label" htmlFor="end_date">End Date :</label>
         <input
           type="date"
           id="end_date"
@@ -34,6 +38,16 @@ export default function DateRangePicker({
           onChange={(e) => onEndDateChange(e.target.value)}
         />
       </div>
-    </>
+      <div className="date-group">
+        <label className="date-label" htmlFor="sheet_month">Mois pour le Sheet :</label>
+        <input
+          type="text"
+          id="sheet_month"
+          value={sheetMonth}
+          onChange={(e) => onSheetMonthChange(e.target.value)}
+          placeholder="Ex: juillet 2025 ..."
+        />
+      </div>
+    </div>
   );
 } 

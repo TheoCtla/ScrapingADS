@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import './MetaMetricsSelector.css';
 
 interface MetaMetric {
   label: string;
@@ -16,8 +17,11 @@ const MetaMetricsSelector: React.FC<MetaMetricsSelectorProps> = ({
   selectedMetrics,
   onMetricsChange,
 }) => {
+  const [selectAllActive, setSelectAllActive] = useState(false);
+  
   const handleSelectAll = () => {
     const anySelected = selectedMetrics.length > 0;
+    setSelectAllActive(!anySelected);
     onMetricsChange(anySelected ? [] : [...availableMetrics]);
   };
 
@@ -36,36 +40,34 @@ const MetaMetricsSelector: React.FC<MetaMetricsSelectorProps> = ({
   };
 
   return (
-    <div style={{ margin: '20px 0', padding: '15px', border: '1px solid #ddd', borderRadius: '8px' }}>
-      <h4 style={{ margin: '0 0 15px 0', color: '#1877f2' }}>📊 Métriques Meta Ads</h4>
-      <label style={{ display: 'block', marginBottom: '10px' }}>Choisissez les données à inclure :</label>
-      <div style={{ marginBottom: '15px' }}>
+    <div className="meta-metrics-selector">
+      <h4 className="meta-metrics-title">Métriques Meta Ads</h4>
+      <div className="meta-metrics-header">
+        <label className="meta-metrics-description">Choisissez les données à inclure :</label>
+        
         <button 
+          className={`meta-select-all-button ${selectAllActive ? 'selected' : ''}`}
           onClick={handleSelectAll}
-          style={{ marginRight: '10px', padding: '5px 10px' }}
         >
           {selectedMetrics.length > 0 ? 'Tout désélectionner' : 'Tout sélectionner'}
         </button>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
+      
+      <div className="meta-metrics-grid">
         {availableMetrics.map((metric) => {
           const isSelected = selectedMetrics.some(m => m.value === metric.value);
           return (
-            <div key={metric.value} style={{ display: 'flex', alignItems: 'center' }}>
+            <div key={metric.value} className="meta-metric-item">
               <input
                 type="checkbox"
                 id={`meta-${metric.value}`}
+                className="meta-metric-checkbox"
                 checked={isSelected}
                 onChange={() => handleMetricToggle(metric)}
-                style={{ marginRight: '8px' }}
               />
               <label 
                 htmlFor={`meta-${metric.value}`}
-                style={{ 
-                  cursor: 'pointer',
-                  fontWeight: isSelected ? 'bold' : 'normal',
-                  color: isSelected ? '#1877f2' : '#333'
-                }}
+                className="meta-metric-label"
               >
                 {metric.label}
               </label>

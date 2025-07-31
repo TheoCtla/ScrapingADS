@@ -1,0 +1,96 @@
+/* MetaMetricsSelector Styles - Dark Theme */
+.meta-metrics-selector {
+  margin: 15px 0;
+  max-width: 400px;
+}
+
+.meta-metrics-title {
+  font-family: 'Proxima Nova', sans-serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: white;
+  margin-bottom: 15px;
+}
+
+.meta-metrics-description {
+  font-family: 'Proxima Nova', sans-serif;
+  font-size: 0.9rem;
+  color: white;
+  margin-bottom: 15px;
+  margin-right: 15px;
+  white-space: nowrap;
+}
+
+.meta-select-all-button {
+  background-color: transparent;
+  border: 1px solid white;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  margin-bottom: 20px;
+  outline: none;
+  width: 160px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.meta-metrics-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.meta-select-all-button:hover {
+  background-color: rgb(66, 133, 244);
+  color: white;
+  border-color: rgb(66, 133, 244);
+  transform: translateY(-1px);
+}
+
+.meta-select-all-button:active {
+  transform: translateY(0);
+}
+
+.meta-select-all-button.selected {
+  background-color: rgb(66, 133, 244);
+  color: white;
+  border-color: rgb(66, 133, 244);
+}
+
+.meta-metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.meta-metric-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.meta-metric-checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: white;
+  cursor: pointer;
+}
+
+.meta-metric-label {
+  font-family: 'Proxima Nova', sans-serif;
+  font-size: 0.85rem;
+  color: white;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .meta-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+} 

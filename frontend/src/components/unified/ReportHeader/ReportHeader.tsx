@@ -8,8 +8,7 @@ interface ReportHeaderProps {
 export default function ReportHeader({ customerCount }: ReportHeaderProps) {
   return (
     <div>
-      <h1>Google Ads Report</h1>
-      <p>{customerCount} client(s) chargé(s)</p>
+      <h1>SCRAPING ADS</h1>
     </div>
   );
 } 

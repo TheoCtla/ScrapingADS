@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './MetricsSelector.css';
 
 interface Metric {
@@ -17,9 +17,11 @@ export default function MetricsSelector({
   selectedMetrics, 
   onMetricsChange 
 }: MetricsSelectorProps) {
+  const [selectAllActive, setSelectAllActive] = useState(false);
   
   const handleSelectAll = () => {
     const anySelected = selectedMetrics.length > 0;
+    setSelectAllActive(!anySelected);
     onMetricsChange(anySelected ? [] : [...availableMetrics]);
   };
 
@@ -51,38 +53,40 @@ export default function MetricsSelector({
   };
 
   return (
-    <div style={{ margin: '15px 0' }}>
-      <h4 style={{ margin: '0 0 15px 0', color: '#4285f4' }}>📊 Métriques Google Ads</h4>
-      <label style={{ display: 'block', marginBottom: '10px' }}>Choisissez les données à inclure :</label>
-      <div style={{ marginBottom: '15px' }}>
-        <button 
-          onClick={handleSelectAll}
-          style={{ marginRight: '10px', padding: '5px 10px' }}
-        >
-          {selectedMetrics.length > 0 ? 'Tout désélectionner' : 'Tout sélectionner'}
-        </button>
-      </div>
+    <div className="metrics-selector-container">
+      <h4 className="metrics-title">Métriques Google Ads</h4>
+      <label className="metrics-description">Choisissez les données à inclure :</label>
+      
+      <button 
+        className={`select-all-button ${selectAllActive ? 'selected' : ''}`}
+        onClick={handleSelectAll}
+      >
+        {selectedMetrics.length > 0 ? 'Tout désélectionner' : 'Tout sélectionner'}
+      </button>
 
-      {Object.entries(metricsByChannel).map(([channelLabel, metrics]) => (
-        <div key={channelLabel}>
-          <h3>{channelLabel}</h3>
-          <div>
-            {metrics.map((metric) => (
-              <div key={metric.value}>
-                <input
-                  type="checkbox"
-                  id={`metric-${metric.value}`}
-                  checked={selectedMetrics.some(m => m.value === metric.value)}
-                  onChange={() => handleMetricToggle(metric)}
-                />
-                <label htmlFor={`metric-${metric.value}`}>
-                  {metric.label}
-                </label>
-              </div>
-            ))}
+      <div className="metrics-channels">
+        {Object.entries(metricsByChannel).map(([channelLabel, metrics]) => (
+          <div key={channelLabel} className="channel-group">
+            <h3 className="channel-title">{channelLabel}</h3>
+            <div className="metrics-grid">
+              {metrics.map((metric) => (
+                <div key={metric.value} className="metric-item">
+                  <input
+                    type="checkbox"
+                    id={`metric-${metric.value}`}
+                    className="metric-checkbox"
+                    checked={selectedMetrics.some(m => m.value === metric.value)}
+                    onChange={() => handleMetricToggle(metric)}
+                  />
+                  <label htmlFor={`metric-${metric.value}`} className="metric-label">
+                    {metric.label}
+                  </label>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 } 

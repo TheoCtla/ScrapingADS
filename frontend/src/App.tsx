@@ -7,8 +7,39 @@ import DateRangePicker from './components/unified/DateRangePicker/DateRangePicke
 import MetricsSelector from './components/google/GoogleMetricsSelector/MetricsSelector';
 import MetaMetricsSelector from './components/meta/MetaMetricsSelector/MetaMetricsSelector';
 import UnifiedDownloadButton from './components/unified/UnifiedDownloadButton/UnifiedDownloadButton';
+import './App.css';
 
 const App: React.FC = () => {
+  // Fonction pour calculer les dates du mois précédent
+  const getLastMonthDates = () => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    // Mois précédent
+    const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+    const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+    
+    // Premier jour du mois précédent (1er du mois)
+    const firstDay = new Date(lastMonthYear, lastMonth, 1);
+    
+    // Dernier jour du mois précédent (dernier jour du mois)
+    const lastDay = new Date(lastMonthYear, lastMonth + 1, 0);
+    
+    // Format YYYY-MM-DD pour les inputs date
+    const formatDate = (date: Date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+    
+    return {
+      startDate: formatDate(firstDay),
+      endDate: formatDate(lastDay)
+    };
+  };
+
   // États Google Ads
   const [googleCustomers, setGoogleCustomers] = useState<{ customer_id: string; name: string; manager: boolean }[]>([]);
   const [selectedGoogleCustomer, setSelectedGoogleCustomer] = useState<string>('');
@@ -17,13 +48,35 @@ const App: React.FC = () => {
   const [metaAccounts, setMetaAccounts] = useState<{ ad_account_id: string; name: string; status: string }[]>([]);
   const [selectedMetaAccount, setSelectedMetaAccount] = useState<string>('');
 
-  // États communs
-  const [startDate, setStartDate] = useState<string>('');
-  const [endDate, setEndDate] = useState<string>('');
-  const [sheetMonth, setSheetMonth] = useState<string>('');
+  // États communs - initialisés avec les dates du mois précédent
+  const lastMonthDates = getLastMonthDates();
+  const [startDate, setStartDate] = useState<string>(lastMonthDates.startDate);
+  const [endDate, setEndDate] = useState<string>(lastMonthDates.endDate);
+  
+  // Fonction pour obtenir le nom du mois précédent en français
+  const getLastMonthName = () => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    // Mois précédent
+    const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+    const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+    
+    const monthNames = [
+      'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
+      'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'
+    ];
+    
+    return `${monthNames[lastMonth]} ${lastMonthYear}`;
+  };
+  
+  const [sheetMonth, setSheetMonth] = useState<string>(getLastMonthName());
   const [loading, setLoading] = useState<boolean>(false);
   const [contactEnabled, setContactEnabled] = useState<boolean>(true);
   const [itineraireEnabled, setItineraireEnabled] = useState<boolean>(true);
+  const [cuisinistesSelected, setCuisinistesSelected] = useState<boolean>(false);
+  const [litiersSelected, setLitiersSelected] = useState<boolean>(false);
   // Liste des métriques Google Ads personnalisées par canal
   const [availableGoogleMetrics, setAvailableGoogleMetrics] = useState<{ label: string; value: string }[]>([
     // Métriques Perfmax
@@ -75,6 +128,8 @@ const App: React.FC = () => {
 
   // Fonctions pour les boutons Cuisinistes et Litiers
   const handleCuisinistesToggle = () => {
+    setCuisinistesSelected(!cuisinistesSelected);
+    
     // Toggle : ajoute ou retire les métriques Search sans toucher aux autres
     const group = availableGoogleMetrics.filter(metric =>
       /search/i.test(metric.label)
@@ -114,6 +169,8 @@ const App: React.FC = () => {
   };
 
   const handleLitiersToggle = () => {
+    setLitiersSelected(!litiersSelected);
+    
     // Toggle : ajoute ou retire les métriques Litiers sans toucher aux autres
     const group = availableGoogleMetrics.filter(metric =>
       ["metrics.clicks_search", "metrics.clicks_perfmax", "metrics.clicks_display", "metrics.impressions"].includes(metric.value)
@@ -160,15 +217,15 @@ const App: React.FC = () => {
         const response = await axios.get('http://localhost:5050/list-customers', {
           withCredentials: true,
         });
-        console.log('✅ Google response:', response.data);
+        console.log('Google response:', response.data);
         if (Array.isArray(response.data)) {
           setGoogleCustomers(response.data);
-          console.log(`✅ Set ${response.data.length} Google customers`);
+          console.log(`Set ${response.data.length} Google customers`);
         } else {
-          console.error('❌ Unexpected format:', response.data);
+          console.error('Unexpected format:', response.data);
         }
       } catch (error: any) {
-        console.error('❌ Error fetching Google customers:', error?.message || error);
+        console.error('Error fetching Google customers:', error?.message || error);
         if (error?.response) {
           console.error('Response data:', error.response.data);
           console.error('Status:', error.response.status);
@@ -188,15 +245,15 @@ const App: React.FC = () => {
         const response = await axios.get('http://localhost:5050/list-meta-accounts', {
           withCredentials: true,
         });
-        console.log('✅ Meta response:', response.data);
+        console.log('Meta response:', response.data);
         if (Array.isArray(response.data)) {
           setMetaAccounts(response.data);
-          console.log(`✅ Set ${response.data.length} Meta accounts`);
+          console.log(`Set ${response.data.length} Meta accounts`);
         } else {
-          console.error('❌ Unexpected Meta format:', response.data);
+          console.error('Unexpected Meta format:', response.data);
         }
       } catch (error: any) {
-        console.error('❌ Error fetching Meta accounts:', error?.message || error);
+        console.error('Error fetching Meta accounts:', error?.message || error);
         if (error?.response) {
           console.error('Response data:', error.response.data);
           console.error('Status:', error.response.status);
@@ -222,13 +279,13 @@ const App: React.FC = () => {
 
 
   const handleUnifiedDownload = async () => {
-    console.log('🔧 DEBUG: handleUnifiedDownload appelée');
-    console.log('🔧 DEBUG: selectedGoogleCustomer:', selectedGoogleCustomer);
-    console.log('🔧 DEBUG: selectedMetaAccount:', selectedMetaAccount);
-    console.log('🔧 DEBUG: startDate:', startDate);
-    console.log('🔧 DEBUG: endDate:', endDate);
-    console.log('🔧 DEBUG: selectedGoogleMetrics:', selectedGoogleMetrics);
-    console.log('🔧 DEBUG: selectedMetaMetrics:', selectedMetaMetrics);
+          console.log('DEBUG: handleUnifiedDownload appelée');
+      console.log('DEBUG: selectedGoogleCustomer:', selectedGoogleCustomer);
+      console.log('DEBUG: selectedMetaAccount:', selectedMetaAccount);
+      console.log('DEBUG: startDate:', startDate);
+      console.log('DEBUG: endDate:', endDate);
+      console.log('DEBUG: selectedGoogleMetrics:', selectedGoogleMetrics);
+      console.log('DEBUG: selectedMetaMetrics:', selectedMetaMetrics);
     
     // Déterminer le type d'envoi
     const hasGoogle = !!selectedGoogleCustomer;
@@ -264,35 +321,35 @@ const App: React.FC = () => {
         meta_metrics: selectedMetaMetrics.map((m: { value: string }) => m.value),
       };
       
-      console.log('🔧 DEBUG: payload unifié envoyé:', payload);
+              console.log('DEBUG: payload unifié envoyé:', payload);
       
               const response = await axios.post('http://localhost:5050/export-unified-report', payload);
 
       console.log('🔧 DEBUG: response reçue:', response);
 
       if (response.data.success) {
-        alert(`✅ Succès ! ${response.data.message}\n\n` +
+        alert(`Succès ! ${response.data.message}\n\n` +
               `Mises à jour réussies: ${response.data.successful_updates.length}\n` +
               `Échecs: ${response.data.failed_updates.length}`);
         
-        console.log('✅ Mises à jour réussies:', response.data.successful_updates);
+        console.log('Mises à jour réussies:', response.data.successful_updates);
         if (response.data.failed_updates.length > 0) {
-          console.log('⚠️ Échecs:', response.data.failed_updates);
+          console.log('Échecs:', response.data.failed_updates);
         }
       } else {
-        alert('❌ Erreur lors de l\'envoi au Google Sheet');
-        console.error('❌ Response body:', response.data);
+        alert('Erreur lors de l\'envoi au Google Sheet');
+        console.error('Response body:', response.data);
       }
       
       console.log('🔧 DEBUG: Envoi au Google Sheet terminé avec succès');
     } catch (error: any) {
-      console.error('❌ ERROR: Error downloading unified report:', error);
+              console.error('ERROR: Error downloading unified report:', error);
       
       let errorMessage = 'Erreur inconnue lors de l\'envoi';
       
       if (error?.response) {
-        console.error('❌ ERROR: Response data:', error.response.data);
-        console.error('❌ ERROR: Response status:', error.response.status);
+        console.error('ERROR: Response data:', error.response.data);
+                  console.error('ERROR: Response status:', error.response.status);
         
         // Afficher l'erreur spécifique du backend
         if (error.response.data?.error) {
@@ -304,7 +361,7 @@ const App: React.FC = () => {
         }
       }
       
-      alert(`❌ Erreur: ${errorMessage}`);
+              alert(`Erreur: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -317,69 +374,60 @@ const App: React.FC = () => {
       <DateRangePicker 
         startDate={startDate}
         endDate={endDate}
+        sheetMonth={sheetMonth}
         onStartDateChange={setStartDate}
         onEndDateChange={setEndDate}
+        onSheetMonthChange={setSheetMonth}
       />
       
-      <div>
-        <label htmlFor="sheet_month">
-          📅 Mois pour le Google Sheet :
-        </label>
-        <input
-          type="text"
-          id="sheet_month"
-          value={sheetMonth}
-          onChange={(e) => setSheetMonth(e.target.value)}
-          placeholder="Ex: juillet 2025"
-        />
-      </div>
-      
-      <div style={{ margin: '15px 0' }}>
-        <span style={{ marginRight: '10px', fontWeight: 'bold' }}>Templates :</span>
+      <div className="templates-section">
+        <span className="templates-label">Templates :</span>
         <button 
+          className={`template-button ${cuisinistesSelected ? 'selected' : ''}`}
           onClick={handleCuisinistesToggle}
-          style={{ marginRight: '10px', padding: '5px 10px' }}
         >
           Cuisinistes
         </button>
         <button 
+          className={`template-button ${litiersSelected ? 'selected' : ''}`}
           onClick={handleLitiersToggle}
-          style={{ padding: '5px 10px' }}
         >
           Litiers
         </button>
       </div>
       
-      <div style={{ margin: '20px 0', padding: '15px', border: '2px solid #4285f4', borderRadius: '8px' }}>
-        <h3 style={{ margin: '0 0 15px 0', color: '#4285f4' }}>🔵 SECTION GOOGLE ADS</h3>
+      <div style={{ display: 'flex', gap: '20px', margin: '20px 0' }}>
+        <div style={{ flex: 2, padding: '15px', border: '2px solid #4285f4', borderRadius: '8px' }}>
+                          <h3 style={{ margin: '0 0 2px 0', color: '#4285f4' }}>SECTION GOOGLE ADS</h3>
+          
+          <GoogleCustomersSelect 
+            googleCustomers={googleCustomers}
+            selectedGoogleCustomer={selectedGoogleCustomer}
+            onSelectGoogleCustomer={handleSelectGoogleCustomer}
+          />
+          
+          <MetricsSelector 
+            availableMetrics={availableGoogleMetrics}
+            selectedMetrics={selectedGoogleMetrics}
+            onMetricsChange={setSelectedGoogleMetrics}
+          />
+        </div>
         
-        <GoogleCustomersSelect 
-          googleCustomers={googleCustomers}
-          selectedGoogleCustomer={selectedGoogleCustomer}
-          onSelectGoogleCustomer={handleSelectGoogleCustomer}
-        />
-        
-        <MetricsSelector 
-          availableMetrics={availableGoogleMetrics}
-          selectedMetrics={selectedGoogleMetrics}
-          onMetricsChange={setSelectedGoogleMetrics}
-        />
-      </div>
-      
-      <div style={{ margin: '20px 0', padding: '15px', border: '2px solid #1877f2', borderRadius: '8px' }}>
-        <h3 style={{ margin: '0 0 15px 0', color: '#1877f2' }}>🔴 SECTION META ADS</h3>
-        
-        <MetaAccountsSelect 
-          metaAccounts={metaAccounts}
-          selectedMetaAccount={selectedMetaAccount}
-          onSelectMetaAccount={handleSelectMetaAccount}
-        />
-        
-        <MetaMetricsSelector 
-          availableMetrics={availableMetaMetrics}
-          selectedMetrics={selectedMetaMetrics}
-          onMetricsChange={setSelectedMetaMetrics}
-        />
+        <div style={{ flex: 1, padding: '15px', border: '2px solid #1877f2', borderRadius: '8px', maxWidth: '500px' }}>
+                          <h3 style={{ margin: '0 0 2px 0', color: '#1877f2' }}>SECTION META ADS</h3>
+          
+          <MetaAccountsSelect 
+            metaAccounts={metaAccounts}
+            selectedMetaAccount={selectedMetaAccount}
+            onSelectMetaAccount={handleSelectMetaAccount}
+          />
+          
+          <MetaMetricsSelector 
+            availableMetrics={availableMetaMetrics}
+            selectedMetrics={selectedMetaMetrics}
+            onMetricsChange={setSelectedMetaMetrics}
+          />
+        </div>
       </div>
       
       <UnifiedDownloadButton 

@@ -12,5 +12,5 @@ if (rootElement) {
     </React.StrictMode>
   );
 } else {
-  console.error("❌ Impossible de monter l'app : élément #root introuvable dans index.html");
+  console.error("Impossible de monter l'app : élément #root introuvable dans index.html");
 }

@@ -1,1 +1,61 @@
-/* Styles supprimés - à refaire plus tard */ 
+/* UnifiedDownloadButton Styles */
+.unified-download-container {
+  margin-top: 0px;
+}
+
+.status-indicators {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.status-indicator {
+  font-size: 14px;
+  color: white;
+}
+
+.download-button {
+  width: 100%;
+  max-width: 400px;
+  padding: 12px 24px;
+  font-family: 'Proxima Nova', sans-serif;
+  font-size: 16px;
+  background-color: rgb(66, 133, 244);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.download-button:hover {
+  background-color: rgb(66, 133, 244);
+  color: white;
+  border-color: rgb(66, 133, 244);
+  transform: translateY(-1px);
+}
+
+.download-button:active {
+  transform: translateY(0);
+}
+
+.download-button:focus {
+  background-color: #1E1E1E;
+  color: white;
+  border-color: rgb(66, 133, 244);
+}
+
+.download-button:disabled {
+  background-color: #ccc;
+  color: #666;
+  border-color: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.help-text {
+  margin: 0px;
+  font-size: 14px;
+  color: #ccc;
+  font-style: italic;
+} 

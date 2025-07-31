@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import './MetaAccountsSelect.css';
 
 interface MetaAccount {
   ad_account_id: string;
@@ -58,107 +59,59 @@ const MetaAccountsSelect: React.FC<MetaAccountsSelectProps> = ({
   if (metaAccounts.length === 0) {
     return (
       <div>
-        <h3>📘 Comptes Meta Ads</h3>
+        <h3>Comptes Meta Ads</h3>
         <p>Chargement des comptes Meta...</p>
       </div>
     );
   }
 
   return (
-    <div>
-      <h3>📘 Comptes Meta Ads</h3>
-      <div ref={dropdownRef} style={{ position: 'relative', width: '100%' }}>
+    <div className="meta-accounts-select-container">
+      <h3 className="meta-accounts-select-title">Comptes Meta Ads</h3>
+      <div ref={dropdownRef} className="meta-dropdown-container">
         {/* Bouton principal du dropdown */}
         <button
+          className="meta-dropdown-button"
           onClick={() => setIsOpen(!isOpen)}
-          style={{
-            width: '100%',
-            padding: '8px 12px',
-            fontSize: '14px',
-            textAlign: 'left',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            backgroundColor: 'white',
-            cursor: 'pointer',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}
         >
-          <span style={{ color: '#000' }}>
+          <span className="meta-dropdown-button-text">
             {selectedAccount 
               ? cleanDisplayName(selectedAccount.name)
-              : '-- Sélectionnez un compte Meta --'
+              : 'Cherche ton compte Meta'
             }
           </span>
-          <span style={{ color: '#000' }}>{isOpen ? '▲' : '▼'}</span>
+          <span className={`meta-dropdown-arrow ${isOpen ? 'open' : ''}`}>▼</span>
         </button>
 
         {/* Dropdown avec searchbar */}
         {isOpen && (
-          <div style={{
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
-            backgroundColor: 'white',
-            border: '1px solid #ccc',
-            borderTop: 'none',
-            borderRadius: '0 0 4px 4px',
-            maxHeight: '300px',
-            overflowY: 'auto',
-            zIndex: 1000
-          }}>
+          <div className="meta-dropdown-menu">
             {/* Searchbar */}
-            <div style={{ padding: '8px' }}>
-              <input
-                type="text"
-                placeholder="Search for an Item..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '8px',
-                  border: '1px solid #ddd',
-                  borderRadius: '4px',
-                  fontSize: '14px',
-                  outline: 'none'
-                }}
-                autoFocus
-              />
-            </div>
+            <input
+              type="text"
+              className="meta-search-input"
+              placeholder="Search for an Item..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              autoFocus
+            />
 
             {/* Liste des comptes filtrés */}
-            <div>
+            <div className="meta-account-list">
               {filteredAccounts.length > 0 ? (
                 filteredAccounts.map((account) => (
                   <div
                     key={account.ad_account_id}
+                    className={`meta-account-item ${account.ad_account_id === selectedMetaAccount ? 'selected' : ''}`}
                     onClick={() => handleSelectAccount(account.ad_account_id)}
-                    style={{
-                      padding: '10px 12px',
-                      cursor: 'pointer',
-                      borderBottom: '1px solid #f0f0f0',
-                      backgroundColor: account.ad_account_id === selectedMetaAccount ? '#e3f2fd' : 'white'
-                    }}
-                    onMouseEnter={(e) => {
-                      if (account.ad_account_id !== selectedMetaAccount) {
-                        e.currentTarget.style.backgroundColor = '#f5f5f5';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (account.ad_account_id !== selectedMetaAccount) {
-                        e.currentTarget.style.backgroundColor = 'white';
-                      }
-                    }}
                   >
-                                         <div style={{ fontWeight: '500', color: '#000' }}>
-                       {cleanDisplayName(account.name)}
-                     </div>
+                    <div className="meta-account-name">
+                      {cleanDisplayName(account.name)}
+                    </div>
                   </div>
                 ))
               ) : (
-                <div style={{ padding: '12px', textAlign: 'center', color: '#000' }}>
+                <div className="meta-no-results">
                   Aucun compte trouvé
                 </div>
               )}
@@ -167,7 +120,7 @@ const MetaAccountsSelect: React.FC<MetaAccountsSelectProps> = ({
         )}
       </div>
       
-      <p style={{ color: '#000' }}>
+      <p className="meta-account-status">
         {selectedMetaAccount ? 
           `Compte sélectionné: ${cleanDisplayName(selectedAccount?.name || '')}` : 
           `${metaAccounts.length} comptes disponibles`
