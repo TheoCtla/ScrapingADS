@@ -78,4 +78,7 @@ backend/exports/*.xlsx
 
 # Configuration files with sensitive data
 backend/config/credentials.json
-backend/config/google-ads.yaml 
+backend/config/google-ads.yaml
+
+# Scripts d'automatisation (contiennent des données sensibles et logs)
+backend/scripts/ 
