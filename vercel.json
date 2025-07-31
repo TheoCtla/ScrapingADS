@@ -1,23 +1,27 @@
 {
     "version": 2,
-    "builds": [],
+    "builds": [
+      {
+        "src": "frontend/package.json",
+        "use": "@vercel/static-build",
+        "config": {
+          "distDir": "frontend/dist"
+        }
+      }
+    ],
     "rewrites": [
       {
         "source": "/api/(.*)",
         "destination": "https://TON-BACKEND-HÉBERGÉ.com/api/$1"
-      }
-    ],
-    "routes": [
-      {
-        "handle": "filesystem"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "/index.html"
-      }
-    ],
-    "outputDirectory": "dist",
-    "rootDirectory": "frontend"
+    }
+],
+"routes": [
+  {
+    "handle": "filesystem"
+  },
+  {
+    "src": "/(.*)",
+    "dest": "/index.html"
   }
-
-
+]
+}
