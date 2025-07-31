@@ -15,7 +15,7 @@ python-dotenv==1.0.0
 
 # Google Ads API Client
 google-ads==27.0.0
-google-api-core
+google-api-core>=2.0.0
 
 # ========================================
 # GOOGLE SHEETS API
