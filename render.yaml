@@ -5,7 +5,4 @@ services:
     plan: free
     buildCommand: "pip install -r backend/requirements.txt"
     startCommand: "python backend/run.py"
-    envVars:
-      - key: PORT
-        value: 10000
     region: frankfurt
