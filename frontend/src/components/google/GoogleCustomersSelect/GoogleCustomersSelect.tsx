@@ -119,13 +119,6 @@ const GoogleCustomersSelect: React.FC<GoogleCustomersSelectProps> = ({
           </div>
         )}
       </div>
-      
-      <p className="customer-status">
-        {selectedGoogleCustomer ? 
-          `Client sélectionné: ${cleanDisplayName(selectedCustomer?.name || '')}` : 
-          `${googleCustomers.length} clients disponibles`
-        }
-      </p>
     </div>
   );
 };

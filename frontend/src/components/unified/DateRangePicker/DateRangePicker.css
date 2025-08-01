@@ -23,7 +23,7 @@
     flex: 1;
     padding: 10px;
     border: 1px solid #ffffff;
-    border-radius: 5px;
+    border-radius: 0;
     height: 40px;
     box-sizing: border-box;
     background-color: transparent;
@@ -34,7 +34,7 @@
     flex: 1;
     padding: 10px;
     border: 1px solid #ffffff;
-    border-radius: 5px;
+    border-radius: 0;
     height: 40px;
     box-sizing: border-box;
     background-color: transparent;
@@ -45,7 +45,7 @@
     flex: 1;
     padding: 10px;
     border: 1px solid #fff;
-    border-radius: 5px;
+    border-radius: 0;
     height: 40px;
     box-sizing: border-box;
     background-color: transparent;

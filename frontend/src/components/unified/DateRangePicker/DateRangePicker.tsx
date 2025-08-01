@@ -21,7 +21,7 @@ export default function DateRangePicker({
   return (
     <div className="date-container">
       <div className="date-group">
-        <label className="date-label" htmlFor="start_date">Start Date :</label>
+        <label className="date-label" htmlFor="start_date">Date de début :</label>
         <input
           type="date"
           id="start_date"
@@ -30,7 +30,7 @@ export default function DateRangePicker({
         />
       </div>
       <div className="date-group">
-        <label className="date-label" htmlFor="end_date">End Date :</label>
+        <label className="date-label" htmlFor="end_date">Date de fin :</label>
         <input
           type="date"
           id="end_date"

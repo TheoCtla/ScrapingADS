@@ -1,5 +1,5 @@
 body {
-  background-color: #191919;
+  background-color: #0a0a0a;
   font-family: 'Proxima Nova', sans-serif;
   font-weight: 400;
   width: 100%;
@@ -50,7 +50,7 @@ body {
   border: 1px solid white;
   color: white;
   padding: 8px 16px;
-  border-radius: 5px;
+  border-radius: 0;
   cursor: pointer;
   font-size: 14px;
   transition: all 0.2s ease;
@@ -58,7 +58,7 @@ body {
 }
 
 .template-button:hover {
-  background-color: rgb(66, 133, 244);
+  background-color: #dbbc32;
   color: white;
   transform: translateY(-1px);
 }
@@ -68,7 +68,12 @@ body {
 }
 
 .template-button.selected {
-  background-color: rgb(66, 133, 244);
+  background-color: #dbbc32;
   color: white;
-  border-color: rgb(66, 133, 244);
+  border-color: #dbbc32;
+}
+
+h3 {
+  font-family: 'Allerta Stencil', Trebuchet MS, sans-serif;
+  font-weight: 400;
 }

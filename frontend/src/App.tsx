@@ -397,8 +397,8 @@ const App: React.FC = () => {
       </div>
       
       <div style={{ display: 'flex', gap: '20px', margin: '20px 0' }}>
-        <div style={{ flex: 2, padding: '15px', border: '2px solid #4285f4', borderRadius: '8px' }}>
-                          <h3 style={{ margin: '0 0 2px 0', color: '#4285f4' }}>SECTION GOOGLE ADS</h3>
+        <div style={{ flex: 2, padding: '15px', border: '2px solid #dbbc32'}}>
+                          <h3 style={{ margin: '0 0 2px 0', color: '#dbbc32' }}>SECTION GOOGLE ADS</h3>
           
           <GoogleCustomersSelect 
             googleCustomers={googleCustomers}
@@ -413,8 +413,8 @@ const App: React.FC = () => {
           />
         </div>
         
-        <div style={{ flex: 1, padding: '15px', border: '2px solid #1877f2', borderRadius: '8px', maxWidth: '500px' }}>
-                          <h3 style={{ margin: '0 0 2px 0', color: '#1877f2' }}>SECTION META ADS</h3>
+        <div style={{ flex: 1, padding: '15px', border: '2px solid #dbbc32', maxWidth: '500px' }}>
+                          <h3 style={{ margin: '0 0 2px 0', color: '#dbbc32' }}>SECTION META ADS</h3>
           
           <MetaAccountsSelect 
             metaAccounts={metaAccounts}

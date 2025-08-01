@@ -119,13 +119,6 @@ const MetaAccountsSelect: React.FC<MetaAccountsSelectProps> = ({
           </div>
         )}
       </div>
-      
-      <p className="meta-account-status">
-        {selectedMetaAccount ? 
-          `Compte sélectionné: ${cleanDisplayName(selectedAccount?.name || '')}` : 
-          `${metaAccounts.length} comptes disponibles`
-        }
-      </p>
     </div>
   );
 };

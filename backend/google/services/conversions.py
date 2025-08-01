@@ -43,6 +43,9 @@ class GoogleAdsConversionsService:
         Returns:
             Tuple (total_conversions, found_conversions)
         """
+        total_conversions = 0
+        found_conversions = []
+        
         try:
             # Requête pour récupérer les conversion actions et leurs métriques
             query = f"""
@@ -60,9 +63,6 @@ class GoogleAdsConversionsService:
             logging.info(f"🔍 Recherche des conversions Contact pour le client {customer_id}")
             
             response = self.auth_service.fetch_report_data(customer_id, query)
-            
-            total_conversions = 0
-            found_conversions = []
             
             for batch in response:
                 for row in batch.results:
@@ -90,10 +90,16 @@ class GoogleAdsConversionsService:
             logging.error(f"❌ GoogleAds API error pour {customer_id}: {ex.error.code().name}")
             for error in ex.failure.errors:
                 logging.error(f"   - {error.message}")
-            return 0, []
+            # Retourner les données trouvées même en cas d'erreur
+            if found_conversions:
+                logging.info(f"🔄 Retour des données partielles trouvées: {total_conversions} conversions")
+            return total_conversions, found_conversions
         except Exception as e:
             logging.error(f"❌ Erreur lors de la récupération des conversions Contact pour {customer_id}: {e}")
-            return 0, []
+            # Retourner les données trouvées même en cas d'erreur
+            if found_conversions:
+                logging.info(f"🔄 Retour des données partielles trouvées: {total_conversions} conversions")
+            return total_conversions, found_conversions
     
     def get_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
         """
@@ -107,6 +113,9 @@ class GoogleAdsConversionsService:
         Returns:
             Tuple (total_conversions, found_conversions)
         """
+        total_conversions = 0
+        found_conversions = []
+        
         try:
             # Même requête que pour les contacts
             query = f"""
@@ -124,9 +133,6 @@ class GoogleAdsConversionsService:
             logging.info(f"🔍 Recherche des conversions Itinéraires pour le client {customer_id}")
             
             response = self.auth_service.fetch_report_data(customer_id, query)
-            
-            total_conversions = 0
-            found_conversions = []
             
             for batch in response:
                 for row in batch.results:
@@ -155,10 +161,16 @@ class GoogleAdsConversionsService:
             logging.error(f"❌ GoogleAds API error pour {customer_id}: {ex.error.code().name}")
             for error in ex.failure.errors:
                 logging.error(f"   - {error.message}")
-            return 0, []
+            # Retourner les données trouvées même en cas d'erreur
+            if found_conversions:
+                logging.info(f"🔄 Retour des données partielles trouvées: {total_conversions} conversions")
+            return total_conversions, found_conversions
         except Exception as e:
             logging.error(f"❌ Erreur lors de la récupération des conversions Itinéraires pour {customer_id}: {e}")
-            return 0, []
+            # Retourner les données trouvées même en cas d'erreur
+            if found_conversions:
+                logging.info(f"🔄 Retour des données partielles trouvées: {total_conversions} conversions")
+            return total_conversions, found_conversions
     
     def update_contact_conversions_in_sheet(self, client_name: str, month: str, conversions_total: int) -> bool:
         """
