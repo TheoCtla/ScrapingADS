@@ -1,0 +1,194 @@
+.client-selector-container {
+  margin-bottom: 20px;
+}
+
+.client-selector-title {
+  margin: 0 0 10px 0;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.client-status {
+  color: #666;
+  font-style: italic;
+}
+
+.client-error {
+  color: #d32f2f;
+  font-weight: 500;
+}
+
+/* Alerte de rappel */
+.client-reminder-alert {
+  background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.client-dropdown-container {
+  position: relative;
+  width: 100%;
+}
+
+.client-dropdown-button {
+  width: 100%;
+  padding: 12px 16px;
+  background: #0a0a0a;
+  border: 2px solid #dbbc32;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.client-dropdown-button:hover {
+  border-color: #dbbc32;
+}
+
+.client-dropdown-button:focus {
+  outline: none;
+  border-color: #dbbc32;
+  box-shadow: 0 0 0 2px rgba(219, 188, 50, 0.2);
+}
+
+.client-dropdown-button-text {
+  color: #fff;
+  font-weight: 500;
+}
+
+.client-dropdown-arrow {
+  color: #666;
+  font-size: 12px;
+  transition: transform 0.2s ease;
+}
+
+.client-dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.client-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 2px solid #dbbc32;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  max-height: 300px;
+  overflow: hidden;
+}
+
+.client-search-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  outline: none;
+  background-color: #0a0a0a;
+}
+
+.client-search-input:focus {
+  border-bottom-color: #dbbc32;
+}
+
+.client-list {
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.client-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #f5f5f5;
+  background-color: #0a0a0a;
+}
+
+.client-item:hover {
+  background-color: #dbbc32;
+}
+
+.client-item.selected {
+  background-color: #dbbc32;
+  color: white;
+}
+
+/* Style spécial pour les clients prioritaires (Orgeval et Melun) */
+.client-item.priority-client {
+  background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+  border-left: 4px solid #ff6b6b;
+}
+
+.client-item.priority-client:hover {
+  background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+  color: white;
+}
+
+.client-item.priority-client.selected {
+  background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+  color: white;
+}
+
+.client-item:last-child {
+  border-bottom: none;
+}
+
+.client-name {
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Badge de priorité */
+.priority-badge {
+  background: #ff6b6b;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0.7;
+  }
+}
+
+.client-no-results {
+  padding: 16px;
+  text-align: center;
+  color: #666;
+  font-style: italic;
+}

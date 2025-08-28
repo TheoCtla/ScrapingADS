@@ -1,0 +1,263 @@
+{
+  "version": "1.0",
+  "description": "Liste blanche des clients autorisés avec mapping vers les IDs Google Ads et Meta Ads",
+  "last_updated": "2025-01-30",
+  "allowlist": [
+    "A.G. Cryolipolyse",
+    "Addario",
+    "Alexander Sachs",
+    "AvivA Chartres",
+    "AvivA Melun",
+    "AvivA Montigny",
+    "AvivA Orgeval",
+    "Crozatier Dijon",
+    "Denteva",
+    "EvoPro Informatique",
+    "France Literie Aix",
+    "France Literie Annemasse",
+    "France Literie Antibes Vallauris",
+    "France Literie Dijon",
+    "France Literie Narbonne",
+    "France Literie Perpignan",
+    "Kaltea Aubagne",
+    "Kaltea Chalon sur Saône",
+    "Kaltea Lyon Sud",
+    "Laserel",
+    "LyleOO",
+    "Meuble Rigaud",
+    "My Salon Aubière",
+    "Place de la literie Toulouse",
+    "Sagne Cuisines",
+    "Star Literie",
+    "Tairmic Tousalon Perpignan",
+    "Tousalon Toulouse"
+  ],
+  "mappings": {
+    "A.G. Cryolipolyse": {
+      "googleAds": {
+        "customerId": "9321943301"
+      },
+      "metaAds": {
+        "adAccountId": "537778268027569"
+      }
+    },
+    "Addario": {
+      "googleAds": {
+        "customerId": "1513412386"
+      },
+      "metaAds": {
+        "adAccountId": "588031303241243"
+      }
+    },
+    "Alexander Sachs": {
+      "googleAds": {
+        "customerId": "5312260895"
+      },
+      "metaAds": {
+        "adAccountId": "1073719333702957"
+      }
+    },
+    "AvivA Chartres": {
+      "googleAds": {
+        "customerId": "1364759792"
+      },
+      "metaAds": {
+        "adAccountId": "3469876616467752"
+      }
+    },
+    "AvivA Melun": {
+      "googleAds": {
+        "customerId": null
+      },
+      "metaAds": {
+        "adAccountId": null
+      }
+    },
+    "AvivA Montigny": {
+      "googleAds": {
+        "customerId": "8583933364"
+      },
+      "metaAds": {
+        "adAccountId": "1707122586538817"
+      }
+    },
+    "AvivA Orgeval": {
+      "googleAds": {
+        "customerId": null
+      },
+      "metaAds": {
+        "adAccountId": null
+      }
+    },
+    "Crozatier Dijon": {
+      "googleAds": {
+        "customerId": "3259500758"
+      },
+      "metaAds": {
+        "adAccountId": "964691284601571"
+      }
+    },
+    "Denteva": {
+      "googleAds": {
+        "customerId": "1810240249"
+      },
+      "metaAds": null
+    },
+    "EvoPro Informatique": {
+      "googleAds": {
+        "customerId": "5461114350"
+      },
+      "metaAds": {
+        "adAccountId": "971834350083602"
+      }
+    },
+    "France Literie Aix": {
+      "googleAds": {
+        "customerId": "5104651305"
+      },
+      "metaAds": {
+        "adAccountId": "1050678126137875"
+      }
+    },
+    "France Literie Annemasse": {
+      "googleAds": {
+        "customerId": "2744128994"
+      },
+      "metaAds": {
+        "adAccountId": "1226557254627350"
+      }
+    },
+    "France Literie Antibes Vallauris": {
+      "googleAds": {
+        "customerId": "2485486745"
+      },
+      "metaAds": "153090796730020"
+    },
+    "France Literie Dijon": {
+      "googleAds": {
+        "customerId": "7349999845"
+      },
+      "metaAds": {
+        "adAccountId": "4804441896258734"
+      }
+    },
+    "France Literie Narbonne": {
+      "googleAds": {
+        "customerId": "7807237268"
+      },
+      "metaAds": {
+        "adAccountId": "614298336313635"
+      }
+    },
+    "France Literie Perpignan": {
+      "googleAds": {
+        "customerId": "1226105597"
+      },
+      "metaAds": {
+        "adAccountId": "404861145553220"
+      }
+    },
+    "Kaltea Aubagne": {
+      "googleAds": {
+        "customerId": "4854280249"
+      },
+      "metaAds": null
+    },
+    "Kaltea Chalon sur Saône": {
+      "googleAds": {
+        "customerId": "1189918252"
+      },
+      "metaAds": {
+        "adAccountId": "1151327286789161"
+      }
+    },
+    "Kaltea Lyon Sud": {
+      "googleAds": {
+        "customerId": "5074336650"
+      },
+      "metaAds": {
+        "adAccountId": "1339517067257728"
+      }
+    },
+    "Laserel": {
+      "googleAds": {
+        "customerId": "5901565913"
+      },
+      "metaAds": {
+        "adAccountId": "5093614030719328"
+      }
+    },
+    "LyleOO": {
+      "googleAds": null,
+      "metaAds": {
+        "adAccountId": "2184991331836484"
+      }
+    },
+    "Meuble Rigaud": {
+      "googleAds": {
+        "customerId": "7836791446"
+      },
+      "metaAds": {
+        "adAccountId": "841001567338427"
+      }
+    },
+    "My Salon Aubière": {
+      "googleAds": {
+        "customerId": "2041308129"
+      },
+      "metaAds": {
+        "adAccountId": "1200332507490076"
+      }
+    },
+    "Place de la literie Toulouse": {
+      "googleAds": {
+        "customerId": "3808834188"
+      },
+      "metaAds": null
+    },
+    "Sagne Cuisines": {
+      "googleAds": {
+        "customerId": "8364219717"
+      },
+      "metaAds": {
+        "adAccountId": "2357246071306016"
+      }
+    },
+    "Star Literie": {
+      "googleAds": {
+        "customerId": "4865583978"
+      },
+      "metaAds": {
+        "adAccountId": "1160911785310714"
+      }
+    },
+    "Tairmic": {
+      "googleAds": {
+        "customerId": "2206388196"
+      },
+      "metaAds": {
+        "adAccountId": "3663177273986426"
+      }
+    },
+    "Tousalon Perpignan": {
+      "googleAds": {
+        "customerId": "3245028529"
+      },
+      "metaAds": {
+        "adAccountId": "603826845514419"
+      }
+    },
+    "Tousalon Toulouse": {
+      "googleAds": {
+        "customerId": "4913925892"
+      },
+      "metaAds": null
+    }
+  },
+  "notes": [
+    "Cette configuration centralise la liste blanche des clients autorisés",
+    "Chaque client peut avoir un mapping Google Ads, Meta Ads, ou les deux",
+    "Si une plateforme n'est pas configurée (null), elle sera ignorée lors du scraping",
+    "Les IDs sont extraits des mappings existants client_mappings.json et meta_mappings.json"
+  ]
+}

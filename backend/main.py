@@ -17,6 +17,7 @@ from backend.config.settings import Config
 
 # Services communs
 from backend.common.services.google_sheets import GoogleSheetsService
+from backend.common.services.client_resolver import ClientResolverService
 
 # Services Google Ads
 from backend.google.services.authentication import GoogleAdsAuthService
@@ -58,14 +59,83 @@ meta_reports = MetaAdsReportsService()
 meta_mappings = MetaAdsMappingService()
 
 sheets_service = GoogleSheetsService()
+client_resolver = ClientResolverService()
 
 # ================================
-# ROUTES GOOGLE ADS
+# ROUTES UNIFIÉES - NOUVELLES
+# ================================
+
+@app.route("/list-authorized-clients", methods=["GET"])
+def list_authorized_clients():
+    """Liste les clients autorisés (liste blanche)"""
+    try:
+        allowlist = client_resolver.get_allowlist()
+        return jsonify({
+            "clients": allowlist,
+            "count": len(allowlist)
+        })
+    except Exception as e:
+        logging.error(f"❌ Erreur lors de la récupération de la liste blanche: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/list-filtered-clients", methods=["POST"])
+def list_filtered_clients():
+    """Liste les clients autorisés filtrés (simule la searchbar)"""
+    try:
+        data = request.json
+        search_term = data.get("search_term", "").lower()
+        
+        allowlist = client_resolver.get_allowlist()
+        
+        if search_term:
+            filtered_clients = [client for client in allowlist if search_term in client.lower()]
+        else:
+            filtered_clients = allowlist
+        
+        return jsonify({
+            "clients": filtered_clients,
+            "count": len(filtered_clients),
+            "total_count": len(allowlist)
+        })
+    except Exception as e:
+        logging.error(f"❌ Erreur lors de la récupération des clients filtrés: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/resolve-client", methods=["POST"])
+def resolve_client():
+    """Résout un nom de client vers ses IDs Google Ads et Meta Ads"""
+    try:
+        data = request.json
+        client_name = data.get("client_name")
+        
+        if not client_name:
+            return jsonify({"error": "Nom de client requis"}), 400
+        
+        # Valider la sélection
+        is_valid, error_message = client_resolver.validate_client_selection(client_name)
+        if not is_valid:
+            return jsonify({"error": error_message}), 400
+        
+        # Résoudre les comptes
+        resolved_accounts = client_resolver.resolve_client_accounts(client_name)
+        client_info = client_resolver.get_client_info(client_name)
+        
+        return jsonify({
+            "client_info": client_info,
+            "resolved_accounts": resolved_accounts
+        })
+        
+    except Exception as e:
+        logging.error(f"❌ Erreur lors de la résolution du client: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+# ================================
+# ROUTES GOOGLE ADS (LEGACY - À SUPPRIMER)
 # ================================
 
 @app.route("/list-customers", methods=["GET"])
 def list_google_customers():
-    """Liste les clients Google Ads accessibles"""
+    """Liste les clients Google Ads accessibles (LEGACY)"""
     try:
         customers_info = google_auth.list_customers()
         return jsonify(customers_info)
@@ -231,13 +301,12 @@ def export_unified_report():
     start_date = data.get("start_date")
     end_date = data.get("end_date")
     sheet_month = data.get("sheet_month")
+    selected_client = data.get("selected_client")  # NOUVEAU: nom du client sélectionné
 
     # Paramètres Google Ads
-    google_customers = data.get("google_customers", [])
     google_metrics = data.get("google_metrics", [])
 
     # Paramètres Meta Ads
-    meta_accounts = data.get("meta_accounts", [])
     meta_metrics = data.get("meta_metrics", [])
     
     # Ajouter automatiquement la métrique de coût si elle n'est pas sélectionnée
@@ -252,158 +321,180 @@ def export_unified_report():
     if not start_date or not end_date:
         return jsonify({"error": "Dates de début et fin requises"}), 400
 
-    if not google_customers and not meta_accounts:
-        return jsonify({"error": "Veuillez sélectionner au moins un client Google Ads ou Meta Ads"}), 400
+    if not selected_client:
+        return jsonify({"error": "Veuillez sélectionner un client"}), 400
+
+    # NOUVEAU: Résolution du client sélectionné
+    logging.info(f"🎯 Traitement du client sélectionné: {selected_client}")
+    
+    # Valider et résoudre le client
+    is_valid, error_message = client_resolver.validate_client_selection(selected_client)
+    if not is_valid:
+        return jsonify({"error": error_message}), 400
+    
+    resolved_accounts = client_resolver.resolve_client_accounts(selected_client)
+    client_info = client_resolver.get_client_info(selected_client)
+    
+    # Extraire les IDs résolus
+    google_customer_id = resolved_accounts["googleAds"]["customerId"] if resolved_accounts["googleAds"] else None
+    meta_account_id = resolved_accounts["metaAds"]["adAccountId"] if resolved_accounts["metaAds"] else None
+    
+    logging.info(f"🔍 IDs résolus pour '{selected_client}': Google={google_customer_id}, Meta={meta_account_id}")
+    
+    # Vérifier qu'au moins une plateforme est configurée
+    if not google_customer_id and not meta_account_id:
+        return jsonify({"error": f"Aucune plateforme configurée pour le client '{selected_client}'"}), 400
 
     try:
         available_sheets = sheets_service.get_worksheet_names() if sheet_month else []
         successful_updates = []
         failed_updates = []
+        platform_warnings = []
 
         # ===== TRAITEMENT GOOGLE ADS =====
-        if google_customers:
-            logging.info(f"📊 Traitement de {len(google_customers)} comptes Google Ads")
+        if google_customer_id and google_metrics:
+            logging.info(f"📊 Traitement Google Ads pour '{selected_client}' (ID: {google_customer_id})")
             
-            for customer_id in google_customers:
-                logging.info(f"🔄 Traitement du compte Google: {customer_id}")
+            try:
+                # Récupérer les données de campagne
+                response_data = google_reports.get_campaign_data(google_customer_id, start_date, end_date)
                 
-                try:
-                    # Récupérer les données de campagne
-                    response_data = google_reports.get_campaign_data(customer_id, start_date, end_date)
+                if response_data:
+                    # Calculer les métriques virtuelles
+                    virtual_metrics = google_reports.calculate_channel_specific_metrics(response_data, google_metrics)
                     
-                    if response_data:
-                        # Calculer les métriques virtuelles
-                        virtual_metrics = google_reports.calculate_channel_specific_metrics(response_data, google_metrics)
+                    # Mettre à jour le Google Sheet si demandé
+                    if sheet_month:
+                        sheet_client_name = google_mappings.get_sheet_name_for_customer(google_customer_id)
                         
-                        # Mettre à jour le Google Sheet si demandé
-                        if sheet_month:
-                            sheet_client_name = google_mappings.get_sheet_name_for_customer(customer_id)
+                        if sheet_client_name and sheet_client_name in available_sheets:
+                            month_row = sheets_service.get_row_for_month(sheet_client_name, sheet_month)
                             
-                            if sheet_client_name and sheet_client_name in available_sheets:
-                                month_row = sheets_service.get_row_for_month(sheet_client_name, sheet_month)
+                            if month_row:
+                                # Mapper vers les métriques du sheet
+                                sheet_data = google_reports.calculate_sheet_metrics_from_ads_data(virtual_metrics, google_metrics)
                                 
-                                if month_row:
-                                    # Mapper vers les métriques du sheet
-                                    sheet_data = google_reports.calculate_sheet_metrics_from_ads_data(virtual_metrics, google_metrics)
+                                updates = []
+                                for metric_name, metric_value in sheet_data.items():
+                                    column_letter = sheets_service.get_column_for_metric(sheet_client_name, metric_name)
                                     
-                                    updates = []
-                                    for metric_name, metric_value in sheet_data.items():
-                                        column_letter = sheets_service.get_column_for_metric(sheet_client_name, metric_name)
+                                    if column_letter:
+                                        updates.append({
+                                            'range': f"{column_letter}{month_row}",
+                                            'value': metric_value
+                                        })
+                                
+                                if updates:
+                                    sheets_service.update_sheet_data(sheet_client_name, updates)
+                                    successful_updates.append(f"Google - {sheet_client_name}: {len(updates)} cellules")
+                                    
+                                    # Scraping additionnel si demandé
+                                    if contact_enabled:
+                                        try:
+                                            google_conversions.scrape_contact_conversions_for_customer(
+                                                google_customer_id, sheet_client_name, start_date, end_date, sheet_month
+                                            )
+                                        except Exception as e:
+                                            logging.error(f"❌ Erreur scraping Contact Google {google_customer_id}: {e}")
+                                    
+                                    if itineraire_enabled:
+                                        try:
+                                            google_conversions.scrape_directions_conversions_for_customer(
+                                                google_customer_id, sheet_client_name, start_date, end_date, sheet_month
+                                            )
+                                        except Exception as e:
+                                            logging.error(f"❌ Erreur scraping Itinéraires Google {google_customer_id}: {e}")
+                            else:
+                                failed_updates.append(f"Google - {selected_client}: Mois '{sheet_month}' non trouvé")
+                        else:
+                            failed_updates.append(f"Google - {selected_client}: Pas de mapping vers un onglet Google Sheet")
+                else:
+                    failed_updates.append(f"Google - {selected_client}: Aucune donnée Google Ads")
+                    
+            except Exception as e:
+                logging.error(f"❌ Erreur Google Ads pour {selected_client}: {e}")
+                failed_updates.append(f"Google - {selected_client}: Erreur API")
+        elif google_metrics and not google_customer_id:
+            platform_warnings.append("Google Ads non configuré pour ce client")
+
+        # ===== TRAITEMENT META ADS =====
+        if meta_account_id and meta_metrics:
+            logging.info(f"📊 Traitement Meta Ads pour '{selected_client}' (ID: {meta_account_id})")
+            
+            try:
+                # Récupérer les données Meta
+                insights = meta_reports.get_meta_insights(meta_account_id, start_date, end_date)
+                
+                if insights:
+                    # Récupérer le CPL moyen des campagnes avec conversions > 0
+                    cpl_average = meta_reports.get_meta_campaigns_cpl_average(meta_account_id, start_date, end_date)
+                    
+                    # Calculer les métriques avec le nouveau CPL
+                    metrics = meta_reports.calculate_meta_metrics(insights, cpl_average)
+                    
+                    # Mettre à jour le Google Sheet si demandé
+                    if sheet_month:
+                        sheet_name = meta_mappings.get_sheet_name_for_account(meta_account_id)
+                        meta_metrics_mapping = meta_mappings.get_meta_metrics_mapping()
+                        
+                        if sheet_name and sheet_name in available_sheets:
+                            month_row = sheets_service.get_row_for_month(sheet_name, sheet_month)
+                            
+                            if month_row:
+                                updates = []
+                                
+                                # Ne traiter que les métriques sélectionnées par l'utilisateur
+                                for selected_metric in meta_metrics:
+                                    # Convertir la valeur frontend vers le nom de colonne
+                                    column_name = meta_metrics_mapping.get(selected_metric)
+                                    
+                                    if column_name and column_name in metrics:
+                                        # Récupérer la valeur directement depuis les métriques calculées
+                                        metric_value = metrics[column_name]
+                                        
+                                        column_letter = sheets_service.get_column_for_metric(sheet_name, column_name)
                                         
                                         if column_letter:
                                             updates.append({
                                                 'range': f"{column_letter}{month_row}",
                                                 'value': metric_value
                                             })
-                                    
-                                    if updates:
-                                        sheets_service.update_sheet_data(sheet_client_name, updates)
-                                        successful_updates.append(f"Google - {sheet_client_name}: {len(updates)} cellules")
-                                        
-                                        # Scraping additionnel si demandé
-                                        if contact_enabled:
-                                            try:
-                                                google_conversions.scrape_contact_conversions_for_customer(
-                                                    customer_id, sheet_client_name, start_date, end_date, sheet_month
-                                                )
-                                            except Exception as e:
-                                                logging.error(f"❌ Erreur scraping Contact Google {customer_id}: {e}")
-                                        
-                                        if itineraire_enabled:
-                                            try:
-                                                google_conversions.scrape_directions_conversions_for_customer(
-                                                    customer_id, sheet_client_name, start_date, end_date, sheet_month
-                                                )
-                                            except Exception as e:
-                                                logging.error(f"❌ Erreur scraping Itinéraires Google {customer_id}: {e}")
-                                    else:
-                                        failed_updates.append(f"Google - {customer_id}: Aucune colonne trouvée")
-                                else:
-                                    failed_updates.append(f"Google - {customer_id}: Mois non trouvé")
-                            else:
-                                failed_updates.append(f"Google - {customer_id}: Pas de mapping")
-                    else:
-                        failed_updates.append(f"Google - {customer_id}: Aucune donnée")
-                        
-                except Exception as e:
-                    logging.error(f"❌ Erreur Google Ads pour {customer_id}: {e}")
-                    failed_updates.append(f"Google - {customer_id}: Erreur API")
-
-        # ===== TRAITEMENT META ADS =====
-        if meta_accounts:
-            logging.info(f"📊 Traitement de {len(meta_accounts)} comptes Meta Ads")
-            
-            for ad_account_id in meta_accounts:
-                logging.info(f"🔄 Traitement du compte Meta: {ad_account_id}")
-                
-                try:
-                    # Récupérer les données Meta
-                    insights = meta_reports.get_meta_insights(ad_account_id, start_date, end_date)
-                    
-                    if insights:
-                        # Récupérer le CPL moyen des campagnes avec conversions > 0
-                        cpl_average = meta_reports.get_meta_campaigns_cpl_average(ad_account_id, start_date, end_date)
-                        
-                        # Calculer les métriques avec le nouveau CPL
-                        metrics = meta_reports.calculate_meta_metrics(insights, cpl_average)
-                        
-                        # Mettre à jour le Google Sheet si demandé
-                        if sheet_month and meta_metrics:
-                            sheet_name = meta_mappings.get_sheet_name_for_account(ad_account_id)
-                            meta_metrics_mapping = meta_mappings.get_meta_metrics_mapping()
-                            
-                            if sheet_name and sheet_name in available_sheets:
-                                month_row = sheets_service.get_row_for_month(sheet_name, sheet_month)
+                                            logging.info(f"📊 {column_name}: {metric_value} → {column_letter}{month_row}")
                                 
-                                if month_row:
-                                    updates = []
-                                    
-                                    # Ne traiter que les métriques sélectionnées par l'utilisateur
-                                    for selected_metric in meta_metrics:
-                                        # Convertir la valeur frontend vers le nom de colonne
-                                        column_name = meta_metrics_mapping.get(selected_metric)
-                                        
-                                        if column_name and column_name in metrics:
-                                            # Récupérer la valeur directement depuis les métriques calculées
-                                            metric_value = metrics[column_name]
-                                            
-                                            column_letter = sheets_service.get_column_for_metric(sheet_name, column_name)
-                                            
-                                            if column_letter:
-                                                updates.append({
-                                                    'range': f"{column_letter}{month_row}",
-                                                    'value': metric_value
-                                                })
-                                                logging.info(f"📊 {column_name}: {metric_value} → {column_letter}{month_row}")
-                                    
-                                    if updates:
-                                        sheets_service.update_sheet_data(sheet_name, updates)
-                                        successful_updates.append(f"Meta - {sheet_name}: {len(updates)} cellules")
-                                    else:
-                                        failed_updates.append(f"Meta - {sheet_name}: Aucune colonne trouvée")
+                                if updates:
+                                    sheets_service.update_sheet_data(sheet_name, updates)
+                                    successful_updates.append(f"Meta - {sheet_name}: {len(updates)} cellules")
                                 else:
-                                    failed_updates.append(f"Meta - {sheet_name}: Mois '{sheet_month}' non trouvé")
+                                    failed_updates.append(f"Meta - {selected_client}: Aucune colonne trouvée")
                             else:
-                                failed_updates.append(f"Meta - {ad_account_id}: Pas de mapping vers un onglet Google Sheet")
-                    else:
-                        failed_updates.append(f"Meta - {ad_account_id}: Aucune donnée")
-                        
-                except Exception as e:
-                    logging.error(f"❌ Erreur Meta Ads pour {ad_account_id}: {e}")
-                    failed_updates.append(f"Meta - {ad_account_id}: Erreur API")
+                                failed_updates.append(f"Meta - {selected_client}: Mois '{sheet_month}' non trouvé")
+                        else:
+                            failed_updates.append(f"Meta - {selected_client}: Pas de mapping vers un onglet Google Sheet")
+                else:
+                    failed_updates.append(f"Meta - {selected_client}: Aucune donnée Meta Ads")
+                    
+            except Exception as e:
+                logging.error(f"❌ Erreur Meta Ads pour {selected_client}: {e}")
+                failed_updates.append(f"Meta - {selected_client}: Erreur API")
+        elif meta_metrics and not meta_account_id:
+            platform_warnings.append("Meta Ads non configuré pour ce client")
 
         # Log des résultats
         if successful_updates:
             logging.info(f"✅ Mises à jour réussies: {successful_updates}")
         if failed_updates:
             logging.warning(f"⚠️ Échecs: {failed_updates}")
+        if platform_warnings:
+            logging.info(f"ℹ️ Avertissements plateformes: {platform_warnings}")
 
         # Retourner une réponse JSON
         return jsonify({
             "success": True,
-            "message": "Données envoyées au Google Sheet avec succès",
+            "message": f"Export unifié terminé pour '{selected_client}'",
+            "client_info": client_info,
             "successful_updates": successful_updates,
-            "failed_updates": failed_updates
+            "failed_updates": failed_updates,
+            "platform_warnings": platform_warnings
         })
 
     except Exception as e:

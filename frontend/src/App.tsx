@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import ReportHeader from './components/unified/ReportHeader/ReportHeader';
-import GoogleCustomersSelect from './components/google/GoogleCustomersSelect/GoogleCustomersSelect';
-import MetaAccountsSelect from './components/meta/MetaAccountsSelect/MetaAccountsSelect';
+import ClientSelector from './components/unified/ClientSelector/ClientSelector';
 import DateRangePicker from './components/unified/DateRangePicker/DateRangePicker';
 import MetricsSelector from './components/google/GoogleMetricsSelector/MetricsSelector';
 import MetaMetricsSelector from './components/meta/MetaMetricsSelector/MetaMetricsSelector';
 import UnifiedDownloadButton from './components/unified/UnifiedDownloadButton/UnifiedDownloadButton';
+import BulkScrapingProgress from './components/unified/BulkScrapingProgress/BulkScrapingProgress';
+import { QUOTA_CONFIG, getRetryDelay, isQuotaError } from './config/quotas';
 import './App.css';
 
 const App: React.FC = () => {
@@ -40,13 +41,23 @@ const App: React.FC = () => {
     };
   };
 
-  // États Google Ads
-  const [googleCustomers, setGoogleCustomers] = useState<{ customer_id: string; name: string; manager: boolean }[]>([]);
-  const [selectedGoogleCustomer, setSelectedGoogleCustomer] = useState<string>('');
-
-  // États Meta Ads
-  const [metaAccounts, setMetaAccounts] = useState<{ ad_account_id: string; name: string; status: string }[]>([]);
-  const [selectedMetaAccount, setSelectedMetaAccount] = useState<string>('');
+  // État du client sélectionné (NOUVEAU)
+  const [selectedClient, setSelectedClient] = useState<string>('');
+  const [clientInfo, setClientInfo] = useState<any>(null);
+  
+  // État pour le scraping en masse
+  const [authorizedClients, setAuthorizedClients] = useState<string[]>([]);
+  const [filteredClients, setFilteredClients] = useState<string[]>([]);
+  const [bulkScrapingState, setBulkScrapingState] = useState({
+    isProcessing: false,
+    currentIndex: 0,
+    currentClient: '',
+    completedClients: [] as string[],
+    failedClients: [] as { client: string; error: string }[],
+    shouldCancel: false
+  });
+  const bulkScrapingRef = useRef(bulkScrapingState);
+  bulkScrapingRef.current = bulkScrapingState;
 
   // États communs - initialisés avec les dates du mois précédent
   const lastMonthDates = getLastMonthDates();
@@ -209,87 +220,75 @@ const App: React.FC = () => {
     }
   };
 
-  // Récupération des clients Google
-  useEffect(() => {
-    const fetchGoogleCustomers = async () => {
-      try {
-        console.log('🔄 Fetching Google customers...');
-        const response = await axios.get('http://localhost:5050/list-customers', {
-          withCredentials: true,
-        });
-        console.log('Google response:', response.data);
-        if (Array.isArray(response.data)) {
-          setGoogleCustomers(response.data);
-          console.log(`Set ${response.data.length} Google customers`);
-        } else {
-          console.error('Unexpected format:', response.data);
-        }
-      } catch (error: any) {
-        console.error('Error fetching Google customers:', error?.message || error);
-        if (error?.response) {
-          console.error('Response data:', error.response.data);
-          console.error('Status:', error.response.status);
-        } else if (error?.request) {
-          console.error('Request made but no response received:', error.request);
-        }
-      }
-    };
-    fetchGoogleCustomers();
-  }, []);
-
-  // Récupération des comptes Meta
-  useEffect(() => {
-    const fetchMetaAccounts = async () => {
-      try {
-        console.log('🔄 Fetching Meta accounts...');
-        const response = await axios.get('http://localhost:5050/list-meta-accounts', {
-          withCredentials: true,
-        });
-        console.log('Meta response:', response.data);
-        if (Array.isArray(response.data)) {
-          setMetaAccounts(response.data);
-          console.log(`Set ${response.data.length} Meta accounts`);
-        } else {
-          console.error('Unexpected Meta format:', response.data);
-        }
-      } catch (error: any) {
-        console.error('Error fetching Meta accounts:', error?.message || error);
-        if (error?.response) {
-          console.error('Response data:', error.response.data);
-          console.error('Status:', error.response.status);
-        } else if (error?.request) {
-          console.error('Request made but no response received:', error.request);
-        }
-      }
-    };
-    fetchMetaAccounts();
-  }, []);
-
-  // Gestionnaires pour Google Customers
-  const handleSelectGoogleCustomer = (customerId: string) => {
-    setSelectedGoogleCustomer(customerId);
+  // Gestionnaire pour la sélection de client (NOUVEAU)
+  const handleSelectClient = (clientName: string) => {
+    setSelectedClient(clientName);
   };
 
-  // Gestionnaires pour Meta Accounts
-  const handleSelectMetaAccount = (accountId: string) => {
-    setSelectedMetaAccount(accountId);
+  // Gestionnaire pour les informations client (NOUVEAU)
+  const handleClientInfoChange = (info: any) => {
+    setClientInfo(info);
+  };
+
+  // Alerte globale pour rappeler Orgeval et Melun
+  useEffect(() => {
+    // Afficher l'alerte une seule fois au chargement de l'application
+    const hasShownReminder = sessionStorage.getItem('orgeval-melun-reminder');
+    
+    if (!hasShownReminder) {
+      setTimeout(() => {
+        alert('⚠️ RAPPEL IMPORTANT ⚠️\n\nCommence par faire Orgeval et Melun à la main !\n\nAssurez-vous que les données sont correctes avant de continuer avec les autres clients.');
+        sessionStorage.setItem('orgeval-melun-reminder', 'shown');
+      }, 2000); // Délai de 2 secondes pour laisser l'interface se charger
+    }
+  }, []);
+
+  // Gestionnaire pour la liste des clients autorisés
+  const handleAuthorizedClientsChange = (clients: string[]) => {
+    setAuthorizedClients(clients);
+    setFilteredClients(clients); // Initialiser avec tous les clients
+  };
+
+  // Fonction pour obtenir les clients filtrés de la searchbar
+  const getFilteredClientsFromSearchbar = async (searchTerm: string = '') => {
+    try {
+      const response = await axios.post('http://localhost:5050/list-filtered-clients', {
+        search_term: searchTerm
+      }, {
+        withCredentials: true,
+      });
+      
+      if (response.data && response.data.clients) {
+        return response.data.clients;
+      }
+      return [];
+    } catch (error) {
+      console.error('❌ Erreur lors de la récupération des clients filtrés:', error);
+      return authorizedClients; // Fallback vers la liste complète
+    }
   };
 
 
 
 
   const handleUnifiedDownload = async () => {
-          console.log('DEBUG: handleUnifiedDownload appelée');
-      console.log('DEBUG: selectedGoogleCustomer:', selectedGoogleCustomer);
-      console.log('DEBUG: selectedMetaAccount:', selectedMetaAccount);
-      console.log('DEBUG: startDate:', startDate);
-      console.log('DEBUG: endDate:', endDate);
-      console.log('DEBUG: selectedGoogleMetrics:', selectedGoogleMetrics);
-      console.log('DEBUG: selectedMetaMetrics:', selectedMetaMetrics);
+    console.log('DEBUG: handleUnifiedDownload appelée');
+    console.log('DEBUG: selectedClient:', selectedClient);
+    console.log('DEBUG: clientInfo:', clientInfo);
+    console.log('DEBUG: startDate:', startDate);
+    console.log('DEBUG: endDate:', endDate);
+    console.log('DEBUG: selectedGoogleMetrics:', selectedGoogleMetrics);
+    console.log('DEBUG: selectedMetaMetrics:', selectedMetaMetrics);
     
-    // Déterminer le type d'envoi
-    const hasGoogle = !!selectedGoogleCustomer;
-    const hasMeta = !!selectedMetaAccount;
+    // Vérifier qu'un client est sélectionné
+    if (!selectedClient) {
+      alert('Veuillez sélectionner un client');
+      return;
+    }
+    
+    // Déterminer le type d'envoi basé sur les plateformes disponibles
+    const hasGoogle = clientInfo?.google_ads?.configured && selectedGoogleMetrics.length > 0;
+    const hasMeta = clientInfo?.meta_ads?.configured && selectedMetaMetrics.length > 0;
     let sendType = '';
     if (hasGoogle && hasMeta) {
       sendType = 'Google + Meta';
@@ -298,9 +297,14 @@ const App: React.FC = () => {
     } else if (hasMeta) {
       sendType = 'Meta uniquement';
     } else {
-      sendType = 'Aucun';
+      sendType = 'Aucune plateforme configurée';
     }
     console.log(`🎯 Mode d'envoi: ${sendType}`);
+    
+    if (sendType === 'Aucune plateforme configurée') {
+      alert('Aucune plateforme configurée pour ce client ou aucune métrique sélectionnée');
+      return;
+    }
     
     setLoading(true);
     try {
@@ -312,12 +316,13 @@ const App: React.FC = () => {
         contact: contactEnabled,
         itineraire: itineraireEnabled,
         
-        // Paramètres Google Ads (tableau avec un seul élément si sélectionné)
-        google_customers: selectedGoogleCustomer ? [selectedGoogleCustomer] : [],
+        // NOUVEAU: Client sélectionné
+        selected_client: selectedClient,
+        
+        // Paramètres Google Ads
         google_metrics: selectedGoogleMetrics.map((m: { value: string }) => m.value),
         
-        // Paramètres Meta Ads (tableau avec un seul élément si sélectionné)
-        meta_accounts: selectedMetaAccount ? [selectedMetaAccount] : [],
+        // Paramètres Meta Ads
         meta_metrics: selectedMetaMetrics.map((m: { value: string }) => m.value),
       };
       
@@ -367,9 +372,251 @@ const App: React.FC = () => {
     }
   };
 
+  // Fonction pour capturer le contexte UI actuel
+  const captureUIContext = () => {
+    return {
+      startDate,
+      endDate,
+      sheetMonth,
+      contactEnabled,
+      itineraireEnabled,
+      selectedGoogleMetrics: selectedGoogleMetrics.map((m: { value: string }) => m.value),
+      selectedMetaMetrics: selectedMetaMetrics.map((m: { value: string }) => m.value),
+    };
+  };
+
+  // Fonction pour traiter un client individuel (réutilise la logique existante)
+  const processSingleClient = async (clientName: string, context: any) => {
+    try {
+      console.log(`🔄 Début du traitement pour le client: ${clientName}`);
+      
+      const payload = {
+        // Paramètres communs
+        start_date: context.startDate,
+        end_date: context.endDate,
+        sheet_month: context.sheetMonth,
+        contact: context.contactEnabled,
+        itineraire: context.itineraireEnabled,
+        
+        // Client sélectionné
+        selected_client: clientName,
+        
+        // Paramètres Google Ads
+        google_metrics: context.selectedGoogleMetrics,
+        
+        // Paramètres Meta Ads
+        meta_metrics: context.selectedMetaMetrics,
+      };
+      
+      console.log(`📤 Envoi du payload pour ${clientName}:`, payload);
+      
+      const response = await axios.post('http://localhost:5050/export-unified-report', payload);
+      
+      if (response.data.success) {
+        console.log(`✅ Succès pour ${clientName}:`, response.data.message);
+        return { success: true, message: response.data.message };
+      } else {
+        console.error(`❌ Échec pour ${clientName}:`, response.data);
+        return { success: false, error: 'Réponse d\'erreur du serveur' };
+      }
+      
+    } catch (error: any) {
+      console.error(`❌ Erreur pour ${clientName}:`, error);
+      
+      let errorMessage = 'Erreur inconnue';
+      let isQuotaErrorFlag = false;
+      
+      if (error?.response?.data?.error) {
+        errorMessage = error.response.data.error;
+        isQuotaErrorFlag = isQuotaError(errorMessage);
+      } else if (error?.response?.status === 429) {
+        errorMessage = 'Quota dépassé (429)';
+        isQuotaErrorFlag = true;
+      } else if (error?.response?.status === 400) {
+        errorMessage = 'Paramètres invalides';
+      } else if (error?.response?.status === 500) {
+        errorMessage = 'Erreur serveur';
+      } else if (error?.message) {
+        errorMessage = error.message;
+        isQuotaErrorFlag = isQuotaError(errorMessage);
+      }
+      
+      return { 
+        success: false, 
+        error: errorMessage,
+        isQuotaError: isQuotaErrorFlag
+      };
+    }
+  };
+
+  // Fonction principale de scraping en masse
+  const handleBulkScraping = async () => {
+    if (bulkScrapingState.isProcessing) {
+      console.log('⚠️ Scraping en masse déjà en cours');
+      return;
+    }
+
+    // Obtenir les clients filtrés de la searchbar (actuellement tous les clients)
+    const clientsToProcess = await getFilteredClientsFromSearchbar();
+    
+    if (clientsToProcess.length === 0) {
+      alert('Aucun client disponible pour le traitement');
+      return;
+    }
+
+    // Vérifier qu'au moins une métrique est sélectionnée
+    const hasGoogleMetrics = selectedGoogleMetrics.length > 0;
+    const hasMetaMetrics = selectedMetaMetrics.length > 0;
+    
+    if (!hasGoogleMetrics && !hasMetaMetrics) {
+      alert('Veuillez sélectionner au moins une métrique Google ou Meta');
+      return;
+    }
+
+    // Capturer le contexte UI actuel (immutable)
+    const uiContext = captureUIContext();
+    console.log('📸 Contexte UI capturé:', uiContext);
+
+    // Initialiser l'état de scraping
+    setBulkScrapingState({
+      isProcessing: true,
+      currentIndex: 0,
+      currentClient: '',
+      completedClients: [],
+      failedClients: [],
+      shouldCancel: false
+    });
+
+    try {
+      // Traitement séquentiel de chaque client
+      for (let i = 0; i < clientsToProcess.length; i++) {
+        const clientName = clientsToProcess[i];
+        
+        // Vérifier si l'annulation a été demandée
+        if (bulkScrapingRef.current.shouldCancel) {
+          console.log('🛑 Scraping annulé par l\'utilisateur');
+          break;
+        }
+
+        // Mettre à jour l'état de progression
+        setBulkScrapingState(prev => ({
+          ...prev,
+          currentIndex: i,
+          currentClient: clientName
+        }));
+
+        console.log(`🔄 Traitement ${i + 1}/${clientsToProcess.length}: ${clientName}`);
+
+        // Traiter le client avec retry et gestion des quotas
+        let result = null;
+        const maxRetries = QUOTA_CONFIG.MAX_RETRIES;
+        
+        for (let retry = 0; retry <= maxRetries; retry++) {
+          if (retry > 0) {
+            console.log(`🔄 Retry ${retry}/${maxRetries} pour ${clientName}`);
+            
+            // Utiliser la configuration pour les délais de retry
+            const delay = getRetryDelay(retry - 1, result?.isQuotaError || false);
+            const delaySeconds = Math.round(delay / 1000);
+            
+            if (result?.isQuotaError) {
+              console.log(`⏳ Quota dépassé, attente de ${delaySeconds}s`);
+            } else {
+              console.log(`⏳ Attente backoff: ${delaySeconds}s`);
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, delay));
+          }
+          
+          result = await processSingleClient(clientName, uiContext);
+          
+          if (result.success) {
+            break;
+          }
+          
+          // Si c'est le dernier retry, on garde l'erreur
+          if (retry === maxRetries) {
+            console.log(`❌ Échec définitif pour ${clientName} après ${maxRetries + 1} tentatives`);
+          }
+        }
+
+        // Mettre à jour les résultats
+        if (result && result.success) {
+          setBulkScrapingState(prev => ({
+            ...prev,
+            completedClients: [...prev.completedClients, clientName]
+          }));
+        } else {
+          setBulkScrapingState(prev => ({
+            ...prev,
+            failedClients: [...prev.failedClients, {
+              client: clientName,
+              error: result?.error || 'Erreur inconnue'
+            }]
+          }));
+        }
+
+        // Pause entre les clients pour respecter les quotas Google Sheets
+        if (i < clientsToProcess.length - 1) {
+          const delay = QUOTA_CONFIG.DELAY_BETWEEN_CLIENTS;
+          const delaySeconds = Math.round(delay / 1000);
+          console.log(`⏳ Pause de ${delaySeconds}s entre les clients pour respecter les quotas`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+
+      // Finaliser le traitement
+      const finalState = bulkScrapingRef.current;
+      console.log('✅ Scraping en masse terminé');
+      console.log(`📊 Résultats: ${finalState.completedClients.length} succès, ${finalState.failedClients.length} échecs`);
+
+      // Afficher un résumé
+      const message = `Scraping terminé!\n\n` +
+        `✅ Succès: ${finalState.completedClients.length}\n` +
+        `❌ Échecs: ${finalState.failedClients.length}`;
+      
+      alert(message);
+
+    } catch (error) {
+      console.error('❌ Erreur lors du scraping en masse:', error);
+      alert('Erreur lors du scraping en masse: ' + (error as Error).message);
+    } finally {
+      // Finaliser l'état
+      setBulkScrapingState(prev => ({
+        ...prev,
+        isProcessing: false,
+        shouldCancel: false
+      }));
+    }
+  };
+
+  // Fonction d'annulation
+  const handleCancelBulkScraping = () => {
+    console.log('🛑 Demande d\'annulation du scraping en masse');
+    setBulkScrapingState(prev => ({
+      ...prev,
+      shouldCancel: true
+    }));
+  };
+
   return (
     <div>
-      <ReportHeader customerCount={googleCustomers.length + metaAccounts.length} />
+      {/* Bannière d'information permanente */}
+      <div style={{
+        background: '#ff6b6b',
+        color: 'white',
+        padding: '12px 20px',
+        textAlign: 'center',
+        fontWeight: '600',
+        fontSize: '14px',
+        boxShadow: '0 2px 8px rgba(255, 107, 107, 0.3)',
+        marginBottom: '20px',
+        borderRadius: '8px'
+      }}>
+        ⚠️ RAPPEL : Commence par faire <strong>Orgeval</strong> et <strong>Melun</strong> à la main !
+      </div>
+      
+      <ReportHeader customerCount={1} />
       
       <DateRangePicker 
         startDate={startDate}
@@ -396,15 +643,34 @@ const App: React.FC = () => {
         </button>
       </div>
       
+      {/* NOUVEAU: Sélecteur de client unifié */}
+      <div style={{ margin: '20px 0' }}>
+        <ClientSelector 
+          selectedClient={selectedClient}
+          onSelectClient={handleSelectClient}
+          onClientInfoChange={handleClientInfoChange}
+          onAuthorizedClientsChange={handleAuthorizedClientsChange}
+        />
+      </div>
+      
+      {/* Affichage des informations du client sélectionné */}
+      {clientInfo && (
+        <div style={{ margin: '20px 0', padding: '15px', backgroundColor: '#0a0a0a', border: '2px solid #dbbc32' }}>
+          <h4 style={{ margin: '0 0 10px 0', color: '#dbbc32', fontFamily: 'Allerta Stencil, sans-serif' }}>INFORMATIONS DU CLIENT</h4>
+          <div style={{ display: 'flex', gap: '20px', fontSize: '14px' }}>
+            <div>
+              <strong>Google Ads:</strong> {clientInfo.google_ads.configured ? 'Configuré' : '❌ Non configuré'}
+            </div>
+            <div>
+              <strong>Meta Ads:</strong> {clientInfo.meta_ads.configured ? 'Configuré' : '❌ Non configuré'}
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div style={{ display: 'flex', gap: '20px', margin: '20px 0' }}>
         <div style={{ flex: 2, padding: '15px', border: '2px solid #dbbc32'}}>
-                          <h3 style={{ margin: '0 0 2px 0', color: '#dbbc32' }}>SECTION GOOGLE ADS</h3>
-          
-          <GoogleCustomersSelect 
-            googleCustomers={googleCustomers}
-            selectedGoogleCustomer={selectedGoogleCustomer}
-            onSelectGoogleCustomer={handleSelectGoogleCustomer}
-          />
+          <h3 style={{ margin: '0 0 2px 0', color: '#dbbc32' }}>SECTION GOOGLE ADS</h3>
           
           <MetricsSelector 
             availableMetrics={availableGoogleMetrics}
@@ -414,13 +680,7 @@ const App: React.FC = () => {
         </div>
         
         <div style={{ flex: 1, padding: '15px', border: '2px solid #dbbc32', maxWidth: '500px' }}>
-                          <h3 style={{ margin: '0 0 2px 0', color: '#dbbc32' }}>SECTION META ADS</h3>
-          
-          <MetaAccountsSelect 
-            metaAccounts={metaAccounts}
-            selectedMetaAccount={selectedMetaAccount}
-            onSelectMetaAccount={handleSelectMetaAccount}
-          />
+          <h3 style={{ margin: '0 0 2px 0', color: '#dbbc32' }}>SECTION META ADS</h3>
           
           <MetaMetricsSelector 
             availableMetrics={availableMetaMetrics}
@@ -433,8 +693,24 @@ const App: React.FC = () => {
       <UnifiedDownloadButton 
         loading={loading}
         onClick={handleUnifiedDownload}
-        hasGoogleSelection={!!selectedGoogleCustomer}
-        hasMetaSelection={!!selectedMetaAccount}
+        hasGoogleSelection={clientInfo?.google_ads?.configured && selectedGoogleMetrics.length > 0}
+        hasMetaSelection={clientInfo?.meta_ads?.configured && selectedMetaMetrics.length > 0}
+        onBulkScraping={handleBulkScraping}
+        bulkScrapingLoading={bulkScrapingState.isProcessing}
+        hasAuthorizedClients={authorizedClients.length > 0}
+        hasAnyMetrics={selectedGoogleMetrics.length > 0 || selectedMetaMetrics.length > 0}
+      />
+      
+      {/* Composant de progression pour le scraping en masse */}
+      <BulkScrapingProgress
+        isVisible={bulkScrapingState.isProcessing || bulkScrapingState.completedClients.length > 0 || bulkScrapingState.failedClients.length > 0}
+        currentClient={bulkScrapingState.currentClient}
+        currentIndex={bulkScrapingState.currentIndex}
+        totalClients={filteredClients.length}
+        isProcessing={bulkScrapingState.isProcessing}
+        onCancel={handleCancelBulkScraping}
+        completedClients={bulkScrapingState.completedClients}
+        failedClients={bulkScrapingState.failedClients}
       />
     </div>
   );

@@ -3,6 +3,62 @@
   margin-top: 0px;
 }
 
+.button-group {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.download-button {
+  flex: 1;
+  min-width: 200px;
+  max-width: 400px;
+  padding: 12px 24px;
+  font-family: 'Proxima Nova', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  background-color: #e4c021;
+  color: #0a0a0a;
+  border-radius: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.bulk-scraping-button {
+  flex: 1;
+  min-width: 200px;
+  max-width: 400px;
+  padding: 12px 24px;
+  font-family: 'Proxima Nova', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  background-color: #dbbc32;
+  color: #0a0a0a;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.bulk-scraping-button:hover:not(:disabled) {
+  background-color: #218838;
+  transform: translateY(-1px);
+}
+
+.bulk-scraping-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.bulk-scraping-button:disabled {
+  background-color: #6c757d;
+  color: #adb5bd;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .status-indicators {
   display: flex;
   gap: 20px;

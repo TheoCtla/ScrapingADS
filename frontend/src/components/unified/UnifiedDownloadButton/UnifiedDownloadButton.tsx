@@ -6,13 +6,21 @@ interface UnifiedDownloadButtonProps {
   onClick: () => void;
   hasGoogleSelection: boolean;
   hasMetaSelection: boolean;
+  onBulkScraping?: () => void;
+  bulkScrapingLoading?: boolean;
+  hasAuthorizedClients?: boolean;
+  hasAnyMetrics?: boolean;
 }
 
 const UnifiedDownloadButton: React.FC<UnifiedDownloadButtonProps> = ({ 
   loading, 
   onClick, 
   hasGoogleSelection, 
-  hasMetaSelection 
+  hasMetaSelection,
+  onBulkScraping,
+  bulkScrapingLoading = false,
+  hasAuthorizedClients = false,
+  hasAnyMetrics = false
 }) => {
   const hasSelection = hasGoogleSelection || hasMetaSelection;
   const isDisabled = loading || !hasSelection;
@@ -35,13 +43,25 @@ const UnifiedDownloadButton: React.FC<UnifiedDownloadButtonProps> = ({
 
   return (
     <div className="unified-download-container">
-      <button
-        className="download-button"
-        onClick={onClick}
-        disabled={isDisabled}
-      >
-        {getButtonText()}
-      </button>
+      <div className="button-group">
+        <button
+          className="download-button"
+          onClick={onClick}
+          disabled={isDisabled}
+        >
+          {getButtonText()}
+        </button>
+        
+        {hasAuthorizedClients && (
+          <button
+            className="bulk-scraping-button"
+            onClick={onBulkScraping}
+            disabled={bulkScrapingLoading || !hasAnyMetrics}
+          >
+            {bulkScrapingLoading ? 'Scraping en cours...' : 'Scraper tous les clients'}
+          </button>
+        )}
+      </div>
       
       {!hasSelection && (
         <p className="help-text">

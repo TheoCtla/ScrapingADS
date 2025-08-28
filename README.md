@@ -8,19 +8,26 @@ Un système complet pour récupérer, analyser et consolider les données public
 
 ## Fonctionnalités
 
+### **Sélection Unifiée de Clients**
+- **Liste blanche centralisée** des clients autorisés
+- **Sélection unique** via une interface unifiée
+- **Résolution automatique** des IDs Google Ads et Meta Ads
+- **Validation stricte** contre la liste blanche
+- **Gestion des plateformes manquantes** avec messages informatifs
+
 ### **Google Ads Integration**
-- **Scraping automatisé** des comptes Google Ads clients
+- **Scraping ciblé** des comptes Google Ads clients
 - **Métriques complètes** : Clics, Impressions, CTR, CPC, CPL, Conversions
 - **Conversions spécialisées** : Contact et Itinéraires (objectifs personnalisés)
 - **Export CSV** et **mise à jour Google Sheets** automatique
-- **Gestion multi-clients** avec mapping automatique
+- **Mapping client-compte** centralisé et versionné
 
 ### **Meta Ads Integration**
 - **Récupération des insights** Meta Ads via Graph API
 - **Métriques unifiées** : Clics, Impressions, CTR, CPC, CPL
 - **Conversions Meta** : Contact et Recherche de lieux
 - **Synchronisation** avec le même système Google Sheets
-- **Mapping client-compte** automatisé
+- **Mapping client-compte** centralisé et versionné
 
 ### **Google Sheets Automation**
 - **Mise à jour automatique** des données dans Google Sheets
@@ -124,11 +131,13 @@ npm run dev
 
 | Route | Méthode | Description |
 |-------|---------|-------------|
-| `/list-customers` | GET | Liste des clients Google Ads |
-| `/list-meta-accounts` | GET | Liste des comptes Meta Ads |
-| `/export-report` | POST | Export Google Ads + mise à jour Sheets |
-| `/export-unified-report` | POST | Export unifié Google + Meta |
+| `/list-authorized-clients` | GET | Liste des clients autorisés (liste blanche) |
+| `/resolve-client` | POST | Résolution nom client → IDs Google/Meta |
+| `/export-unified-report` | POST | Export unifié Google + Meta (nouveau format) |
 | `/update_sheet` | POST | Mise à jour manuelle Google Sheets |
+| `/list-customers` | GET | Liste des clients Google Ads (LEGACY) |
+| `/list-meta-accounts` | GET | Liste des comptes Meta Ads (LEGACY) |
+| `/export-report` | POST | Export Google Ads + mise à jour Sheets (LEGACY) |
 
 ---
 
@@ -141,10 +150,10 @@ npm run dev
 
 ### Interface utilisateur
 1. **Ouvrir** http://localhost:3000
-2. **Sélectionner** un client dans la liste
+2. **Sélectionner** un client autorisé dans la liste blanche
 3. **Choisir** la période d'analyse, la période pré remplie est le dernier mois entier
-4. **Sélectionner** les métriques souhaitées
-5. **Checkez** la mise à jour dans Google Sheets
+4. **Sélectionner** les métriques souhaitées (Google Ads et/ou Meta Ads)
+5. **Vérifier** la mise à jour dans Google Sheets
 
 ---
 
@@ -156,14 +165,24 @@ scrappingRapport/
 │   ├── config/
 │   │   ├── credentials.json
 │   │   ├── google-ads.yaml
+│   │   ├── client_allowlist.json
 │   │   ├── client_mappings.json
 │   │   └── meta_mappings.json
+│   ├── common/
+│   │   └── services/
+│   │       └── client_resolver.py
 │   ├── main.py
 │   ├── config/settings.py
+│   ├── tests/
+│   │   └── test_client_resolver.py
 │   └── exports/
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
+│   │   │   ├── unified/
+│   │   │   │   └── ClientSelector/
+│   │   │   ├── google/
+│   │   │   └── meta/
 │   │   ├── App.tsx
 │   │   └── main.tsx
 │   ├── package.json
@@ -171,7 +190,8 @@ scrappingRapport/
 ├── .env
 ├── .env.exemple
 ├── start_project.sh
-└── README.md
+├── README.md
+└── README_MAINTAINERS.md
 ```
 
 ---
@@ -205,11 +225,29 @@ cd frontend && npm test
 
 ---
 
+## Changelog
+
+### Version 2.0 - Refonte Unifiée (Janvier 2025)
+- ✅ **Liste blanche centralisée** : Remplacement des deux sélecteurs par un système unifié
+- ✅ **Sélection unique** : Interface simplifiée avec une seule barre de recherche
+- ✅ **Scraping ciblé** : Plus de scraping global, uniquement le client sélectionné
+- ✅ **Mapping centralisé** : Configuration unifiée dans `client_allowlist.json`
+- ✅ **Gestion d'erreurs robuste** : Messages informatifs pour les plateformes manquantes
+- ✅ **Tests unitaires** : Couverture complète du service de résolution client
+- ✅ **Documentation** : Guide de maintenance pour les mainteneurs
+
+### Version 1.0 - Système Initial
+- Système de scraping Google Ads et Meta Ads
+- Interface avec sélecteurs séparés
+- Export vers Google Sheets
+
+---
+
 ## Support
 
 Pour toute question ou problème :
 - **Issues** : Créer une issue sur le repository
-- **Documentation** : Consulter les fichiers de configuration
+- **Documentation** : Consulter les fichiers de configuration et `README_MAINTAINERS.md`
 - **Logs** : Vérifier `backend.log` et `frontend.log`
 
 ---
