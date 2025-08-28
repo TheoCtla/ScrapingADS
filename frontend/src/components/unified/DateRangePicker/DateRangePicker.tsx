@@ -18,6 +18,63 @@ export default function DateRangePicker({
   onEndDateChange,
   onSheetMonthChange
 }: DateRangePickerProps) {
+  
+  // Fonction pour obtenir le mois précédent en français
+  const getPreviousMonthInFrench = () => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    // Mois précédent
+    const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+    
+    const monthNames = [
+      'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
+      'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'
+    ];
+    
+    return monthNames[lastMonth];
+  };
+  
+  // Fonction pour convertir le mois français en anglais avec majuscule
+  const convertMonthToEnglish = (input: string): string => {
+    const frenchToEnglishMonths: { [key: string]: string } = {
+      'janvier': 'January',
+      'février': 'February',
+      'mars': 'March',
+      'avril': 'April',
+      'mai': 'May',
+      'juin': 'June',
+      'juillet': 'July',
+      'août': 'August',
+      'septembre': 'September',
+      'octobre': 'October',
+      'novembre': 'November',
+      'décembre': 'December'
+    };
+
+    let converted = input;
+    const currentYear = new Date().getFullYear();
+    
+    // Chercher et remplacer chaque mois français
+    for (const [french, english] of Object.entries(frenchToEnglishMonths)) {
+      const regex = new RegExp(french, 'gi'); // 'gi' pour ignorer la casse
+      if (regex.test(converted)) {
+        // Si on trouve un mois français, le remplacer par le mois anglais + année
+        converted = converted.replace(regex, english + ' ' + currentYear);
+        break; // Sortir de la boucle après avoir trouvé et remplacé
+      }
+    }
+    
+    return converted;
+  };
+
+  const handleSheetMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+    const convertedValue = convertMonthToEnglish(inputValue);
+    onSheetMonthChange(convertedValue);
+  };
+
   return (
     <div className="date-container">
       <div className="date-group">
@@ -44,8 +101,8 @@ export default function DateRangePicker({
           type="text"
           id="sheet_month"
           value={sheetMonth}
-          onChange={(e) => onSheetMonthChange(e.target.value)}
-          placeholder="Ex: juillet 2025 ..."
+          onChange={handleSheetMonthChange}
+          placeholder={`Ex: ${getPreviousMonthInFrench()} ${new Date().getFullYear()} ...`}
         />
       </div>
     </div>

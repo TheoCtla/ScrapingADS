@@ -44,15 +44,39 @@ class GoogleSheetsService:
     def get_row_for_month(self, worksheet_name: str, month: str) -> Optional[int]:
         """
         Trouve le numéro de ligne contenant le mois spécifié dans la colonne A
+        Convertit automatiquement le mois français en anglais pour la recherche
         
         Args:
             worksheet_name: Nom de l'onglet
-            month: Mois à rechercher
+            month: Mois à rechercher (peut être en français)
             
         Returns:
             Numéro de ligne (1-indexed) ou None si non trouvé
         """
         try:
+            # Conversion des mois français vers anglais
+            french_to_english_months = {
+                'janvier': 'January',
+                'février': 'February', 
+                'mars': 'March',
+                'avril': 'April',
+                'mai': 'May',
+                'juin': 'June',
+                'juillet': 'July',
+                'août': 'August',
+                'septembre': 'September',
+                'octobre': 'October',
+                'novembre': 'November',
+                'décembre': 'December'
+            }
+            
+            # Convertir le mois en anglais si nécessaire
+            month_to_search = month
+            for french_month, english_month in french_to_english_months.items():
+                if french_month in month.lower():
+                    month_to_search = month.replace(french_month, english_month)
+                    break
+            
             range_name = f"'{worksheet_name}'!A:A"
             result = self.service.spreadsheets().values().get(
                 spreadsheetId=self.sheet_id,
@@ -60,15 +84,15 @@ class GoogleSheetsService:
             ).execute()
             
             values = result.get('values', [])
-            logging.info(f"🔍 Recherche du mois '{month}' dans l'onglet '{worksheet_name}'")
+            logging.info(f"🔍 Recherche du mois '{month_to_search}' (original: '{month}') dans l'onglet '{worksheet_name}'")
             
             for i, row in enumerate(values):
-                if row and len(row) > 0 and row[0].strip() == month.strip():
+                if row and len(row) > 0 and row[0].strip() == month_to_search.strip():
                     row_number = i + 1  # 1-indexed
-                    logging.info(f"✅ Mois '{month}' trouvé à la ligne {row_number}")
+                    logging.info(f"✅ Mois '{month_to_search}' trouvé à la ligne {row_number}")
                     return row_number
             
-            logging.warning(f"⚠️ Mois '{month}' non trouvé dans l'onglet '{worksheet_name}'")
+            logging.warning(f"⚠️ Mois '{month_to_search}' non trouvé dans l'onglet '{worksheet_name}'")
             return None
             
         except Exception as e:

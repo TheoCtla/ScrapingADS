@@ -53,7 +53,7 @@ const App: React.FC = () => {
   const [startDate, setStartDate] = useState<string>(lastMonthDates.startDate);
   const [endDate, setEndDate] = useState<string>(lastMonthDates.endDate);
   
-  // Fonction pour obtenir le nom du mois précédent en français
+  // Fonction pour obtenir le nom du mois précédent en anglais
   const getLastMonthName = () => {
     const now = new Date();
     const currentMonth = now.getMonth();
@@ -64,8 +64,8 @@ const App: React.FC = () => {
     const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
     
     const monthNames = [
-      'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
-      'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
     ];
     
     return `${monthNames[lastMonth]} ${lastMonthYear}`;
