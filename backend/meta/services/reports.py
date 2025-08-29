@@ -294,15 +294,15 @@ class MetaAdsReportsService:
         for action_type, total_value in action_totals.items():
             action_lower = action_type.lower()
             
-            # ✅ LOGIQUE ULTRA-PRÉCISE - Basée sur l'analyse diagnostique
+            # ✅ LOGIQUE CORRIGÉE - Basée sur les vraies actions Meta
             
-            # CONTACTS : SEULEMENT add_to_cart principal (pas les variantes)
-            if action_type == 'add_to_cart':
+            # CONTACTS : Actions de génération de leads
+            if action_type in ['onsite_web_lead', 'lead', 'offsite_conversion.fb_pixel_lead']:
                 contact_conversions += total_value
                 logging.info(f"✅ CONTACT DÉTECTÉ: '{action_type}' = {total_value}")
                 
-            # RECHERCHES : SEULEMENT like + comment (interactions sociales légères)
-            elif action_type in ['like', 'comment']:
+            # RECHERCHES : Actions de recherche de lieux
+            elif action_type == 'offsite_conversion.fb_pixel_custom':
                 search_conversions += total_value
                 logging.info(f"✅ RECHERCHE DÉTECTÉE: '{action_type}' = {total_value}")
                 

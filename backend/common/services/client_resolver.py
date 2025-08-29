@@ -71,8 +71,8 @@ class ClientResolverService:
         }
         
         # Log de la résolution
-        google_id = resolved_accounts["googleAds"]["customerId"] if resolved_accounts["googleAds"] else "Non configuré"
-        meta_id = resolved_accounts["metaAds"]["adAccountId"] if resolved_accounts["metaAds"] else "Non configuré"
+        google_id = resolved_accounts["googleAds"].get("customerId") if resolved_accounts["googleAds"] else "Non configuré"
+        meta_id = resolved_accounts["metaAds"].get("adAccountId") if resolved_accounts["metaAds"] else "Non configuré"
         
         logging.info(f"🔍 Résolution client '{client_name}': Google={google_id}, Meta={meta_id}")
         

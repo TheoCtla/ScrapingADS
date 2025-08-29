@@ -132,7 +132,9 @@
       "googleAds": {
         "customerId": "2485486745"
       },
-      "metaAds": "153090796730020"
+      "metaAds": {
+        "adAccountId": "1264194895280191"
+      }
     },
     "France Literie Dijon": {
       "googleAds": {
@@ -162,7 +164,9 @@
       "googleAds": {
         "customerId": "4854280249"
       },
-      "metaAds": "3553367521625842"
+      "metaAds": {
+        "adAccountId": "3553367521625842"
+      }
     },
     "Kaltea Chalon sur Saône": {
       "googleAds": {
@@ -214,7 +218,9 @@
       "googleAds": {
         "customerId": "3808834188"
       },
-      "metaAds": "740892074941237"
+      "metaAds": {
+        "adAccountId": "740892074941237"
+      }
     },
     "Sagne Cuisines": {
       "googleAds": {

@@ -31,7 +31,14 @@ from backend.meta.services.reports import MetaAdsReportsService
 from backend.meta.utils.mappings import MetaAdsMappingService
 
 # Configuration du logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
+logging.basicConfig(
+    level=logging.INFO, 
+    format='%(asctime)s %(levelname)s %(message)s',
+    handlers=[
+        logging.FileHandler('backend.log'),
+        logging.StreamHandler()
+    ]
+)
 
 # Initialisation de l'application Flask
 app = Flask(__name__)
@@ -295,7 +302,9 @@ def list_meta_accounts():
 @app.route("/export-unified-report", methods=["POST"])
 def export_unified_report():
     """Export unifié pour Google Ads + Meta Ads avec checkboxes"""
+    logging.info("🚀 ROUTE /export-unified-report appelée")
     data = request.json
+    logging.info(f"📥 Données reçues: {data}")
 
     # Paramètres communs
     start_date = data.get("start_date")

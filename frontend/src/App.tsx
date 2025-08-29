@@ -601,20 +601,6 @@ const App: React.FC = () => {
 
   return (
     <div>
-      {/* Bannière d'information permanente */}
-      <div style={{
-        background: '#ff6b6b',
-        color: 'white',
-        padding: '12px 20px',
-        textAlign: 'center',
-        fontWeight: '600',
-        fontSize: '14px',
-        boxShadow: '0 2px 8px rgba(255, 107, 107, 0.3)',
-        marginBottom: '20px',
-        borderRadius: '8px'
-      }}>
-        ⚠️ RAPPEL : Commence par faire <strong>Orgeval</strong> et <strong>Melun</strong> à la main !
-      </div>
       
       <ReportHeader customerCount={1} />
       
