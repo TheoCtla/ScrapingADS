@@ -44,7 +44,6 @@
 }
 
 .bulk-scraping-button:hover:not(:disabled) {
-  background-color: #218838;
   transform: translateY(-1px);
 }
 
