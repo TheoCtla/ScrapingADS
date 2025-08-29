@@ -659,10 +659,10 @@ const App: React.FC = () => {
           <h4 style={{ margin: '0 0 10px 0', color: '#dbbc32', fontFamily: 'Allerta Stencil, sans-serif' }}>INFORMATIONS DU CLIENT</h4>
           <div style={{ display: 'flex', gap: '20px', fontSize: '14px' }}>
             <div>
-              <strong>Google Ads:</strong> {clientInfo.google_ads.configured ? 'Configuré' : '❌ Non configuré'}
+              <strong>Google Ads:</strong> {clientInfo.google_ads.configured ? 'Configuré' : 'Non configuré'}
             </div>
             <div>
-              <strong>Meta Ads:</strong> {clientInfo.meta_ads.configured ? 'Configuré' : '❌ Non configuré'}
+              <strong>Meta Ads:</strong> {clientInfo.meta_ads.configured ? 'Configuré' : 'Non configuré'}
             </div>
           </div>
         </div>

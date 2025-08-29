@@ -29,7 +29,8 @@
     "Place de la literie Toulouse",
     "Sagne Cuisines",
     "Star Literie",
-    "Tairmic Tousalon Perpignan",
+    "Tairmic",
+    "Tousalon Perpignan",
     "Tousalon Toulouse"
   ],
   "mappings": {
@@ -161,7 +162,7 @@
       "googleAds": {
         "customerId": "4854280249"
       },
-      "metaAds": null
+      "metaAds": "3553367521625842"
     },
     "Kaltea Chalon sur Saône": {
       "googleAds": {
@@ -213,7 +214,7 @@
       "googleAds": {
         "customerId": "3808834188"
       },
-      "metaAds": null
+      "metaAds": "740892074941237"
     },
     "Sagne Cuisines": {
       "googleAds": {
@@ -251,7 +252,9 @@
       "googleAds": {
         "customerId": "4913925892"
       },
-      "metaAds": null
+      "metaAds": {
+        "adAccountId": "3598406686959980"
+      }
     }
   },
   "notes": [
