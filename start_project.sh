@@ -64,10 +64,10 @@ start_backend() {
     print_status "🔥 Démarrage du backend Flask..."
     
     # Activer l'environnement virtuel et démarrer le backend
-    source venv/bin/activate
+    source backend/venv/bin/activate
     
     # Démarrer le backend en arrière-plan
-    python -c "
+    python3 -c "
 import sys
 sys.path.insert(0, '.')
 from backend.main import app
