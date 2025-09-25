@@ -9,6 +9,7 @@ Flask-CORS==4.0.0
 # Variables d'environnement
 python-dotenv==1.0.0
 
+
 # ========================================
 # GOOGLE ADS API
 # ========================================

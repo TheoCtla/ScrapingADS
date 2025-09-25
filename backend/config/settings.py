@@ -18,7 +18,7 @@ class APIConfig:
     META_BUSINESS_ID = os.getenv("META_BUSINESS_ID")
     
     # Google Ads API
-    GOOGLE_ADS_YAML_PATH = CONFIG_DIR / "google-ads.yaml"
+    GOOGLE_ADS_YAML_PATH = os.getenv("GOOGLE_ADS_YAML_PATH", str(CONFIG_DIR / "google-ads.yaml"))
     
     # Google Sheets API
     GOOGLE_SHEET_ID = os.getenv("GOOGLE_SHEET_ID")

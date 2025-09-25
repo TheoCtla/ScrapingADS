@@ -514,6 +514,11 @@ def export_unified_report():
 # ROUTES UTILITAIRES
 # ================================
 
+@app.route("/healthz", methods=["GET"])
+def health_check():
+    """Endpoint de santé pour Render"""
+    return jsonify({"status": "healthy", "service": "scrapping-rapport-backend"}), 200
+
 @app.route("/update_sheet", methods=["POST"])
 def update_sheet():
     """Route pour mettre à jour un Google Sheet avec des données"""
