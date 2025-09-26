@@ -32,8 +32,11 @@ const GoogleCustomersSelect: React.FC<GoogleCustomersSelectProps> = ({
 
 
   // Filtrer les clients basé sur le terme de recherche (utilise le nom nettoyé)
+  // ET exclure les comptes manager
   const filteredCustomers = googleCustomers.filter(customer =>
-    customer.name && cleanDisplayName(customer.name).toLowerCase().includes(searchTerm.toLowerCase())
+    customer.name && 
+    !customer.manager && // Exclure les comptes manager
+    cleanDisplayName(customer.name).toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Fermer le dropdown si on clique à l'extérieur
