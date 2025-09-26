@@ -107,7 +107,6 @@
   "notes": [
     "Les account_ids Meta sont récupérés via /list-meta-accounts",
     "Les noms d'onglets doivent correspondre exactement à ceux du Google Sheet",
-    "Ce fichier est utilisé par get_meta_client_mapping() dans app.py",
-    "Généré automatiquement avec 96 mappings"
+    "Ce fichier est utilisé par get_meta_client_mapping() dans app.py"
   ]
 }
