@@ -261,6 +261,46 @@
       "metaAds": {
         "adAccountId": "3598406686959980"
       }
+    },
+    "Flamme&Creation": {
+      "googleAds": {
+        "customerId": "9576529976"
+      },
+      "metaAds": {
+        "adAccountId": ""
+      }
+    },
+    "France Literie Saint-Priest & Givors": {
+      "googleAds": {
+        "customerId": "3511211392"
+      },
+      "metaAds": {
+        "adAccountId": "1339396903"
+      }
+    },
+    "France Literie Champagne": {
+      "googleAds": {
+        "customerId": "1842495793"
+      },
+      "metaAds": {
+        "adAccountId": "1818226181888823"
+      }
+    },
+    "Bedroom Perpignan": {
+      "googleAds": {
+        "customerId": "2620320258"
+      },
+      "metaAds": {
+        "adAccountId": "1091543009746467"
+      }
+    },
+    "Cuisine Plus Perpignan": {
+      "googleAds": {
+        "customerId": "9360801546"
+      },
+      "metaAds": {
+        "adAccountId": "538724497223368"
+      }
     }
   },
   "notes": [
