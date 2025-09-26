@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './ClientSelector.css';
 
@@ -9,19 +9,6 @@ interface ClientSelectorProps {
   onAuthorizedClientsChange?: (clients: string[]) => void;
 }
 
-interface ClientInfo {
-  name: string;
-  authorized: boolean;
-  available_platforms: string[];
-  google_ads: {
-    configured: boolean;
-    customer_id: string | null;
-  };
-  meta_ads: {
-    configured: boolean;
-    ad_account_id: string | null;
-  };
-}
 
 const ClientSelector: React.FC<ClientSelectorProps> = ({ 
   selectedClient, 
@@ -70,33 +57,34 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
     fetchAuthorizedClients();
   }, []);
 
+  // Fonction stable pour résoudre les informations du client
+  const resolveClientInfo = useCallback(async () => {
+    if (!selectedClient) {
+      onClientInfoChange(null);
+      return;
+    }
+
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/resolve-client`, {
+        client_name: selectedClient
+      }, {
+        withCredentials: true,
+      });
+
+      if (response.data && response.data.client_info) {
+        onClientInfoChange(response.data.client_info);
+        console.log('✅ Informations client résolues:', response.data.client_info);
+      }
+    } catch (error: any) {
+      console.error('❌ Erreur lors de la résolution du client:', error);
+      onClientInfoChange(null);
+    }
+  }, [selectedClient, onClientInfoChange]);
+
   // Résoudre les informations du client sélectionné
   useEffect(() => {
-    const resolveClientInfo = async () => {
-      if (!selectedClient) {
-        onClientInfoChange(null);
-        return;
-      }
-
-      try {
-        const response = await axios.post(`${import.meta.env.VITE_API_URL}/resolve-client`, {
-          client_name: selectedClient
-        }, {
-          withCredentials: true,
-        });
-
-        if (response.data && response.data.client_info) {
-          onClientInfoChange(response.data.client_info);
-          console.log('✅ Informations client résolues:', response.data.client_info);
-        }
-      } catch (error: any) {
-        console.error('❌ Erreur lors de la résolution du client:', error);
-        onClientInfoChange(null);
-      }
-    };
-
     resolveClientInfo();
-  }, [selectedClient, onClientInfoChange]);
+  }, [resolveClientInfo]);
 
   // Filtrer les clients basé sur le terme de recherche
   const filteredClients = authorizedClients.filter(client =>
