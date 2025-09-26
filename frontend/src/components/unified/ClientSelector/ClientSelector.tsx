@@ -44,7 +44,7 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
         setLoading(true);
         setError(null);
         
-        const response = await axios.get('http://localhost:5050/list-authorized-clients', {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/list-authorized-clients`, {
           withCredentials: true,
         });
         
@@ -79,7 +79,7 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
       }
 
       try {
-        const response = await axios.post('http://localhost:5050/resolve-client', {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/resolve-client`, {
           client_name: selectedClient
         }, {
           withCredentials: true,

@@ -252,7 +252,7 @@ const App: React.FC = () => {
   // Fonction pour obtenir les clients filtrés de la searchbar
   const getFilteredClientsFromSearchbar = async (searchTerm: string = '') => {
     try {
-      const response = await axios.post('http://localhost:5050/list-filtered-clients', {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/list-filtered-clients`, {
         search_term: searchTerm
       }, {
         withCredentials: true,
@@ -328,7 +328,7 @@ const App: React.FC = () => {
       
               console.log('DEBUG: payload unifié envoyé:', payload);
       
-              const response = await axios.post('http://localhost:5050/export-unified-report', payload);
+              const response = await axios.post(`${import.meta.env.VITE_API_URL}/export-unified-report`, payload);
 
       console.log('🔧 DEBUG: response reçue:', response);
 
@@ -410,7 +410,7 @@ const App: React.FC = () => {
       
       console.log(`📤 Envoi du payload pour ${clientName}:`, payload);
       
-      const response = await axios.post('http://localhost:5050/export-unified-report', payload);
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/export-unified-report`, payload);
       
       if (response.data.success) {
         console.log(`✅ Succès pour ${clientName}:`, response.data.message);
