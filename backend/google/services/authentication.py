@@ -43,7 +43,7 @@ class GoogleAdsAuthService:
         """
         try:
             ga_service = self.client.get_service("GoogleAdsService")
-            response = ga_service.search_stream(customer_id=customer_id, query=query)
+            response = ga_service.search(customer_id=customer_id, query=query)
             return response
         except GoogleAdsException as ex:
             for error in ex.failure.errors:
