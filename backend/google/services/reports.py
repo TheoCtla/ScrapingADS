@@ -82,7 +82,8 @@ class GoogleAdsReportsService:
             response = self.auth_service.fetch_report_data(customer_id, query)
             response_list = list(response)  # Convertir en liste pour pouvoir la réutiliser
             
-            total_results = sum(len(batch.results) for batch in response_list) if response_list else 0
+            # Avec search(), les données sont directement dans response_list, pas dans .results
+            total_results = len(response_list) if response_list else 0
             logging.info(f"📈 {total_results} résultats récupérés")
             
             return response_list
@@ -116,40 +117,40 @@ class GoogleAdsReportsService:
         channels_found = set()
         
         # Collecter les données par canal
-        for batch in response_data:
-            for row in batch.results:
-                total_rows += 1
-                channel = row.campaign.advertising_channel_type.name
-                channels_found.add(channel)
+        # Avec search(), les données sont directement dans response_data, pas dans .results
+        for row in response_data:
+            total_rows += 1
+            channel = row.campaign.advertising_channel_type.name
+            channels_found.add(channel)
+            
+            # Log des détails pour les premières lignes
+            if total_rows <= 3:
+                logging.info(f"📊 Ligne {total_rows}: Channel={channel}, Clicks={row.metrics.clicks}, Impressions={row.metrics.impressions}, Cost={row.metrics.cost_micros}")
+            
+            if channel in channel_data:
+                channel_data[channel]['clicks'] += row.metrics.clicks or 0
+                channel_data[channel]['impressions'] += row.metrics.impressions or 0
+                channel_data[channel]['cost_micros'] += row.metrics.cost_micros or 0
+                channel_data[channel]['conversions'] += row.metrics.conversions or 0
+                channel_data[channel]['phone_calls'] += row.metrics.phone_calls or 0
                 
-                # Log des détails pour les premières lignes
-                if total_rows <= 3:
-                    logging.info(f"📊 Ligne {total_rows}: Channel={channel}, Clicks={row.metrics.clicks}, Impressions={row.metrics.impressions}, Cost={row.metrics.cost_micros}")
-                
-                if channel in channel_data:
-                    channel_data[channel]['clicks'] += row.metrics.clicks or 0
-                    channel_data[channel]['impressions'] += row.metrics.impressions or 0
-                    channel_data[channel]['cost_micros'] += row.metrics.cost_micros or 0
-                    channel_data[channel]['conversions'] += row.metrics.conversions or 0
-                    channel_data[channel]['phone_calls'] += row.metrics.phone_calls or 0
-                    
-                    if row.metrics.average_cpc is not None:
-                        channel_data[channel]['cpc_sum'] += row.metrics.average_cpc
-                        channel_data[channel]['cpc_count'] += 1
-                else:
-                    logging.warning(f"⚠️ Canal non reconnu: {channel}")
-                
-                # Totaux globaux
-                total_data['clicks'] += row.metrics.clicks or 0
-                total_data['impressions'] += row.metrics.impressions or 0
-                
-                if row.metrics.ctr is not None:
-                    total_data['ctr_sum'] += row.metrics.ctr
-                    total_data['ctr_count'] += 1
-                    
                 if row.metrics.average_cpc is not None:
-                    total_data['cpc_sum'] += row.metrics.average_cpc
-                    total_data['cpc_count'] += 1
+                    channel_data[channel]['cpc_sum'] += row.metrics.average_cpc
+                    channel_data[channel]['cpc_count'] += 1
+            else:
+                logging.warning(f"⚠️ Canal non reconnu: {channel}")
+            
+            # Totaux globaux
+            total_data['clicks'] += row.metrics.clicks or 0
+            total_data['impressions'] += row.metrics.impressions or 0
+            
+            if row.metrics.ctr is not None:
+                total_data['ctr_sum'] += row.metrics.ctr
+                total_data['ctr_count'] += 1
+                
+            if row.metrics.average_cpc is not None:
+                total_data['cpc_sum'] += row.metrics.average_cpc
+                total_data['cpc_count'] += 1
         
         # Log des résultats de debug
         logging.info(f"📊 Nombre total de lignes traitées: {total_rows}")
