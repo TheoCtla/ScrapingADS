@@ -1,6 +1,6 @@
 """
 Service de conversions Google Ads - Gestion des conversions Contact et Itinéraires
-Version finale avec correction de l'itération
+Version corrigée avec addition de toutes les conversions
 """
 
 import logging
@@ -73,33 +73,33 @@ class GoogleAdsConversionsService:
             
             response = self.auth_service.fetch_report_data(customer_id, query)
             
-            # ✅ CORRECTION: response contient directement les GoogleAdsRow
-            for row in response:
-                conversion_name = row.segments.conversion_action_name.lower().strip()
-                conversions_value = row.metrics.all_conversions or 0
-                
-                # Enregistrer toutes les conversions pour debug
-                all_conversions.append({
-                    'name': row.segments.conversion_action_name,
-                    'id': row.segments.conversion_action,
-                    'conversions': conversions_value
-                })
-                
-                # Classifier par section basée sur le nom
-                is_contact = any(target_name in conversion_name for target_name in self.TARGET_CONTACT_NAMES)
-                is_directions = any(target_name in conversion_name for target_name in self.TARGET_DIRECTIONS_NAMES)
-                
-                if is_contact:
-                    contact_total += conversions_value
-                    logging.info(f"✅ Conversion Contact: {row.segments.conversion_action_name} = {conversions_value}")
-                elif is_directions:
-                    directions_total += conversions_value
-                    logging.info(f"✅ Conversion Itinéraires: {row.segments.conversion_action_name} = {conversions_value}")
-                else:
-                    # Si aucune section n'est identifiée, essayer de deviner basé sur le contexte
-                    logging.info(f"⚠️ Conversion non classifiée: {row.segments.conversion_action_name} = {conversions_value}")
-                    # Pour l'instant, on ignore les conversions non classifiées
-                    pass
+            for batch in response:
+                for row in batch:  # ✅ CORRECTION: batch au lieu de batch.results
+                    conversion_name = row.segments.conversion_action_name.lower().strip()
+                    conversions_value = row.metrics.all_conversions or 0
+                    
+                    # Enregistrer toutes les conversions pour debug
+                    all_conversions.append({
+                        'name': row.segments.conversion_action_name,
+                        'id': row.segments.conversion_action,
+                        'conversions': conversions_value
+                    })
+                    
+                    # Classifier par section basée sur le nom
+                    is_contact = any(target_name in conversion_name for target_name in self.TARGET_CONTACT_NAMES)
+                    is_directions = any(target_name in conversion_name for target_name in self.TARGET_DIRECTIONS_NAMES)
+                    
+                    if is_contact:
+                        contact_total += conversions_value
+                        logging.info(f"✅ Conversion Contact: {row.segments.conversion_action_name} = {conversions_value}")
+                    elif is_directions:
+                        directions_total += conversions_value
+                        logging.info(f"✅ Conversion Itinéraires: {row.segments.conversion_action_name} = {conversions_value}")
+                    else:
+                        # Si aucune section n'est identifiée, essayer de deviner basé sur le contexte
+                        logging.info(f"⚠️ Conversion non classifiée: {row.segments.conversion_action_name} = {conversions_value}")
+                        # Pour l'instant, on ignore les conversions non classifiées
+                        pass
             
             logging.info(f"📊 Total Contact: {contact_total}, Total Itinéraires: {directions_total}")
             return contact_total, directions_total, all_conversions
