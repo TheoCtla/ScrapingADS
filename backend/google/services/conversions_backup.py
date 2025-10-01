@@ -1,6 +1,5 @@
 """
 Service de conversions Google Ads - Gestion des conversions Contact et Itinéraires
-Version corrigée avec addition de toutes les conversions
 """
 
 import logging
@@ -18,30 +17,23 @@ class GoogleAdsConversionsService:
         self.sheets_service = GoogleSheetsService()
         
         # Noms des conversions à chercher (insensible à la casse)
-        # Étendus pour couvrir plus de cas
         self.TARGET_CONTACT_NAMES = [
             "appels",
             "cta", 
             "appel (cta)",
-            "clicks to call",
-            "contact",
-            "call",
-            "phone"
+            "clicks to call"
         ]
         
         self.TARGET_DIRECTIONS_NAMES = [
             "itinéraires",
             "local actions - directions", 
             "itinéraires magasin",
-            "click map",
-            "directions",
-            "local actions",
-            "store visits"
+            "click map"
         ]
     
-    def get_all_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, int, List[Dict]]:
+    def get_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
         """
-        Récupère TOUTES les conversions et les sépare en Contact et Itinéraires
+        Récupère les données de conversions Contact pour un customer donné
         
         Args:
             customer_id: ID du client Google Ads
@@ -49,14 +41,13 @@ class GoogleAdsConversionsService:
             end_date: Date de fin (YYYY-MM-DD)
             
         Returns:
-            Tuple (contact_total, directions_total, all_conversions)
+            Tuple (total_conversions, found_conversions)
         """
-        contact_total = 0
-        directions_total = 0
-        all_conversions = []
+        total_conversions = 0
+        found_conversions = []
         
         try:
-            # Requête pour récupérer TOUTES les conversion actions
+            # Requête pour récupérer les conversion actions et leurs métriques
             query = f"""
             SELECT
                 segments.conversion_action_name,
@@ -69,77 +60,117 @@ class GoogleAdsConversionsService:
                 AND metrics.all_conversions > 0
             """
             
-            logging.info(f"🔍 Recherche de TOUTES les conversions pour le client {customer_id}")
+            logging.info(f"🔍 Recherche des conversions Contact pour le client {customer_id}")
             
             response = self.auth_service.fetch_report_data(customer_id, query)
             
             for batch in response:
-                for row in batch:  # ✅ CORRECTION: batch au lieu de batch.results
+                for row in batch.results:
                     conversion_name = row.segments.conversion_action_name.lower().strip()
-                    conversions_value = row.metrics.all_conversions or 0
                     
-                    # Enregistrer toutes les conversions pour debug
-                    all_conversions.append({
-                        'name': row.segments.conversion_action_name,
-                        'id': row.segments.conversion_action,
-                        'conversions': conversions_value
-                    })
-                    
-                    # Classifier par section basée sur le nom
-                    is_contact = any(target_name in conversion_name for target_name in self.TARGET_CONTACT_NAMES)
-                    is_directions = any(target_name in conversion_name for target_name in self.TARGET_DIRECTIONS_NAMES)
-                    
-                    if is_contact:
-                        contact_total += conversions_value
-                        logging.info(f"✅ Conversion Contact: {row.segments.conversion_action_name} = {conversions_value}")
-                    elif is_directions:
-                        directions_total += conversions_value
-                        logging.info(f"✅ Conversion Itinéraires: {row.segments.conversion_action_name} = {conversions_value}")
-                    else:
-                        # Si aucune section n'est identifiée, essayer de deviner basé sur le contexte
-                        logging.info(f"⚠️ Conversion non classifiée: {row.segments.conversion_action_name} = {conversions_value}")
-                        # Pour l'instant, on ignore les conversions non classifiées
-                        pass
+                    # Vérifier si le nom correspond à l'un des noms cibles
+                    if any(target_name in conversion_name for target_name in self.TARGET_CONTACT_NAMES):
+                        conversions_value = row.metrics.all_conversions or 0
+                        total_conversions += conversions_value
+                        found_conversions.append({
+                            'name': row.segments.conversion_action_name,
+                            'id': row.segments.conversion_action,
+                            'conversions': conversions_value
+                        })
+                        logging.info(f"✅ Conversion Contact trouvée: {row.segments.conversion_action_name} = {conversions_value}")
             
-            logging.info(f"📊 Total Contact: {contact_total}, Total Itinéraires: {directions_total}")
-            return contact_total, directions_total, all_conversions
+            if found_conversions:
+                logging.info(f"📊 Total conversions Contact pour {customer_id}: {total_conversions}")
+            else:
+                logging.warning(f"⚠️ Aucune conversion de type 'Contact' trouvée pour le compte {customer_id}")
+            
+            return total_conversions, found_conversions
             
         except GoogleAdsException as ex:
             logging.error(f"❌ GoogleAds API error pour {customer_id}: {ex.error.code().name}")
             for error in ex.failure.errors:
                 logging.error(f"   - {error.message}")
-            return contact_total, directions_total, all_conversions
+            # Retourner les données trouvées même en cas d'erreur
+            if found_conversions:
+                logging.info(f"🔄 Retour des données partielles trouvées: {total_conversions} conversions")
+            return total_conversions, found_conversions
         except Exception as e:
-            logging.error(f"❌ Erreur lors de la récupération des conversions pour {customer_id}: {e}")
-            return contact_total, directions_total, all_conversions
-    
-    def get_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
-        """
-        Récupère les données de conversions Contact (utilise la nouvelle méthode)
-        """
-        contact_total, directions_total, all_conversions = self.get_all_conversions_data(
-            customer_id, start_date, end_date
-        )
-        
-        # Filtrer seulement les conversions Contact
-        contact_conversions = [conv for conv in all_conversions 
-                              if any(target_name in conv['name'].lower() for target_name in self.TARGET_CONTACT_NAMES)]
-        
-        return contact_total, contact_conversions
+            logging.error(f"❌ Erreur lors de la récupération des conversions Contact pour {customer_id}: {e}")
+            # Retourner les données trouvées même en cas d'erreur
+            if found_conversions:
+                logging.info(f"🔄 Retour des données partielles trouvées: {total_conversions} conversions")
+            return total_conversions, found_conversions
     
     def get_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
         """
-        Récupère les données de conversions Itinéraires (utilise la nouvelle méthode)
+        Récupère les données de conversions Itinéraires pour un customer donné
+        
+        Args:
+            customer_id: ID du client Google Ads
+            start_date: Date de début (YYYY-MM-DD)
+            end_date: Date de fin (YYYY-MM-DD)
+            
+        Returns:
+            Tuple (total_conversions, found_conversions)
         """
-        contact_total, directions_total, all_conversions = self.get_all_conversions_data(
-            customer_id, start_date, end_date
-        )
+        total_conversions = 0
+        found_conversions = []
         
-        # Filtrer seulement les conversions Itinéraires
-        directions_conversions = [conv for conv in all_conversions 
-                                 if any(target_name in conv['name'].lower() for target_name in self.TARGET_DIRECTIONS_NAMES)]
-        
-        return directions_total, directions_conversions
+        try:
+            # Même requête que pour les contacts
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🔍 Recherche des conversions Itinéraires pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for batch in response:
+                for row in batch.results:
+                    conversion_name = row.segments.conversion_action_name.lower().strip()
+                    
+                    # Vérifier si le nom correspond à l'un des noms cibles d'Itinéraires
+                    if any(target_name.lower() in conversion_name for target_name in self.TARGET_DIRECTIONS_NAMES):
+                        conversions_value = row.metrics.all_conversions or 0
+                        total_conversions += conversions_value
+                        found_conversions.append({
+                            'name': row.segments.conversion_action_name,
+                            'id': row.segments.conversion_action,
+                            'conversions': conversions_value
+                        })
+                        logging.info(f"✅ Conversion Itinéraires trouvée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            if found_conversions:
+                logging.info(f"📊 Total conversions Itinéraires pour {customer_id}: {total_conversions}")
+            else:
+                print(f"[{customer_id}] Aucune conversion Itinéraires trouvée, valeur 0 envoyée.")
+                logging.warning(f"⚠️ Aucune conversion de type 'Itinéraires' trouvée pour le compte {customer_id}")
+            
+            return total_conversions, found_conversions
+            
+        except GoogleAdsException as ex:
+            logging.error(f"❌ GoogleAds API error pour {customer_id}: {ex.error.code().name}")
+            for error in ex.failure.errors:
+                logging.error(f"   - {error.message}")
+            # Retourner les données trouvées même en cas d'erreur
+            if found_conversions:
+                logging.info(f"🔄 Retour des données partielles trouvées: {total_conversions} conversions")
+            return total_conversions, found_conversions
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Itinéraires pour {customer_id}: {e}")
+            # Retourner les données trouvées même en cas d'erreur
+            if found_conversions:
+                logging.info(f"🔄 Retour des données partielles trouvées: {total_conversions} conversions")
+            return total_conversions, found_conversions
     
     def update_contact_conversions_in_sheet(self, client_name: str, month: str, conversions_total: int) -> bool:
         """
@@ -334,4 +365,4 @@ class GoogleAdsConversionsService:
             return {
                 'success': False,
                 'error': str(e)
-            }
+            } 
