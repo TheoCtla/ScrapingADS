@@ -44,7 +44,8 @@ class MetaAdsAuthService:
         """Effectue une requête Meta avec gestion des quotas"""
         for attempt in range(max_retries + 1):
             try:
-                response = requests.get(url, params=params)
+                # Timeout de 30 secondes pour éviter les blocages
+                response = requests.get(url, params=params, timeout=30)
                 
                 # Vérifier les limites de taux
                 is_rate_limited, wait_time = self._handle_meta_rate_limit(response)
@@ -86,7 +87,7 @@ class MetaAdsAuthService:
             all_accounts = []
             
             page_count = 0
-            max_pages = 20  # Réduire pour économiser la mémoire
+            max_pages = 5  # Réduire drastiquement pour éviter timeout
             
             while page_count < max_pages:
                 response = self._make_meta_request_with_retry(url, params)
@@ -158,7 +159,7 @@ class MetaAdsAuthService:
             
             all_accounts = []
             page_count = 0
-            max_pages = 20  # Réduire pour économiser la mémoire
+            max_pages = 5  # Réduire drastiquement pour éviter timeout
             
             while page_count < max_pages:
                 response = self._make_meta_request_with_retry(url, params)

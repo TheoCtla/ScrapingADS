@@ -43,7 +43,8 @@ class MetaAdsReportsService:
         """Effectue une requête Meta avec gestion des quotas"""
         for attempt in range(max_retries + 1):
             try:
-                response = requests.get(url, params=params)
+                # Timeout de 30 secondes pour éviter les blocages
+                response = requests.get(url, params=params, timeout=30)
                 
                 # Vérifier les limites de taux
                 is_rate_limited, wait_time = self._handle_meta_rate_limit(response)
@@ -92,7 +93,7 @@ class MetaAdsReportsService:
                 "fields": "impressions,clicks,ctr,cpc,spend,actions,campaign_name",
                 "level": "campaign",  # Récupérer par campagne au lieu de account
                 "time_range": f'{{"since":"{start_date}","until":"{end_date}"}}',
-                "limit": 100  # Limite pour pagination
+                "limit": 50  # Réduire la limite pour éviter timeout
             }
             
             logging.info(f"🔍 Appel API Meta pour {ad_account_id}: {start_date} à {end_date} (niveau campagne)")
@@ -101,7 +102,7 @@ class MetaAdsReportsService:
             all_data = []
             next_url = None
             page_count = 0
-            max_pages = 50  # Protection contre les boucles infinies
+            max_pages = 10  # Réduire drastiquement pour éviter timeout
             
             while page_count < max_pages:
                 if next_url:

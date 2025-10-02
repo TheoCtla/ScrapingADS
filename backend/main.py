@@ -468,9 +468,11 @@ def export_unified_report():
             logging.info(f"📊 Traitement Meta Ads pour '{selected_client}' (ID: {meta_account_id})")
             
             try:
-                # Récupérer les données Meta
+                # Récupérer les données Meta avec timeout
                 meta_reports = get_service('meta_reports')
+                logging.info(f"🔄 Début récupération Meta pour {meta_account_id}")
                 insights = meta_reports.get_meta_insights(meta_account_id, start_date, end_date)
+                logging.info(f"✅ Données Meta récupérées: {insights is not None}")
                 
                 if insights:
                     # Récupérer le CPL moyen des campagnes avec conversions > 0
@@ -523,7 +525,8 @@ def export_unified_report():
                     
             except Exception as e:
                 logging.error(f"❌ Erreur Meta Ads pour {selected_client}: {e}")
-                failed_updates.append(f"Meta - {selected_client}: Erreur API")
+                logging.error(f"❌ Type d'erreur: {type(e).__name__}")
+                failed_updates.append(f"Meta - {selected_client}: Erreur API - {str(e)[:100]}")
         elif meta_metrics and not meta_account_id:
             platform_warnings.append("Meta Ads non configuré pour ce client")
 
