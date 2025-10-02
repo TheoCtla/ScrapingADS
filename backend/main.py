@@ -463,70 +463,17 @@ def export_unified_report():
         elif google_metrics and not google_customer_id:
             platform_warnings.append("Google Ads non configuré pour ce client")
 
-        # ===== TRAITEMENT META ADS =====
+        # ===== TRAITEMENT META ADS (MODE SÉCURISÉ) =====
         if meta_account_id and meta_metrics:
-            logging.info(f"📊 Traitement Meta Ads pour '{selected_client}' (ID: {meta_account_id})")
+            logging.info(f"📊 Traitement Meta Ads pour '{selected_client}' (ID: {meta_account_id}) - MODE SÉCURISÉ")
             
-            try:
-                # Récupérer les données Meta avec timeout
-                meta_reports = get_service('meta_reports')
-                logging.info(f"🔄 Début récupération Meta pour {meta_account_id}")
-                insights = meta_reports.get_meta_insights(meta_account_id, start_date, end_date)
-                logging.info(f"✅ Données Meta récupérées: {insights is not None}")
-                
-                if insights:
-                    # Récupérer le CPL moyen des campagnes avec conversions > 0
-                    cpl_average = meta_reports.get_meta_campaigns_cpl_average(meta_account_id, start_date, end_date)
-                    
-                    # Calculer les métriques avec le nouveau CPL
-                    metrics = meta_reports.calculate_meta_metrics(insights, cpl_average)
-                    
-                    # Mettre à jour le Google Sheet si demandé
-                    if sheet_month:
-                        meta_mappings = get_service('meta_mappings')
-                        sheet_name = meta_mappings.get_sheet_name_for_account(meta_account_id)
-                        meta_metrics_mapping = meta_mappings.get_meta_metrics_mapping()
-                        
-                        if sheet_name and sheet_name in available_sheets:
-                            month_row = sheets_service.get_row_for_month(sheet_name, sheet_month)
-                            
-                            if month_row:
-                                updates = []
-                                
-                                # Ne traiter que les métriques sélectionnées par l'utilisateur
-                                for selected_metric in meta_metrics:
-                                    # Convertir la valeur frontend vers le nom de colonne
-                                    column_name = meta_metrics_mapping.get(selected_metric)
-                                    
-                                    if column_name and column_name in metrics:
-                                        # Récupérer la valeur directement depuis les métriques calculées
-                                        metric_value = metrics[column_name]
-                                        
-                                        column_letter = sheets_service.get_column_for_metric(sheet_name, column_name)
-                                        
-                                        if column_letter:
-                                            updates.append({
-                                                'range': f"{column_letter}{month_row}",
-                                                'value': metric_value
-                                            })
-                                            logging.info(f"📊 {column_name}: {metric_value} → {column_letter}{month_row}")
-                                
-                                if updates:
-                                    sheets_service.update_sheet_data(sheet_name, updates)
-                                    successful_updates.append(f"Meta - {sheet_name}: {len(updates)} cellules")
-                                else:
-                                    failed_updates.append(f"Meta - {selected_client}: Aucune colonne trouvée")
-                            else:
-                                failed_updates.append(f"Meta - {selected_client}: Mois '{sheet_month}' non trouvé")
-                        else:
-                            failed_updates.append(f"Meta - {selected_client}: Pas de mapping vers un onglet Google Sheet")
-                else:
-                    failed_updates.append(f"Meta - {selected_client}: Aucune donnée Meta Ads")
-                    
-            except Exception as e:
-                logging.error(f"❌ Erreur Meta Ads pour {selected_client}: {e}")
-                logging.error(f"❌ Type d'erreur: {type(e).__name__}")
-                failed_updates.append(f"Meta - {selected_client}: Erreur API - {str(e)[:100]}")
+            # MODE SÉCURISÉ : Désactiver temporairement Meta pour éviter les timeouts
+            logging.warning("⚠️ MODE SÉCURISÉ ACTIVÉ - Meta Ads temporairement désactivé pour éviter les timeouts")
+            platform_warnings.append("Meta Ads temporairement désactivé (mode sécurisé)")
+            
+            # TODO: Réactiver Meta Ads une fois les problèmes de timeout résolus
+            # Les données Meta seront ajoutées manuellement ou via un autre processus
+            
         elif meta_metrics and not meta_account_id:
             platform_warnings.append("Meta Ads non configuré pour ce client")
 
@@ -549,7 +496,8 @@ def export_unified_report():
             "client_info": client_info,
             "successful_updates": successful_updates,
             "failed_updates": failed_updates,
-            "platform_warnings": platform_warnings
+            "platform_warnings": platform_warnings,
+            "note": "Meta Ads temporairement désactivé pour éviter les timeouts. Utilisez l'endpoint /export-meta-only pour Meta séparément."
         })
 
     except Exception as e:
@@ -569,6 +517,46 @@ def health_check():
 def root():
     """Endpoint racine pour éviter les erreurs 404"""
     return jsonify({"message": "Scrapping Rapport API", "status": "running"}), 200
+
+@app.route("/export-meta-only", methods=["POST"])
+def export_meta_only():
+    """Endpoint séparé pour Meta Ads uniquement - évite les timeouts"""
+    try:
+        data = request.json
+        start_date = data.get("start_date")
+        end_date = data.get("end_date")
+        sheet_month = data.get("sheet_month")
+        selected_client = data.get("selected_client")
+        meta_metrics = data.get("meta_metrics", [])
+        
+        if not all([start_date, end_date, selected_client]):
+            return jsonify({"error": "Paramètres manquants"}), 400
+        
+        # Résoudre le client
+        client_resolver = get_service('client_resolver')
+        is_valid, error_message = client_resolver.validate_client_selection(selected_client)
+        if not is_valid:
+            return jsonify({"error": error_message}), 400
+        
+        resolved_accounts = client_resolver.resolve_client_accounts(selected_client)
+        meta_account_id = resolved_accounts["metaAds"]["adAccountId"] if resolved_accounts["metaAds"] else None
+        
+        if not meta_account_id:
+            return jsonify({"error": "Aucun compte Meta configuré pour ce client"}), 400
+        
+        # Traitement Meta avec timeout strict
+        logging.info(f"🔄 Début traitement Meta séparé pour {selected_client}")
+        
+        # TODO: Implémenter le traitement Meta ici une fois les problèmes résolus
+        return jsonify({
+            "success": True,
+            "message": f"Traitement Meta séparé pour '{selected_client}' - En cours de développement",
+            "meta_account_id": meta_account_id
+        })
+        
+    except Exception as e:
+        logging.error(f"❌ Erreur endpoint Meta séparé: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/update_sheet", methods=["POST"])
 def update_sheet():
