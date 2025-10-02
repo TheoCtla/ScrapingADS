@@ -463,17 +463,89 @@ def export_unified_report():
         elif google_metrics and not google_customer_id:
             platform_warnings.append("Google Ads non configuré pour ce client")
 
-        # ===== TRAITEMENT META ADS (MODE SÉCURISÉ) =====
+        # ===== TRAITEMENT META ADS (OPTIMISÉ) =====
         if meta_account_id and meta_metrics:
-            logging.info(f"📊 Traitement Meta Ads pour '{selected_client}' (ID: {meta_account_id}) - MODE SÉCURISÉ")
+            logging.info(f"📊 Traitement Meta Ads pour '{selected_client}' (ID: {meta_account_id})")
             
-            # MODE SÉCURISÉ : Désactiver temporairement Meta pour éviter les timeouts
-            logging.warning("⚠️ MODE SÉCURISÉ ACTIVÉ - Meta Ads temporairement désactivé pour éviter les timeouts")
-            platform_warnings.append("Meta Ads temporairement désactivé (mode sécurisé)")
-            
-            # TODO: Réactiver Meta Ads une fois les problèmes de timeout résolus
-            # Les données Meta seront ajoutées manuellement ou via un autre processus
-            
+            try:
+                # Récupérer les données Meta avec timeout strict
+                meta_reports = get_service('meta_reports')
+                logging.info(f"🔄 Début récupération Meta pour {meta_account_id}")
+                
+                # Utiliser un timeout global pour éviter les blocages
+                import signal
+                
+                def timeout_handler(signum, frame):
+                    raise TimeoutError("Timeout Meta Ads")
+                
+                # Définir un timeout de 60 secondes pour Meta
+                signal.signal(signal.SIGALRM, timeout_handler)
+                signal.alarm(60)
+                
+                try:
+                    insights = meta_reports.get_meta_insights(meta_account_id, start_date, end_date)
+                    signal.alarm(0)  # Annuler le timeout
+                    logging.info(f"✅ Données Meta récupérées: {insights is not None}")
+                    
+                    if insights:
+                        # Récupérer le CPL moyen des campagnes avec conversions > 0
+                        cpl_average = meta_reports.get_meta_campaigns_cpl_average(meta_account_id, start_date, end_date)
+                        
+                        # Calculer les métriques avec le nouveau CPL
+                        metrics = meta_reports.calculate_meta_metrics(insights, cpl_average)
+                        
+                        # Mettre à jour le Google Sheet si demandé
+                        if sheet_month:
+                            meta_mappings = get_service('meta_mappings')
+                            sheet_name = meta_mappings.get_sheet_name_for_account(meta_account_id)
+                            meta_metrics_mapping = meta_mappings.get_meta_metrics_mapping()
+                            
+                            if sheet_name and sheet_name in available_sheets:
+                                month_row = sheets_service.get_row_for_month(sheet_name, sheet_month)
+                                
+                                if month_row:
+                                    updates = []
+                                    
+                                    # Ne traiter que les métriques sélectionnées par l'utilisateur
+                                    for selected_metric in meta_metrics:
+                                        # Convertir la valeur frontend vers le nom de colonne
+                                        column_name = meta_metrics_mapping.get(selected_metric)
+                                        
+                                        if column_name and column_name in metrics:
+                                            # Récupérer la valeur directement depuis les métriques calculées
+                                            metric_value = metrics[column_name]
+                                            
+                                            column_letter = sheets_service.get_column_for_metric(sheet_name, column_name)
+                                            
+                                            if column_letter:
+                                                updates.append({
+                                                    'range': f"{column_letter}{month_row}",
+                                                    'value': metric_value
+                                                })
+                                                logging.info(f"📊 {column_name}: {metric_value} → {column_letter}{month_row}")
+                                    
+                                    if updates:
+                                        sheets_service.update_sheet_data(sheet_name, updates)
+                                        successful_updates.append(f"Meta - {sheet_name}: {len(updates)} cellules")
+                                    else:
+                                        failed_updates.append(f"Meta - {selected_client}: Aucune colonne trouvée")
+                                else:
+                                    failed_updates.append(f"Meta - {selected_client}: Mois '{sheet_month}' non trouvé")
+                            else:
+                                failed_updates.append(f"Meta - {selected_client}: Pas de mapping vers un onglet Google Sheet")
+                    else:
+                        failed_updates.append(f"Meta - {selected_client}: Aucune donnée Meta Ads")
+                        
+                except TimeoutError:
+                    signal.alarm(0)  # Annuler le timeout
+                    logging.error(f"⏰ Timeout Meta Ads pour {selected_client} (60s dépassé)")
+                    failed_updates.append(f"Meta - {selected_client}: Timeout (60s)")
+                    
+            except Exception as e:
+                logging.error(f"❌ Erreur Meta Ads pour {selected_client}: {e}")
+                logging.error(f"❌ Type d'erreur: {type(e).__name__}")
+                failed_updates.append(f"Meta - {selected_client}: Erreur API - {str(e)[:100]}")
+                
         elif meta_metrics and not meta_account_id:
             platform_warnings.append("Meta Ads non configuré pour ce client")
 
@@ -496,8 +568,7 @@ def export_unified_report():
             "client_info": client_info,
             "successful_updates": successful_updates,
             "failed_updates": failed_updates,
-            "platform_warnings": platform_warnings,
-            "note": "Meta Ads temporairement désactivé pour éviter les timeouts. Utilisez l'endpoint /export-meta-only pour Meta séparément."
+            "platform_warnings": platform_warnings
         })
 
     except Exception as e:
