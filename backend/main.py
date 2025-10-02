@@ -199,6 +199,7 @@ def export_google_report():
 
     try:
         # Récupérer les données de campagne
+        google_reports = get_service('google_reports')
         response_data = google_reports.get_campaign_data(customer_id, start_date, end_date, channel_filter)
         
         if not response_data:
@@ -230,6 +231,8 @@ def export_google_report():
                 sheet_data = google_reports.calculate_sheet_metrics_from_ads_data(virtual_metrics, metrics)
                 
                 # Logique d'auto-détection intelligente
+                sheets_service = get_service('sheets_service')
+                google_mappings = get_service('google_mappings')
                 available_sheets = sheets_service.get_worksheet_names()
                 sheet_client_name = google_mappings.get_sheet_name_for_customer(customer_id)
                 
@@ -264,6 +267,7 @@ def export_google_report():
                         contact_enabled = data.get("contact", False)
                         if contact_enabled:
                             try:
+                                google_conversions = get_service('google_conversions')
                                 contact_result = google_conversions.scrape_contact_conversions_for_customer(
                                     customer_id, sheet_client_name, start_date, end_date, sheet_month
                                 )
@@ -276,6 +280,7 @@ def export_google_report():
                         itineraire_enabled = data.get("itineraire", False)
                         if itineraire_enabled:
                             try:
+                                google_conversions = get_service('google_conversions')
                                 directions_result = google_conversions.scrape_directions_conversions_for_customer(
                                     customer_id, sheet_client_name, start_date, end_date, sheet_month
                                 )
@@ -301,6 +306,7 @@ def export_google_report():
 def list_meta_accounts():
     """Liste TOUS les comptes Meta Ads accessibles"""
     try:
+        meta_auth = get_service('meta_auth')
         all_accounts = meta_auth.get_all_accessible_ad_accounts()
         
         # Formatter pour l'interface frontend
@@ -361,6 +367,7 @@ def export_unified_report():
     logging.info(f"🎯 Traitement du client sélectionné: {selected_client}")
     
     # Valider et résoudre le client
+    client_resolver = get_service('client_resolver')
     is_valid, error_message = client_resolver.validate_client_selection(selected_client)
     if not is_valid:
         return jsonify({"error": error_message}), 400
@@ -379,6 +386,7 @@ def export_unified_report():
         return jsonify({"error": f"Aucune plateforme configurée pour le client '{selected_client}'"}), 400
 
     try:
+        sheets_service = get_service('sheets_service')
         available_sheets = sheets_service.get_worksheet_names() if sheet_month else []
         successful_updates = []
         failed_updates = []
@@ -390,6 +398,7 @@ def export_unified_report():
             
             try:
                 # Récupérer les données de campagne
+                google_reports = get_service('google_reports')
                 response_data = google_reports.get_campaign_data(google_customer_id, start_date, end_date)
                 
                 if response_data:
@@ -398,6 +407,7 @@ def export_unified_report():
                     
                     # Mettre à jour le Google Sheet si demandé
                     if sheet_month:
+                        google_mappings = get_service('google_mappings')
                         sheet_client_name = google_mappings.get_sheet_name_for_customer(google_customer_id)
                         
                         if sheet_client_name and sheet_client_name in available_sheets:
@@ -424,6 +434,7 @@ def export_unified_report():
                                     # Scraping additionnel si demandé
                                     if contact_enabled:
                                         try:
+                                            google_conversions = get_service('google_conversions')
                                             google_conversions.scrape_contact_conversions_for_customer(
                                                 google_customer_id, sheet_client_name, start_date, end_date, sheet_month
                                             )
@@ -432,6 +443,7 @@ def export_unified_report():
                                     
                                     if itineraire_enabled:
                                         try:
+                                            google_conversions = get_service('google_conversions')
                                             google_conversions.scrape_directions_conversions_for_customer(
                                                 google_customer_id, sheet_client_name, start_date, end_date, sheet_month
                                             )
@@ -456,6 +468,7 @@ def export_unified_report():
             
             try:
                 # Récupérer les données Meta
+                meta_reports = get_service('meta_reports')
                 insights = meta_reports.get_meta_insights(meta_account_id, start_date, end_date)
                 
                 if insights:
@@ -467,6 +480,7 @@ def export_unified_report():
                     
                     # Mettre à jour le Google Sheet si demandé
                     if sheet_month:
+                        meta_mappings = get_service('meta_mappings')
                         sheet_name = meta_mappings.get_sheet_name_for_account(meta_account_id)
                         meta_metrics_mapping = meta_mappings.get_meta_metrics_mapping()
                         
@@ -568,6 +582,7 @@ def update_sheet():
         logging.info(f"🔄 Début de mise à jour pour client '{client_name}', mois '{mois}'")
         
         # Vérifier que l'onglet du client existe
+        sheets_service = get_service('sheets_service')
         sheet_names = sheets_service.get_worksheet_names()
         if client_name not in sheet_names:
             return jsonify({
@@ -637,6 +652,8 @@ def test_auto_detection():
             return jsonify({'error': 'customer_id requis'}), 400
         
         # Test de la logique d'auto-détection
+        sheets_service = get_service('sheets_service')
+        google_mappings = get_service('google_mappings')
         available_sheets = sheets_service.get_worksheet_names()
         
         # Vérifier mapping manuel
