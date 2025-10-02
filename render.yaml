@@ -1,8 +1,0 @@
-services:
-  - type: web
-    name: scraping-backend
-    env: python
-    plan: free
-    buildCommand: "pip install -r backend/requirements.txt"
-    startCommand: "python backend/run.py"
-    region: frankfurt

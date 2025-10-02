@@ -44,8 +44,10 @@ class MetaAdsReportsService:
             # Gérer la pagination pour récupérer toutes les campagnes
             all_data = []
             next_url = None
+            page_count = 0
+            max_pages = 50  # Protection contre les boucles infinies
             
-            while True:
+            while page_count < max_pages:
                 if next_url:
                     response = requests.get(next_url)
                 else:
@@ -66,7 +68,11 @@ class MetaAdsReportsService:
                 if not next_url:
                     break
                     
-                logging.info(f"📄 Page suivante trouvée, récupération de {len(page_data)} campagnes supplémentaires...")
+                page_count += 1
+                logging.info(f"📄 Page {page_count} récupérée: {len(page_data)} campagnes")
+                
+            if page_count >= max_pages:
+                logging.warning(f"⚠️ Limite de pages atteinte ({max_pages}) pour la récupération des insights Meta")
             
             data = all_data
             logging.info(f"📊 Données Meta reçues: {len(data)} campagnes")

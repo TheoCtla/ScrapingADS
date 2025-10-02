@@ -29,7 +29,10 @@ class MetaAdsAuthService:
             
             all_accounts = []
             
-            while True:
+            page_count = 0
+            max_pages = 50  # Protection contre les boucles infinies
+            
+            while page_count < max_pages:
                 response = requests.get(url, params=params)
                 if response.status_code != 200:
                     logging.error(f"❌ Erreur récupération comptes possédés BM: {response.status_code} - {response.text}")
@@ -48,6 +51,10 @@ class MetaAdsAuthService:
                 # Préparer la requête suivante
                 url = next_url
                 params = {}  # Les paramètres sont déjà dans l'URL next
+                page_count += 1
+                
+            if page_count >= max_pages:
+                logging.warning(f"⚠️ Limite de pages atteinte ({max_pages}) pour la récupération des comptes possédés")
             
             logging.info(f"📊 {len(all_accounts)} comptes possédés par le BM récupérés")
             return all_accounts
@@ -94,8 +101,10 @@ class MetaAdsAuthService:
             }
             
             all_accounts = []
+            page_count = 0
+            max_pages = 50  # Protection contre les boucles infinies
             
-            while True:
+            while page_count < max_pages:
                 response = requests.get(url, params=params)
                 if response.status_code != 200:
                     logging.warning(f"⚠️ Erreur récupération comptes clients BM {business_id}: {response.status_code}")
@@ -114,6 +123,10 @@ class MetaAdsAuthService:
                 # Préparer la requête suivante
                 url = next_url
                 params = {}
+                page_count += 1
+                
+            if page_count >= max_pages:
+                logging.warning(f"⚠️ Limite de pages atteinte ({max_pages}) pour la récupération des comptes clients BM {business_id}")
             
             logging.info(f"📋 {len(all_accounts)} comptes clients trouvés pour BM {business_id}")
             return all_accounts

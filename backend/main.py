@@ -30,7 +30,7 @@ from backend.meta.services.authentication import MetaAdsAuthService
 from backend.meta.services.reports import MetaAdsReportsService
 from backend.meta.utils.mappings import MetaAdsMappingService
 
-# Configuration du logging
+# Configuration du logging optimisée
 logging.basicConfig(
     level=logging.INFO, 
     format='%(asctime)s %(levelname)s %(message)s',
@@ -39,6 +39,13 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
+
+# Réduire les logs verbeux des bibliothèques externes
+logging.getLogger('googleapiclient').setLevel(logging.WARNING)
+logging.getLogger('google.auth').setLevel(logging.WARNING)
+logging.getLogger('google.oauth2').setLevel(logging.WARNING)
+logging.getLogger('urllib3').setLevel(logging.WARNING)
+logging.getLogger('requests').setLevel(logging.WARNING)
 
 # Initialisation de l'application Flask
 app = Flask(__name__)
@@ -55,18 +62,31 @@ except ValueError as e:
     logging.error(f"❌ Erreur de configuration : {e}")
     raise
 
-# Initialisation des services
-google_auth = GoogleAdsAuthService()
-google_reports = GoogleAdsReportsService()
-google_conversions = GoogleAdsConversionsService()
-google_mappings = GoogleAdsMappingService()
+# Services globaux (initialisation paresseuse)
+_services = {}
 
-meta_auth = MetaAdsAuthService()
-meta_reports = MetaAdsReportsService()
-meta_mappings = MetaAdsMappingService()
-
-sheets_service = GoogleSheetsService()
-client_resolver = ClientResolverService()
+def get_service(service_name):
+    """Initialise les services de manière paresseuse pour éviter les logs répétitifs"""
+    if service_name not in _services:
+        if service_name == 'google_auth':
+            _services[service_name] = GoogleAdsAuthService()
+        elif service_name == 'google_reports':
+            _services[service_name] = GoogleAdsReportsService()
+        elif service_name == 'google_conversions':
+            _services[service_name] = GoogleAdsConversionsService()
+        elif service_name == 'google_mappings':
+            _services[service_name] = GoogleAdsMappingService()
+        elif service_name == 'meta_auth':
+            _services[service_name] = MetaAdsAuthService()
+        elif service_name == 'meta_reports':
+            _services[service_name] = MetaAdsReportsService()
+        elif service_name == 'meta_mappings':
+            _services[service_name] = MetaAdsMappingService()
+        elif service_name == 'sheets_service':
+            _services[service_name] = GoogleSheetsService()
+        elif service_name == 'client_resolver':
+            _services[service_name] = ClientResolverService()
+    return _services[service_name]
 
 # ================================
 # ROUTES UNIFIÉES - NOUVELLES
@@ -76,6 +96,7 @@ client_resolver = ClientResolverService()
 def list_authorized_clients():
     """Liste les clients autorisés (liste blanche)"""
     try:
+        client_resolver = get_service('client_resolver')
         allowlist = client_resolver.get_allowlist()
         return jsonify({
             "clients": allowlist,
@@ -92,6 +113,7 @@ def list_filtered_clients():
         data = request.json
         search_term = data.get("search_term", "").lower()
         
+        client_resolver = get_service('client_resolver')
         allowlist = client_resolver.get_allowlist()
         
         if search_term:
@@ -119,6 +141,7 @@ def resolve_client():
             return jsonify({"error": "Nom de client requis"}), 400
         
         # Valider la sélection
+        client_resolver = get_service('client_resolver')
         is_valid, error_message = client_resolver.validate_client_selection(client_name)
         if not is_valid:
             return jsonify({"error": error_message}), 400
@@ -144,6 +167,7 @@ def resolve_client():
 def list_google_customers():
     """Liste les clients Google Ads accessibles (LEGACY)"""
     try:
+        google_auth = get_service('google_auth')
         customers_info = google_auth.list_customers()
         return jsonify(customers_info)
     except Exception as e:
@@ -516,8 +540,13 @@ def export_unified_report():
 
 @app.route("/healthz", methods=["GET"])
 def health_check():
-    """Endpoint de santé pour Render"""
+    """Endpoint de santé pour Render - optimisé pour éviter les logs répétitifs"""
     return jsonify({"status": "healthy", "service": "scrapping-rapport-backend"}), 200
+
+@app.route("/", methods=["GET"])
+def root():
+    """Endpoint racine pour éviter les erreurs 404"""
+    return jsonify({"message": "Scrapping Rapport API", "status": "running"}), 200
 
 @app.route("/update_sheet", methods=["POST"])
 def update_sheet():
