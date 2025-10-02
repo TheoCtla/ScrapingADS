@@ -4,6 +4,7 @@ Service d'authentification Meta Ads
 
 import logging
 import requests
+import time
 from typing import List, Dict, Any
 
 from backend.config.settings import Config
@@ -16,6 +17,61 @@ class MetaAdsAuthService:
         self.business_id = Config.API.META_BUSINESS_ID
         self.api_version = "v19.0"
         self.base_url = f"https://graph.facebook.com/{self.api_version}"
+    
+    def _handle_meta_rate_limit(self, response):
+        """Gère les limites de taux Meta avec retry intelligent"""
+        if response.status_code == 403:
+            try:
+                error_data = response.json()
+                if error_data.get("error", {}).get("code") == 4:  # Rate limit
+                    error_subcode = error_data.get("error", {}).get("error_subcode")
+                    
+                    if error_subcode == 1504022:  # Application request limit
+                        logging.warning("⚠️ Limite de taux Meta atteinte - Application request limit")
+                        return True, 300  # Attendre 5 minutes
+                    elif error_subcode == 1504023:  # User request limit  
+                        logging.warning("⚠️ Limite de taux Meta atteinte - User request limit")
+                        return True, 60   # Attendre 1 minute
+                    else:
+                        logging.warning("⚠️ Limite de taux Meta atteinte - Autre erreur")
+                        return True, 120  # Attendre 2 minutes
+            except:
+                logging.warning("⚠️ Limite de taux Meta atteinte - Format d'erreur inconnu")
+                return True, 180  # Attendre 3 minutes
+        return False, 0
+    
+    def _make_meta_request_with_retry(self, url, params=None, max_retries=3):
+        """Effectue une requête Meta avec gestion des quotas"""
+        for attempt in range(max_retries + 1):
+            try:
+                response = requests.get(url, params=params)
+                
+                # Vérifier les limites de taux
+                is_rate_limited, wait_time = self._handle_meta_rate_limit(response)
+                
+                if is_rate_limited:
+                    if attempt < max_retries:
+                        logging.info(f"⏳ Attente de {wait_time}s avant retry {attempt + 1}/{max_retries}")
+                        time.sleep(wait_time)
+                        continue
+                    else:
+                        logging.error(f"❌ Limite de taux Meta dépassée après {max_retries} tentatives")
+                        return None
+                
+                if response.status_code == 200:
+                    return response
+                else:
+                    logging.error(f"❌ Erreur API Meta: {response.status_code} - {response.text}")
+                    return None
+                    
+            except Exception as e:
+                logging.error(f"❌ Exception lors de la requête Meta: {e}")
+                if attempt < max_retries:
+                    time.sleep(30)  # Attendre 30s avant retry
+                    continue
+                return None
+        
+        return None
     
     def get_owned_ad_accounts(self) -> List[Dict[str, Any]]:
         """Récupère les comptes publicitaires possédés par le Business Manager"""
@@ -33,9 +89,9 @@ class MetaAdsAuthService:
             max_pages = 50  # Protection contre les boucles infinies
             
             while page_count < max_pages:
-                response = requests.get(url, params=params)
-                if response.status_code != 200:
-                    logging.error(f"❌ Erreur récupération comptes possédés BM: {response.status_code} - {response.text}")
+                response = self._make_meta_request_with_retry(url, params)
+                if response is None:
+                    logging.error(f"❌ Échec de la requête Meta comptes possédés après retry")
                     break
                 
                 data = response.json()
@@ -72,9 +128,9 @@ class MetaAdsAuthService:
                 "fields": "id,name"
             }
             
-            response = requests.get(url, params=params)
-            if response.status_code != 200:
-                logging.error(f"❌ Erreur accès Business Manager {self.business_id}: {response.status_code} - {response.text}")
+            response = self._make_meta_request_with_retry(url, params)
+            if response is None:
+                logging.error(f"❌ Échec de la requête Meta Business Manager après retry")
                 return []
             
             business_data = response.json()
@@ -105,9 +161,9 @@ class MetaAdsAuthService:
             max_pages = 50  # Protection contre les boucles infinies
             
             while page_count < max_pages:
-                response = requests.get(url, params=params)
-                if response.status_code != 200:
-                    logging.warning(f"⚠️ Erreur récupération comptes clients BM {business_id}: {response.status_code}")
+                response = self._make_meta_request_with_retry(url, params)
+                if response is None:
+                    logging.warning(f"⚠️ Échec de la requête Meta comptes clients BM {business_id} après retry")
                     break
                 
                 data = response.json()
@@ -144,9 +200,9 @@ class MetaAdsAuthService:
                 "fields": "account_id,name,account_status"
             }
             
-            response = requests.get(url, params=params)
-            if response.status_code != 200:
-                logging.warning(f"⚠️ Erreur récupération comptes possédés BM {business_id}: {response.status_code}")
+            response = self._make_meta_request_with_retry(url, params)
+            if response is None:
+                logging.warning(f"⚠️ Échec de la requête Meta comptes possédés BM {business_id} après retry")
                 return []
             
             accounts = response.json().get("data", [])

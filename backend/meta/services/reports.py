@@ -4,6 +4,7 @@ Service de rapports Meta Ads - Gestion des insights et métriques
 
 import logging
 import requests
+import time
 from typing import Dict, Any, Optional
 
 from backend.config.settings import Config
@@ -15,6 +16,61 @@ class MetaAdsReportsService:
         self.access_token = Config.API.META_ACCESS_TOKEN
         self.api_version = "v19.0"
         self.base_url = f"https://graph.facebook.com/{self.api_version}"
+    
+    def _handle_meta_rate_limit(self, response, max_retries=3):
+        """Gère les limites de taux Meta avec retry intelligent"""
+        if response.status_code == 403:
+            try:
+                error_data = response.json()
+                if error_data.get("error", {}).get("code") == 4:  # Rate limit
+                    error_subcode = error_data.get("error", {}).get("error_subcode")
+                    
+                    if error_subcode == 1504022:  # Application request limit
+                        logging.warning("⚠️ Limite de taux Meta atteinte - Application request limit")
+                        return True, 300  # Attendre 5 minutes
+                    elif error_subcode == 1504023:  # User request limit  
+                        logging.warning("⚠️ Limite de taux Meta atteinte - User request limit")
+                        return True, 60   # Attendre 1 minute
+                    else:
+                        logging.warning("⚠️ Limite de taux Meta atteinte - Autre erreur")
+                        return True, 120  # Attendre 2 minutes
+            except:
+                logging.warning("⚠️ Limite de taux Meta atteinte - Format d'erreur inconnu")
+                return True, 180  # Attendre 3 minutes
+        return False, 0
+    
+    def _make_meta_request_with_retry(self, url, params=None, max_retries=3):
+        """Effectue une requête Meta avec gestion des quotas"""
+        for attempt in range(max_retries + 1):
+            try:
+                response = requests.get(url, params=params)
+                
+                # Vérifier les limites de taux
+                is_rate_limited, wait_time = self._handle_meta_rate_limit(response)
+                
+                if is_rate_limited:
+                    if attempt < max_retries:
+                        logging.info(f"⏳ Attente de {wait_time}s avant retry {attempt + 1}/{max_retries}")
+                        time.sleep(wait_time)
+                        continue
+                    else:
+                        logging.error(f"❌ Limite de taux Meta dépassée après {max_retries} tentatives")
+                        return None
+                
+                if response.status_code == 200:
+                    return response
+                else:
+                    logging.error(f"❌ Erreur API Meta: {response.status_code} - {response.text}")
+                    return None
+                    
+            except Exception as e:
+                logging.error(f"❌ Exception lors de la requête Meta: {e}")
+                if attempt < max_retries:
+                    time.sleep(30)  # Attendre 30s avant retry
+                    continue
+                return None
+        
+        return None
     
     def get_meta_insights(self, ad_account_id: str, start_date: str, end_date: str) -> Optional[Dict[str, Any]]:
         """
@@ -49,12 +105,12 @@ class MetaAdsReportsService:
             
             while page_count < max_pages:
                 if next_url:
-                    response = requests.get(next_url)
+                    response = self._make_meta_request_with_retry(next_url)
                 else:
-                    response = requests.get(url, params=params)
+                    response = self._make_meta_request_with_retry(url, params)
                     
-                if response.status_code != 200:
-                    logging.error(f"❌ Erreur API Meta: {response.status_code} - {response.text}")
+                if response is None:
+                    logging.error(f"❌ Échec de la requête Meta après retry")
                     return None
                 
                 response_data = response.json()
@@ -188,9 +244,9 @@ class MetaAdsReportsService:
             
             logging.info(f"🔍 DEBUG: Appel API Meta campagnes pour CPL moyen {ad_account_id}: {start_date} à {end_date}")
             
-            response = requests.get(url, params=params)
-            if response.status_code != 200:
-                logging.error(f"❌ Erreur API Meta campagnes: {response.status_code} - {response.text}")
+            response = self._make_meta_request_with_retry(url, params)
+            if response is None:
+                logging.error(f"❌ Échec de la requête Meta campagnes après retry")
                 return 0
             
             response_data = response.json()
