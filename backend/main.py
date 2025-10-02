@@ -4,6 +4,7 @@ Point d'entrée principal de l'application de reporting publicitaire
 
 import logging
 import os
+import gc
 from datetime import datetime
 from flask import Flask, request, send_file, jsonify
 from flask_cors import CORS
@@ -533,6 +534,10 @@ def export_unified_report():
             logging.warning(f"⚠️ Échecs: {failed_updates}")
         if platform_warnings:
             logging.info(f"ℹ️ Avertissements plateformes: {platform_warnings}")
+
+        # Nettoyage mémoire après traitement
+        gc.collect()
+        logging.info("🧹 Nettoyage mémoire effectué")
 
         # Retourner une réponse JSON
         return jsonify({

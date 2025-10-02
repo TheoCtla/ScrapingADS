@@ -86,7 +86,7 @@ class MetaAdsAuthService:
             all_accounts = []
             
             page_count = 0
-            max_pages = 50  # Protection contre les boucles infinies
+            max_pages = 20  # Réduire pour économiser la mémoire
             
             while page_count < max_pages:
                 response = self._make_meta_request_with_retry(url, params)
@@ -158,7 +158,7 @@ class MetaAdsAuthService:
             
             all_accounts = []
             page_count = 0
-            max_pages = 50  # Protection contre les boucles infinies
+            max_pages = 20  # Réduire pour économiser la mémoire
             
             while page_count < max_pages:
                 response = self._make_meta_request_with_retry(url, params)
