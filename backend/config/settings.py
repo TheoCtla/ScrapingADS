@@ -9,6 +9,28 @@ from pathlib import Path
 BASE_DIR = Path(__file__).parent.parent
 CONFIG_DIR = BASE_DIR / "config"
 
+def get_config_path(env_var: str, default_path: str) -> str:
+    """
+    Retourne le chemin de configuration en fonction de l'environnement.
+    Détecte automatiquement si on est en local ou en production.
+    
+    Args:
+        env_var: Nom de la variable d'environnement
+        default_path: Chemin par défaut (local)
+        
+    Returns:
+        Chemin vers le fichier de configuration
+    """
+    # Récupère le chemin depuis les variables d'environnement
+    env_path = os.getenv(env_var)
+    
+    if env_path and Path(env_path).exists():
+        # Le fichier existe au chemin spécifié (production)
+        return env_path
+    else:
+        # Le fichier n'existe pas, utiliser le chemin par défaut (local)
+        return default_path
+
 # Configuration des APIs
 class APIConfig:
     """Configuration des APIs externes"""
@@ -18,11 +40,11 @@ class APIConfig:
     META_BUSINESS_ID = os.getenv("META_BUSINESS_ID")
     
     # Google Ads API
-    GOOGLE_ADS_YAML_PATH = os.getenv("GOOGLE_ADS_YAML_PATH", str(CONFIG_DIR / "google-ads.yaml"))
+    GOOGLE_ADS_YAML_PATH = get_config_path("GOOGLE_ADS_YAML_PATH", str(CONFIG_DIR / "google-ads.yaml"))
     
     # Google Sheets API
     GOOGLE_SHEET_ID = os.getenv("GOOGLE_SHEET_ID")
-    GOOGLE_CREDENTIALS_FILE = os.getenv("GOOGLE_CREDENTIALS_FILE", str(CONFIG_DIR / "credentials.json"))
+    GOOGLE_CREDENTIALS_FILE = get_config_path("GOOGLE_CREDENTIALS_FILE", str(CONFIG_DIR / "credentials.json"))
     GOOGLE_SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 class FlaskConfig:
