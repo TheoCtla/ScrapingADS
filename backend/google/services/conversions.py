@@ -66,7 +66,7 @@ class GoogleAdsConversionsService:
             FROM campaign
             WHERE
                 segments.date BETWEEN '{start_date}' AND '{end_date}'
-                AND metrics.all_conversions > 0
+                AND metrics.conversions > 0
             """
             
             logging.info(f"🔍 Recherche de TOUTES les conversions pour le client {customer_id}")
@@ -76,7 +76,7 @@ class GoogleAdsConversionsService:
             # ✅ CORRECTION: response contient directement les GoogleAdsRow
             for row in response:
                 conversion_name = row.segments.conversion_action_name.lower().strip()
-                conversions_value = row.metrics.all_conversions or 0
+                conversions_value = row.metrics.conversions or 0
                 
                 # Enregistrer toutes les conversions pour debug
                 all_conversions.append({
