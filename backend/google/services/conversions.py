@@ -174,6 +174,34 @@ class GoogleAdsConversionsService:
             "actions locales – itinéraire"
         ]
         
+        # Clients qui nécessitent une protection timeout
+        self.TIMEOUT_PROTECTED_CLIENTS = [
+            "5901565913",  # Laserel
+            # Ajoutez d'autres client_ids ici si nécessaire
+        ]
+    
+    def _apply_timeout_protection(self, customer_id: str, timeout_seconds: int = 60):
+        """
+        Applique une protection timeout pour les clients qui en ont besoin
+        """
+        if customer_id in self.TIMEOUT_PROTECTED_CLIENTS:
+            import signal
+            
+            def timeout_handler(signum, frame):
+                raise TimeoutError(f"Timeout lors de la requête pour {customer_id}")
+            
+            signal.signal(signal.SIGALRM, timeout_handler)
+            signal.alarm(timeout_seconds)
+            return True
+        return False
+    
+    def _clear_timeout_protection(self):
+        """
+        Annule la protection timeout
+        """
+        import signal
+        signal.alarm(0)
+        
         self.STAR_LITERIE_CONTACT_NAMES = [
             "appels",
             "clicks to call",
@@ -1776,7 +1804,23 @@ class GoogleAdsConversionsService:
             
             logging.info(f"🔬 Recherche des conversions LASEREL ITINÉRAIRES pour le client {customer_id}")
             
-            response = self.auth_service.fetch_report_data(customer_id, query)
+            # Ajouter un timeout pour éviter les problèmes de mémoire
+            import signal
+            
+            def timeout_handler(signum, frame):
+                raise TimeoutError("Timeout lors de la requête Laserel")
+            
+            # Timeout de 30 secondes
+            signal.signal(signal.SIGALRM, timeout_handler)
+            signal.alarm(30)
+            
+            try:
+                response = self.auth_service.fetch_report_data(customer_id, query)
+            except TimeoutError:
+                logging.error(f"⏰ Timeout lors de la requête Laserel Itinéraires pour {customer_id}")
+                return 0, []
+            finally:
+                signal.alarm(0)  # Annuler le timeout
             
             for row in response:
                 conversion_name = row.segments.conversion_action_name.lower().strip()
