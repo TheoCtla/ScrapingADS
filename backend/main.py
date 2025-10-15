@@ -19,6 +19,8 @@ from backend.config.settings import Config
 # Services communs
 from backend.common.services.google_sheets import GoogleSheetsService
 from backend.common.services.client_resolver import ClientResolverService
+from backend.common.services.light_scraper import LightScraperService
+from backend.common.utils.concurrency_manager import with_concurrency_limit, get_concurrency_status
 
 # Services Google Ads
 from backend.google.services.authentication import GoogleAdsAuthService
@@ -87,6 +89,8 @@ def get_service(service_name):
             _services[service_name] = GoogleSheetsService()
         elif service_name == 'client_resolver':
             _services[service_name] = ClientResolverService()
+        elif service_name == 'light_scraper':
+            _services[service_name] = LightScraperService()
     return _services[service_name]
 
 # ================================
@@ -331,6 +335,7 @@ def list_meta_accounts():
 # ================================
 
 @app.route("/export-unified-report", methods=["POST"])
+@with_concurrency_limit("unified_report_export", timeout=120)
 def export_unified_report():
     """Export unifié pour Google Ads + Meta Ads avec checkboxes"""
     logging.info("🚀 ROUTE /export-unified-report appelée")
@@ -584,12 +589,27 @@ def health_check():
     """Endpoint de santé pour Render - optimisé pour éviter les logs répétitifs"""
     return jsonify({"status": "healthy", "service": "scrapping-rapport-backend"}), 200
 
+@app.route("/concurrency-status", methods=["GET"])
+def concurrency_status():
+    """Endpoint pour monitorer l'état de concurrence"""
+    try:
+        status = get_concurrency_status()
+        return jsonify({
+            "status": "success",
+            "concurrency": status,
+            "timestamp": datetime.now().isoformat()
+        }), 200
+    except Exception as e:
+        logging.error(f"❌ Erreur lors de la récupération du statut de concurrence: {e}")
+        return jsonify({"error": str(e)}), 500
+
 @app.route("/", methods=["GET"])
 def root():
     """Endpoint racine pour éviter les erreurs 404"""
     return jsonify({"message": "Scrapping Rapport API", "status": "running"}), 200
 
 @app.route("/export-meta-only", methods=["POST"])
+@with_concurrency_limit("meta_only_export", timeout=60)
 def export_meta_only():
     """Endpoint séparé pour Meta Ads uniquement - évite les timeouts"""
     try:
@@ -740,6 +760,75 @@ def test_auto_detection():
     except Exception as e:
         logging.error(f"❌ Erreur test auto-détection: {str(e)}")
         return jsonify({'error': str(e)}), 500
+
+# ================================
+# ROUTES SCRAPING LÉGER
+# ================================
+
+@app.route("/scrape-light-contact", methods=["POST"])
+@with_concurrency_limit("light_contact_scraping", timeout=30)
+def scrape_light_contact():
+    """Endpoint pour le scraping Contact léger sans navigateur"""
+    try:
+        data = request.json
+        client_name = data.get("client_name")
+        start_date = data.get("start_date")
+        end_date = data.get("end_date")
+        
+        if not all([client_name, start_date, end_date]):
+            return jsonify({"error": "Paramètres manquants: client_name, start_date, end_date"}), 400
+        
+        light_scraper = get_service('light_scraper')
+        result = light_scraper.scrape_contact_conversions_light(client_name, start_date, end_date)
+        
+        return jsonify(result), 200 if result.get("success") else 500
+        
+    except Exception as e:
+        logging.error(f"❌ Erreur scraping Contact léger: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/scrape-light-directions", methods=["POST"])
+@with_concurrency_limit("light_directions_scraping", timeout=30)
+def scrape_light_directions():
+    """Endpoint pour le scraping Itinéraires léger sans navigateur"""
+    try:
+        data = request.json
+        client_name = data.get("client_name")
+        start_date = data.get("start_date")
+        end_date = data.get("end_date")
+        
+        if not all([client_name, start_date, end_date]):
+            return jsonify({"error": "Paramètres manquants: client_name, start_date, end_date"}), 400
+        
+        light_scraper = get_service('light_scraper')
+        result = light_scraper.scrape_directions_conversions_light(client_name, start_date, end_date)
+        
+        return jsonify(result), 200 if result.get("success") else 500
+        
+    except Exception as e:
+        logging.error(f"❌ Erreur scraping Itinéraires léger: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/scrape-website-light", methods=["POST"])
+@with_concurrency_limit("light_website_scraping", timeout=30)
+def scrape_website_light():
+    """Endpoint pour le scraping léger de sites web"""
+    try:
+        data = request.json
+        url = data.get("url")
+        selectors = data.get("selectors", {})
+        
+        if not url:
+            return jsonify({"error": "URL requise"}), 400
+        
+        light_scraper = get_service('light_scraper')
+        result = light_scraper.scrape_website_light(url, selectors)
+        
+        return jsonify(result), 200 if result.get("success") else 500
+        
+    except Exception as e:
+        logging.error(f"❌ Erreur scraping site léger: {e}")
+        return jsonify({"error": str(e)}), 500
 
 # ================================
 # POINT D'ENTRÉE PRINCIPAL

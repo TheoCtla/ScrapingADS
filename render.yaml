@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: scrapping-rapport-backend
+    env: python
+    plan: starter
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: gunicorn backend.main:app -c gunicorn.conf.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: WEB_CONCURRENCY
+        value: 1
+      - key: PYTHONUNBUFFERED
+        value: 1
+      - key: PYTHONDONTWRITEBYTECODE
+        value: 1
+      - key: GUNICORN_WORKERS
+        value: 1
+      - key: GUNICORN_THREADS
+        value: 1
+      - key: GUNICORN_TIMEOUT
+        value: 120
+      - key: GUNICORN_MAX_REQUESTS
+        value: 200
+      - key: GUNICORN_MAX_REQUESTS_JITTER
+        value: 50
+    healthCheckPath: /healthz
+    autoDeploy: true
+    region: oregon
+    disk:
+      name: scrapping-data
+      mountPath: /opt/render/project/data
+      sizeGB: 1
