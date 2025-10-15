@@ -38,6 +38,233 @@ class GoogleAdsConversionsService:
             "local actions",
             "store visits"
         ]
+        
+        self.CRYOLIPOLYSE_CONTACT_NAMES = [
+            "appels",
+            "cta"
+        ]
+        
+        self.ADDARIO_DIRECTIONS_NAMES = [
+            "itinéraires",
+            "local actions - directions"
+        ]
+        
+        self.CROZATIER_CONTACT_NAMES = [
+            "appels",
+            "clicks to call"
+        ]
+        
+        self.DENTEVA_CONTACT_NAMES = [
+            "action de conversion",
+            "appels"
+        ]
+        
+        self.DENTEVA_DIRECTIONS_NAMES = [
+            "itinéraires",
+            "click map",
+            "local actions - directions"
+        ]
+        
+        self.EVOPRO_CONTACT_NAMES = [
+            "action de conversion",
+            "appel (cta)",
+            "cta",
+            "clicks to call",
+            "appels",
+            "appel (footer)"
+        ]
+        
+        self.EVOPRO_DIRECTIONS_NAMES = [
+            "itinéraires",
+            "local actions - directions"
+        ]
+        
+        self.FRANCE_LITERIE_AIX_CONTACT_NAMES = [
+            "appels",
+            "cta"
+        ]
+        
+        self.FRANCE_LITERIE_AIX_DIRECTIONS_NAMES = [
+            "itinéraires",
+            "local actions - directions"
+        ]
+        
+        self.FRANCE_LITERIE_ANNEMASSE_CONTACT_NAMES = [
+            "appels",
+            "clicks to call"
+        ]
+        
+        self.FRANCE_LITERIE_ANNEMASSE_DIRECTIONS_NAMES = [
+            "itinéraires",
+            "local actions - directions"
+        ]
+        
+        self.FRANCE_LITERIE_DIJON_CONTACT_NAMES = [
+            "appels",
+            "cta"
+        ]
+        
+        self.FRANCE_LITERIE_DIJON_DIRECTIONS_NAMES = [
+            "itinéraires magasin",
+        ]
+        
+        self.FRANCE_LITERIE_NARBONNE_CONTACT_NAMES = [
+            "appels",
+            "clicks to call"
+        ]
+        
+        self.FRANCE_LITERIE_NARBONNE_DIRECTIONS_NAMES = [
+            "itinéraires",
+            "local actions - directions",
+            "itinéraires magasin"
+        ]
+        
+        self.FRANCE_LITERIE_PERPIGNAN_CONTACT_NAMES = [
+            "appels",
+            "clicks to call"
+        ]
+        
+        self.FRANCE_LITERIE_PERPIGNAN_DIRECTIONS_NAMES = [
+            "itinéraires",
+            "local actions - directions"
+        ]
+        
+        self.KALTEA_AUBAGNE_CONTACT_NAMES = [
+            "appels directs",
+            "appels directs via google maps pour une campagne intelligente",
+            "appels directs via l'annonce d'une campagne intelligente",
+            "appels",
+            "profil de l'établissement - appel"
+        ]
+        
+        self.KALTEA_AUBAGNE_DIRECTIONS_NAMES = [
+            "itinéraires",
+            "itinéraires magasin",
+            "itinéraires google maps d'une campagne intelligente"
+        ]
+        
+        self.KALTEA_CHALON_CONTACT_NAMES = [
+            "clicks to call",
+            "appels"
+        ]
+        
+        self.KALTEA_CHALON_DIRECTIONS_NAMES = [
+            "local actions - directions",
+            "itinéraires magasin"
+        ]
+        
+        self.KALTEA_LYON_CONTACT_NAMES = [
+            "clicks to call",
+            "appels"
+        ]
+        
+        self.KALTEA_LYON_DIRECTIONS_NAMES = [
+            "local actions - directions",
+            "itinéraire"
+        ]
+        
+        self.LASEREL_CONTACT_NAMES = [
+            "appels",
+            "clicks to call",
+            "appel (cta)",
+            "cta"
+        ]
+        
+        self.LASEREL_DIRECTIONS_NAMES = [
+            "actions locales – itinéraire"
+        ]
+        
+        self.STAR_LITERIE_CONTACT_NAMES = [
+            "appels",
+            "clicks to call",
+            "cta"
+        ]
+        
+        self.STAR_LITERIE_DIRECTIONS_NAMES = [
+            "itinéraires",
+            "local actions - directions",
+            "itinéraires magasin"
+        ]
+        
+        self.TOUSALON_PERPIGNAN_CONTACT_NAMES = [
+            "appels"
+        ]
+        
+        self.TOUSALON_PERPIGNAN_DIRECTIONS_NAMES = [
+            "local actions - directions"
+        ]
+        
+        self.TOUSALON_TOULOUSE_CONTACT_NAMES = [
+            "appels",
+            "clicks to call"
+        ]
+        
+        self.TOUSALON_TOULOUSE_DIRECTIONS_NAMES = [
+            "itinéraire",
+            "local actions - directions"
+        ]
+        
+        self.BEDROOM_CONTACT_NAMES = [
+            "call bouton",
+            "clicks to call"
+        ]
+        
+        self.BEDROOM_DIRECTIONS_NAMES = [
+            "itinéraires",
+            "local actions - directions"
+        ]
+        
+        self.CUISINE_PLUS_PERPIGNAN_CONTACT_NAMES = [
+            # Pas de conversions contact pour Cuisine Plus Perpignan
+        ]
+        
+        self.CUISINE_PLUS_PERPIGNAN_DIRECTIONS_NAMES = [
+            "itinéraires"
+        ]
+        
+        self.FLAMME_CREATION_CONTACT_NAMES = [
+            "appels",
+            "clicks to call"
+        ]
+        
+        self.FLAMME_CREATION_DIRECTIONS_NAMES = [
+            "itinéraires",
+            "local actions - directions"
+        ]
+        
+        self.FL_CHAMPAGNE_CONTACT_NAMES = [
+            "appels"
+        ]
+        
+        self.FL_CHAMPAGNE_DIRECTIONS_NAMES = [
+            "itinéraires"
+        ]
+        
+        self.SAINT_PRIEST_GIVORS_CONTACT_NAMES = [
+            "appel givors",
+            "appel st priest",
+            "appels",
+            "clicks to call",
+            "cta"
+        ]
+        
+        self.SAINT_PRIEST_GIVORS_DIRECTIONS_NAMES = [
+            "itinéraire saint priest",
+            "itinéraire givors",
+            "local actions - directions"
+        ]
+        
+        self.FL_ANTIBES_CONTACT_NAMES = [
+            "appels",
+            "clicks to call",
+            "cta"
+        ]
+        
+        self.FL_ANTIBES_DIRECTIONS_NAMES = [
+            "itinéraires",
+            "local actions - directions"
+        ]
+        
     
     def get_all_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, int, List[Dict]]:
         """
@@ -66,7 +293,7 @@ class GoogleAdsConversionsService:
             FROM campaign
             WHERE
                 segments.date BETWEEN '{start_date}' AND '{end_date}'
-                AND metrics.conversions > 0
+                AND metrics.all_conversions > 0
             """
             
             logging.info(f"🔍 Recherche de TOUTES les conversions pour le client {customer_id}")
@@ -76,7 +303,16 @@ class GoogleAdsConversionsService:
             # ✅ CORRECTION: response contient directement les GoogleAdsRow
             for row in response:
                 conversion_name = row.segments.conversion_action_name.lower().strip()
-                conversions_value = row.metrics.conversions or 0
+                # Logique pour gérer la différence entre les métriques
+                # Si conversions a une valeur, l'utiliser
+                # Sinon, utiliser all_conversions MAIS seulement si la différence n'est pas trop importante
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    # Utiliser all_conversions seulement si conversions est 0
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
                 
                 # Enregistrer toutes les conversions pour debug
                 all_conversions.append({
@@ -85,9 +321,91 @@ class GoogleAdsConversionsService:
                     'conversions': conversions_value
                 })
                 
+                # Debug logging pour comprendre les valeurs
+                logging.info(f"🔍 Conversion: {row.segments.conversion_action_name}")
+                logging.info(f"   - metrics.conversions: {row.metrics.conversions}")
+                logging.info(f"   - metrics.all_conversions: {row.metrics.all_conversions}")
+                logging.info(f"   - Valeur utilisée: {conversions_value}")
+                
+                # Logging spécial pour les conversions Contact
+                if any(target_name in conversion_name for target_name in self.TARGET_CONTACT_NAMES):
+                    logging.info(f"📞 CONVERSION CONTACT DÉTECTÉE: {row.segments.conversion_action_name}")
+                    logging.info(f"   - conversions: {row.metrics.conversions}")
+                    logging.info(f"   - all_conversions: {row.metrics.all_conversions}")
+                    logging.info(f"   - Valeur finale: {conversions_value}")
+                
+                # Vérifier si c'est A.G. Cryolipolyse (customer_id: 9321943301)
+                is_cryolipolyse = customer_id == "9321943301"
+                # Vérifier si c'est Addario (customer_id: 1513412386)
+                is_addario = customer_id == "1513412386"
+                # Vérifier si c'est Crozatier Dijon (customer_id: 3259500758)
+                is_crozatier = customer_id == "3259500758"
+                # Vérifier si c'est Denteva (customer_id: 1810240249)
+                is_denteva = customer_id == "1810240249"
+                # Vérifier si c'est EvoPro (customer_id: 5461114350)
+                is_evopro = customer_id == "5461114350"
+                # Vérifier si c'est France Literie Aix (customer_id: 5104651305)
+                is_france_literie_aix = customer_id == "5104651305"
+                # Vérifier si c'est France Literie Annemasse (customer_id: 2744128994)
+                is_france_literie_annemasse = customer_id == "2744128994"
+                # Vérifier si c'est FL Antibes Vallauris (customer_id: 2485486745)
+                is_fl_antibes = customer_id == "2485486745"
+                
                 # Classifier par section basée sur le nom
-                is_contact = any(target_name in conversion_name for target_name in self.TARGET_CONTACT_NAMES)
-                is_directions = any(target_name in conversion_name for target_name in self.TARGET_DIRECTIONS_NAMES)
+                if is_cryolipolyse:
+                    is_contact = any(target_name in conversion_name for target_name in self.CRYOLIPOLYSE_CONTACT_NAMES)
+                    is_directions = any(target_name in conversion_name for target_name in self.TARGET_DIRECTIONS_NAMES)
+                    if is_contact:
+                        logging.info(f"🧊 CONVERSION CRYOLIPOLYSE CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                elif is_addario:
+                    is_contact = any(target_name in conversion_name for target_name in self.TARGET_CONTACT_NAMES)
+                    is_directions = any(target_name in conversion_name for target_name in self.ADDARIO_DIRECTIONS_NAMES)
+                    if is_directions:
+                        logging.info(f"🎯 CONVERSION ADDARIO ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                elif is_crozatier:
+                    is_contact = any(target_name in conversion_name for target_name in self.CROZATIER_CONTACT_NAMES)
+                    is_directions = any(target_name in conversion_name for target_name in self.TARGET_DIRECTIONS_NAMES)
+                    if is_contact:
+                        logging.info(f"🏪 CONVERSION CROZATIER CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                elif is_denteva:
+                    is_contact = any(target_name in conversion_name for target_name in self.DENTEVA_CONTACT_NAMES)
+                    is_directions = any(target_name in conversion_name for target_name in self.DENTEVA_DIRECTIONS_NAMES)
+                    if is_contact:
+                        logging.info(f"🦷 CONVERSION DENTEVA CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                    if is_directions:
+                        logging.info(f"🦷 CONVERSION DENTEVA ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                elif is_evopro:
+                    is_contact = any(target_name in conversion_name for target_name in self.EVOPRO_CONTACT_NAMES)
+                    is_directions = any(target_name in conversion_name for target_name in self.EVOPRO_DIRECTIONS_NAMES)
+                    if is_contact:
+                        logging.info(f"💻 CONVERSION EVOPRO CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                    if is_directions:
+                        logging.info(f"💻 CONVERSION EVOPRO ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                elif is_france_literie_aix:
+                    is_contact = any(target_name in conversion_name for target_name in self.FRANCE_LITERIE_AIX_CONTACT_NAMES)
+                    is_directions = any(target_name in conversion_name for target_name in self.FRANCE_LITERIE_AIX_DIRECTIONS_NAMES)
+                    if is_contact:
+                        logging.info(f"🛏️ CONVERSION FRANCE LITERIE AIX CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                    if is_directions:
+                        logging.info(f"🛏️ CONVERSION FRANCE LITERIE AIX ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                elif is_france_literie_annemasse:
+                    is_contact = any(target_name in conversion_name for target_name in self.FRANCE_LITERIE_ANNEMASSE_CONTACT_NAMES)
+                    is_directions = any(target_name in conversion_name for target_name in self.FRANCE_LITERIE_ANNEMASSE_DIRECTIONS_NAMES)
+                    if is_contact:
+                        logging.info(f"🏔️ CONVERSION FRANCE LITERIE ANNEMASSE CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                    if is_directions:
+                        logging.info(f"🏔️ CONVERSION FRANCE LITERIE ANNEMASSE ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                elif is_fl_antibes:
+                    is_contact = any(target_name in conversion_name for target_name in self.FL_ANTIBES_CONTACT_NAMES)
+                    is_directions = any(target_name in conversion_name for target_name in self.FL_ANTIBES_DIRECTIONS_NAMES)
+                    if is_contact:
+                        logging.info(f"🏖️ CONVERSION FL ANTIBES CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                    if is_directions:
+                        logging.info(f"🏖️ CONVERSION FL ANTIBES ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    # Logique standard pour tous les autres clients
+                    is_contact = any(target_name in conversion_name for target_name in self.TARGET_CONTACT_NAMES)
+                    is_directions = any(target_name in conversion_name for target_name in self.TARGET_DIRECTIONS_NAMES)
                 
                 if is_contact:
                     contact_total += conversions_value
@@ -127,6 +445,2647 @@ class GoogleAdsConversionsService:
         
         return contact_total, contact_conversions
     
+    def get_cryolipolyse_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour A.G. Cryolipolyse
+        Uniquement les conversions contenant "Appels" et "CTA"
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🧊 Recherche des conversions CRYOLIPOLYSE pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Contact pour Cryolipolyse (uniquement "Appels" et "CTA")
+                is_cryolipolyse_contact = any(target_name in conversion_name for target_name in self.CRYOLIPOLYSE_CONTACT_NAMES)
+                
+                if is_cryolipolyse_contact:
+                    contact_total += conversions_value
+                    logging.info(f"🧊 CONVERSION CRYOLIPOLYSE CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Cryolipolyse ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact Cryolipolyse
+            contact_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.CRYOLIPOLYSE_CONTACT_NAMES)]
+            
+            logging.info(f"🧊 Total Contact Cryolipolyse: {contact_total}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Cryolipolyse pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_crozatier_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour Crozatier Dijon
+        Uniquement les conversions contenant "Appels" et "Clicks to call"
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🏪 Recherche des conversions CROZATIER CONTACT pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Contact pour Crozatier (uniquement "Appels" et "Clicks to call")
+                is_crozatier_contact = any(target_name in conversion_name for target_name in self.CROZATIER_CONTACT_NAMES)
+                
+                if is_crozatier_contact:
+                    contact_total += conversions_value
+                    logging.info(f"🏪 CONVERSION CROZATIER CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Crozatier ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact Crozatier
+            contact_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.CROZATIER_CONTACT_NAMES)]
+            
+            logging.info(f"🏪 Total Contact Crozatier: {contact_total}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Crozatier pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_denteva_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour Denteva
+        Uniquement les conversions contenant "Action de conversion" et "Appels"
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🦷 Recherche des conversions DENTEVA CONTACT pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Contact pour Denteva (uniquement "Action de conversion" et "Appels")
+                is_denteva_contact = any(target_name in conversion_name for target_name in self.DENTEVA_CONTACT_NAMES)
+                
+                if is_denteva_contact:
+                    contact_total += conversions_value
+                    logging.info(f"🦷 CONVERSION DENTEVA CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Denteva Contact ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact Denteva
+            contact_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.DENTEVA_CONTACT_NAMES)]
+            
+            logging.info(f"🦷 Total Contact Denteva: {contact_total}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Denteva Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_denteva_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour Denteva
+        Uniquement les conversions contenant "Itinéraires", "Click Map" et "Local actions - Directions"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🦷 Recherche des conversions DENTEVA ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour Denteva (uniquement "Itinéraires", "Click Map" et "Local actions - Directions")
+                is_denteva_directions = any(target_name in conversion_name for target_name in self.DENTEVA_DIRECTIONS_NAMES)
+                
+                if is_denteva_directions:
+                    directions_total += conversions_value
+                    logging.info(f"🦷 CONVERSION DENTEVA ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Denteva Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires Denteva
+            directions_conversions = [conv for conv in all_conversions 
+                                     if any(target_name in conv['name'].lower() for target_name in self.DENTEVA_DIRECTIONS_NAMES)]
+            
+            logging.info(f"🦷 Total Itinéraires Denteva: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Denteva Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+    
+    def get_evopro_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour EvoPro
+        Toutes les conversions Contact : "Action de conversion", "Appel (CTA)", "CTA", "Clicks to call", "Appels", "Appel (footer)"
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"💻 Recherche des conversions EVOPRO CONTACT pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Contact pour EvoPro (toutes les conversions Contact)
+                is_evopro_contact = any(target_name in conversion_name for target_name in self.EVOPRO_CONTACT_NAMES)
+                
+                if is_evopro_contact:
+                    contact_total += conversions_value
+                    logging.info(f"💻 CONVERSION EVOPRO CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion EvoPro Contact ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact EvoPro
+            contact_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.EVOPRO_CONTACT_NAMES)]
+            
+            logging.info(f"💻 Total Contact EvoPro: {contact_total}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions EvoPro Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_evopro_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour EvoPro
+        Uniquement les conversions contenant "Itinéraires" et "Local actions - Directions"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"💻 Recherche des conversions EVOPRO ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour EvoPro (uniquement "Itinéraires" et "Local actions - Directions")
+                is_evopro_directions = any(target_name in conversion_name for target_name in self.EVOPRO_DIRECTIONS_NAMES)
+                
+                if is_evopro_directions:
+                    directions_total += conversions_value
+                    logging.info(f"💻 CONVERSION EVOPRO ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion EvoPro Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires EvoPro
+            directions_conversions = [conv for conv in all_conversions 
+                                     if any(target_name in conv['name'].lower() for target_name in self.EVOPRO_DIRECTIONS_NAMES)]
+            
+            logging.info(f"💻 Total Itinéraires EvoPro: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions EvoPro Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+    
+    def get_france_literie_aix_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour France Literie Aix
+        Uniquement les conversions contenant "Appels" et "CTA" (même logique que Cryolipolyse)
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🛏️ Recherche des conversions FRANCE LITERIE AIX CONTACT pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Contact pour France Literie Aix (uniquement "Appels" et "CTA")
+                is_france_literie_aix_contact = any(target_name in conversion_name for target_name in self.FRANCE_LITERIE_AIX_CONTACT_NAMES)
+                
+                if is_france_literie_aix_contact:
+                    contact_total += conversions_value
+                    logging.info(f"🛏️ CONVERSION FRANCE LITERIE AIX CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion France Literie Aix Contact ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact France Literie Aix
+            contact_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.FRANCE_LITERIE_AIX_CONTACT_NAMES)]
+            
+            logging.info(f"🛏️ Total Contact France Literie Aix: {contact_total}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions France Literie Aix Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_france_literie_aix_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour France Literie Aix
+        Uniquement les conversions contenant "Itinéraires" et "Local actions - Directions"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🛏️ Recherche des conversions FRANCE LITERIE AIX ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour France Literie Aix (uniquement "Itinéraires" et "Local actions - Directions")
+                is_france_literie_aix_directions = any(target_name in conversion_name for target_name in self.FRANCE_LITERIE_AIX_DIRECTIONS_NAMES)
+                
+                if is_france_literie_aix_directions:
+                    directions_total += conversions_value
+                    logging.info(f"🛏️ CONVERSION FRANCE LITERIE AIX ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion France Literie Aix Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires France Literie Aix
+            directions_conversions = [conv for conv in all_conversions 
+                                   if any(target_name in conv['name'].lower() for target_name in self.FRANCE_LITERIE_AIX_DIRECTIONS_NAMES)]
+            
+            logging.info(f"🛏️ Total Itinéraires France Literie Aix: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions France Literie Aix Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+    
+    def get_france_literie_dijon_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour France Literie Dijon
+        Uniquement les conversions contenant "Appels" et "CTA"
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🏰 Recherche des conversions FRANCE LITERIE DIJON CONTACT pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Contact pour France Literie Dijon (uniquement "Appels" et "CTA")
+                is_france_literie_dijon_contact = any(target_name in conversion_name for target_name in self.FRANCE_LITERIE_DIJON_CONTACT_NAMES)
+                
+                if is_france_literie_dijon_contact:
+                    contact_total += conversions_value
+                    logging.info(f"🏰 CONVERSION FRANCE LITERIE DIJON CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion France Literie Dijon Contact ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact France Literie Dijon
+            contact_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.FRANCE_LITERIE_DIJON_CONTACT_NAMES)]
+            
+            logging.info(f"🏰 Total Contact France Literie Dijon: {contact_total}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions France Literie Dijon Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_france_literie_dijon_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour France Literie Dijon
+        Uniquement les conversions contenant "Itinéraires" et "Magasin"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🏰 Recherche des conversions FRANCE LITERIE DIJON ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour France Literie Dijon (uniquement "Itinéraires" et "Magasin")
+                is_france_literie_dijon_directions = any(target_name in conversion_name for target_name in self.FRANCE_LITERIE_DIJON_DIRECTIONS_NAMES)
+                
+                if is_france_literie_dijon_directions:
+                    directions_total += conversions_value
+                    logging.info(f"🏰 CONVERSION FRANCE LITERIE DIJON ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion France Literie Dijon Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires France Literie Dijon
+            directions_conversions = [conv for conv in all_conversions 
+                                   if any(target_name in conv['name'].lower() for target_name in self.FRANCE_LITERIE_DIJON_DIRECTIONS_NAMES)]
+            
+            logging.info(f"🏰 Total Itinéraires France Literie Dijon: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions France Literie Dijon Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+    
+    def get_france_literie_narbonne_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour France Literie Narbonne
+        Uniquement les conversions contenant "Appels" et "CTA"
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🏛️ Recherche des conversions FRANCE LITERIE NARBONNE CONTACT pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # 🏛️ LOGS DÉTAILLÉS FRANCE LITERIE NARBONNE - Debug complet (client qui fonctionne)
+                logging.info(f"🏛️ FL NARBONNE DEBUG - Conversion trouvée: '{row.segments.conversion_action_name}'")
+                logging.info(f"🏛️ FL NARBONNE DEBUG - metrics.conversions: {row.metrics.conversions}")
+                logging.info(f"🏛️ FL NARBONNE DEBUG - metrics.all_conversions: {row.metrics.all_conversions}")
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                    logging.info(f"🏛️ FL NARBONNE DEBUG - Utilisation de metrics.conversions: {conversions_value}")
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                    logging.info(f"🏛️ FL NARBONNE DEBUG - Utilisation de metrics.all_conversions: {conversions_value}")
+                else:
+                    conversions_value = 0
+                    logging.info(f"🏛️ FL NARBONNE DEBUG - Aucune conversion, valeur = 0")
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Contact pour France Literie Narbonne (uniquement "Appels" et "CTA")
+                is_france_literie_narbonne_contact = any(target_name in conversion_name for target_name in self.FRANCE_LITERIE_NARBONNE_CONTACT_NAMES)
+                
+                # 🏛️ LOGS DÉTAILLÉS FRANCE LITERIE NARBONNE - Vérification des noms de conversions
+                logging.info(f"🏛️ FL NARBONNE DEBUG - Noms recherchés: {self.FRANCE_LITERIE_NARBONNE_CONTACT_NAMES}")
+                logging.info(f"🏛️ FL NARBONNE DEBUG - Nom de conversion: '{conversion_name}'")
+                logging.info(f"🏛️ FL NARBONNE DEBUG - Match trouvé: {is_france_literie_narbonne_contact}")
+                
+                if is_france_literie_narbonne_contact:
+                    contact_total += conversions_value
+                    logging.info(f"🏛️ CONVERSION FRANCE LITERIE NARBONNE CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion France Literie Narbonne Contact ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact France Literie Narbonne
+            contact_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.FRANCE_LITERIE_NARBONNE_CONTACT_NAMES)]
+            
+            logging.info(f"🏛️ Total Contact France Literie Narbonne: {contact_total}")
+            logging.info(f"🏛️ FL NARBONNE RÉSUMÉ - Total final: {contact_total}")
+            logging.info(f"🏛️ FL NARBONNE RÉSUMÉ - Conversions trouvées: {len(contact_conversions)}")
+            for conv in contact_conversions:
+                logging.info(f"🏛️ FL NARBONNE RÉSUMÉ - {conv['name']}: {conv['conversions']}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions France Literie Narbonne Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_france_literie_narbonne_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour France Literie Narbonne
+        Uniquement les conversions contenant "Itinéraires" et "Local actions - Directions"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🏛️ Recherche des conversions FRANCE LITERIE NARBONNE ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour France Literie Narbonne (uniquement "Itinéraires" et "Local actions - Directions")
+                is_france_literie_narbonne_directions = any(target_name in conversion_name for target_name in self.FRANCE_LITERIE_NARBONNE_DIRECTIONS_NAMES)
+                
+                if is_france_literie_narbonne_directions:
+                    directions_total += conversions_value
+                    logging.info(f"🏛️ CONVERSION FRANCE LITERIE NARBONNE ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion France Literie Narbonne Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires France Literie Narbonne
+            directions_conversions = [conv for conv in all_conversions 
+                                   if any(target_name in conv['name'].lower() for target_name in self.FRANCE_LITERIE_NARBONNE_DIRECTIONS_NAMES)]
+            
+            logging.info(f"🏛️ Total Itinéraires France Literie Narbonne: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions France Literie Narbonne Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+    
+    def get_france_literie_perpignan_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour France Literie Perpignan
+        Uniquement les conversions contenant "Appels" et "Clicks to call"
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🏰 Recherche des conversions FRANCE LITERIE PERPIGNAN CONTACT pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Contact pour France Literie Perpignan (uniquement "Appels" et "Clicks to call")
+                is_france_literie_perpignan_contact = any(target_name in conversion_name for target_name in self.FRANCE_LITERIE_PERPIGNAN_CONTACT_NAMES)
+                
+                if is_france_literie_perpignan_contact:
+                    contact_total += conversions_value
+                    logging.info(f"🏰 CONVERSION FRANCE LITERIE PERPIGNAN CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion France Literie Perpignan Contact ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact France Literie Perpignan
+            contact_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.FRANCE_LITERIE_PERPIGNAN_CONTACT_NAMES)]
+            
+            logging.info(f"🏰 Total Contact France Literie Perpignan: {contact_total}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions France Literie Perpignan Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_france_literie_perpignan_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour France Literie Perpignan
+        Uniquement les conversions contenant "Itinéraires" et "Local actions - Directions"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🏰 Recherche des conversions FRANCE LITERIE PERPIGNAN ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour France Literie Perpignan (uniquement "Itinéraires" et "Local actions - Directions")
+                is_france_literie_perpignan_directions = any(target_name in conversion_name for target_name in self.FRANCE_LITERIE_PERPIGNAN_DIRECTIONS_NAMES)
+                
+                if is_france_literie_perpignan_directions:
+                    directions_total += conversions_value
+                    logging.info(f"🏰 CONVERSION FRANCE LITERIE PERPIGNAN ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion France Literie Perpignan Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires France Literie Perpignan
+            directions_conversions = [conv for conv in all_conversions 
+                                   if any(target_name in conv['name'].lower() for target_name in self.FRANCE_LITERIE_PERPIGNAN_DIRECTIONS_NAMES)]
+            
+            logging.info(f"🏰 Total Itinéraires France Literie Perpignan: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions France Literie Perpignan Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+    
+    def get_kaltea_aubagne_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour Kaltea Aubagne
+        Uniquement les conversions contenant les différents types d'appels
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🌡️ Recherche des conversions KALTEA AUBAGNE CONTACT pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Contact pour Kaltea Aubagne
+                is_kaltea_aubagne_contact = any(target_name in conversion_name for target_name in self.KALTEA_AUBAGNE_CONTACT_NAMES)
+                
+                if is_kaltea_aubagne_contact:
+                    contact_total += conversions_value
+                    logging.info(f"🌡️ CONVERSION KALTEA AUBAGNE CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Kaltea Aubagne Contact ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact Kaltea Aubagne
+            contact_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.KALTEA_AUBAGNE_CONTACT_NAMES)]
+            
+            logging.info(f"🌡️ Total Contact Kaltea Aubagne: {contact_total}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Kaltea Aubagne Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_kaltea_aubagne_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour Kaltea Aubagne
+        Uniquement les conversions contenant les différents types d'itinéraires
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🌡️ Recherche des conversions KALTEA AUBAGNE ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour Kaltea Aubagne
+                is_kaltea_aubagne_directions = any(target_name in conversion_name for target_name in self.KALTEA_AUBAGNE_DIRECTIONS_NAMES)
+                
+                if is_kaltea_aubagne_directions:
+                    directions_total += conversions_value
+                    logging.info(f"🌡️ CONVERSION KALTEA AUBAGNE ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Kaltea Aubagne Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires Kaltea Aubagne
+            directions_conversions = [conv for conv in all_conversions 
+                                   if any(target_name in conv['name'].lower() for target_name in self.KALTEA_AUBAGNE_DIRECTIONS_NAMES)]
+            
+            logging.info(f"🌡️ Total Itinéraires Kaltea Aubagne: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Kaltea Aubagne Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+    
+    def get_kaltea_chalon_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour Kaltea Chalon
+        Uniquement les conversions contenant "Clicks to call" et "Appels"
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🌡️ Recherche des conversions KALTEA CHALON CONTACT pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Contact pour Kaltea Chalon
+                is_kaltea_chalon_contact = any(target_name in conversion_name for target_name in self.KALTEA_CHALON_CONTACT_NAMES)
+                
+                if is_kaltea_chalon_contact:
+                    contact_total += conversions_value
+                    logging.info(f"🌡️ CONVERSION KALTEA CHALON CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Kaltea Chalon Contact ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact Kaltea Chalon
+            contact_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.KALTEA_CHALON_CONTACT_NAMES)]
+            
+            logging.info(f"🌡️ Total Contact Kaltea Chalon: {contact_total}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Kaltea Chalon Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_kaltea_chalon_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour Kaltea Chalon
+        Uniquement les conversions contenant "Local actions - Directions" et "Itinéraires Magasin"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🌡️ Recherche des conversions KALTEA CHALON ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour Kaltea Chalon
+                is_kaltea_chalon_directions = any(target_name in conversion_name for target_name in self.KALTEA_CHALON_DIRECTIONS_NAMES)
+                
+                if is_kaltea_chalon_directions:
+                    directions_total += conversions_value
+                    logging.info(f"🌡️ CONVERSION KALTEA CHALON ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Kaltea Chalon Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires Kaltea Chalon
+            directions_conversions = [conv for conv in all_conversions 
+                                   if any(target_name in conv['name'].lower() for target_name in self.KALTEA_CHALON_DIRECTIONS_NAMES)]
+            
+            logging.info(f"🌡️ Total Itinéraires Kaltea Chalon: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Kaltea Chalon Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+    
+    def get_kaltea_lyon_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour Kaltea Lyon
+        Uniquement les conversions contenant "Clicks to call" et "Appels"
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🌡️ Recherche des conversions KALTEA LYON CONTACT pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Contact pour Kaltea Lyon
+                is_kaltea_lyon_contact = any(target_name in conversion_name for target_name in self.KALTEA_LYON_CONTACT_NAMES)
+                
+                if is_kaltea_lyon_contact:
+                    contact_total += conversions_value
+                    logging.info(f"🌡️ CONVERSION KALTEA LYON CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Kaltea Lyon Contact ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact Kaltea Lyon
+            contact_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.KALTEA_LYON_CONTACT_NAMES)]
+            
+            logging.info(f"🌡️ Total Contact Kaltea Lyon: {contact_total}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Kaltea Lyon Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_kaltea_lyon_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour Kaltea Lyon
+        Uniquement les conversions contenant "Local actions - Directions" et "Itinéraire"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🌡️ Recherche des conversions KALTEA LYON ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour Kaltea Lyon
+                is_kaltea_lyon_directions = any(target_name in conversion_name for target_name in self.KALTEA_LYON_DIRECTIONS_NAMES)
+                
+                if is_kaltea_lyon_directions:
+                    directions_total += conversions_value
+                    logging.info(f"🌡️ CONVERSION KALTEA LYON ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Kaltea Lyon Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires Kaltea Lyon
+            directions_conversions = [conv for conv in all_conversions 
+                                   if any(target_name in conv['name'].lower() for target_name in self.KALTEA_LYON_DIRECTIONS_NAMES)]
+            
+            logging.info(f"🌡️ Total Itinéraires Kaltea Lyon: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Kaltea Lyon Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+    
+    def get_laserel_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour Laserel
+        Retourne "Faire à la main" au lieu de scraper les données
+        """
+        logging.info(f"🔬 LASEREL CONTACT - Mode manuel activé : 'Faire à la main'")
+        
+        # Retourner "Faire à la main" au lieu de scraper
+        return "Faire à la main", []
+    
+    def get_laserel_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour Laserel
+        Uniquement les conversions contenant "Actions locales – Itinéraire"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🔬 Recherche des conversions LASEREL ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour Laserel
+                is_laserel_directions = any(target_name in conversion_name for target_name in self.LASEREL_DIRECTIONS_NAMES)
+                
+                if is_laserel_directions:
+                    directions_total += conversions_value
+                    logging.info(f"🔬 CONVERSION LASEREL ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Laserel Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires Laserel
+            directions_conversions = [conv for conv in all_conversions 
+                                   if any(target_name in conv['name'].lower() for target_name in self.LASEREL_DIRECTIONS_NAMES)]
+            
+            logging.info(f"🔬 Total Itinéraires Laserel: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Laserel Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+    
+    def get_star_literie_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour Star Literie
+        Uniquement les conversions contenant "Appels" et "Clicks to call"
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"⭐ Recherche des conversions STAR LITERIE CONTACT pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Contact pour Star Literie
+                is_star_literie_contact = any(target_name in conversion_name for target_name in self.STAR_LITERIE_CONTACT_NAMES)
+                
+                if is_star_literie_contact:
+                    contact_total += conversions_value
+                    logging.info(f"⭐ CONVERSION STAR LITERIE CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Star Literie Contact ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact Star Literie
+            contact_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.STAR_LITERIE_CONTACT_NAMES)]
+            
+            logging.info(f"⭐ Total Contact Star Literie: {contact_total}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Star Literie Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_star_literie_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour Star Literie
+        Uniquement les conversions contenant "Itinéraires", "Local actions - Directions" et "Itinéraires Magasin"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"⭐ Recherche des conversions STAR LITERIE ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour Star Literie
+                is_star_literie_directions = any(target_name in conversion_name for target_name in self.STAR_LITERIE_DIRECTIONS_NAMES)
+                
+                if is_star_literie_directions:
+                    directions_total += conversions_value
+                    logging.info(f"⭐ CONVERSION STAR LITERIE ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Star Literie Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires Star Literie
+            directions_conversions = [conv for conv in all_conversions 
+                                   if any(target_name in conv['name'].lower() for target_name in self.STAR_LITERIE_DIRECTIONS_NAMES)]
+            
+            logging.info(f"⭐ Total Itinéraires Star Literie: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Star Literie Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+    
+    def get_tousalon_perpignan_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour Tousalon Perpignan
+        Uniquement les conversions contenant "Appels"
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"💇 Recherche des conversions TOUSALON PERPIGNAN CONTACT pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Contact pour Tousalon Perpignan
+                is_tousalon_perpignan_contact = any(target_name in conversion_name for target_name in self.TOUSALON_PERPIGNAN_CONTACT_NAMES)
+                
+                if is_tousalon_perpignan_contact:
+                    contact_total += conversions_value
+                    logging.info(f"💇 CONVERSION TOUSALON PERPIGNAN CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Tousalon Perpignan Contact ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact Tousalon Perpignan
+            contact_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.TOUSALON_PERPIGNAN_CONTACT_NAMES)]
+            
+            logging.info(f"💇 Total Contact Tousalon Perpignan: {contact_total}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Tousalon Perpignan Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_tousalon_perpignan_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour Tousalon Perpignan
+        Uniquement les conversions contenant "Local actions - Directions"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"💇 Recherche des conversions TOUSALON PERPIGNAN ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour Tousalon Perpignan
+                is_tousalon_perpignan_directions = any(target_name in conversion_name for target_name in self.TOUSALON_PERPIGNAN_DIRECTIONS_NAMES)
+                
+                if is_tousalon_perpignan_directions:
+                    directions_total += conversions_value
+                    logging.info(f"💇 CONVERSION TOUSALON PERPIGNAN ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Tousalon Perpignan Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires Tousalon Perpignan
+            directions_conversions = [conv for conv in all_conversions 
+                                   if any(target_name in conv['name'].lower() for target_name in self.TOUSALON_PERPIGNAN_DIRECTIONS_NAMES)]
+            
+            logging.info(f"💇 Total Itinéraires Tousalon Perpignan: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Tousalon Perpignan Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+    
+    def get_tousalon_toulouse_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour Tousalon Toulouse
+        Uniquement les conversions contenant "Appels" et "Clicks to call"
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🏛️ Recherche des conversions TOUSALON TOULOUSE CONTACT pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Contact pour Tousalon Toulouse
+                is_tousalon_toulouse_contact = any(target_name in conversion_name for target_name in self.TOUSALON_TOULOUSE_CONTACT_NAMES)
+                
+                if is_tousalon_toulouse_contact:
+                    contact_total += conversions_value
+                    logging.info(f"🏛️ CONVERSION TOUSALON TOULOUSE CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Tousalon Toulouse Contact ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact Tousalon Toulouse
+            contact_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.TOUSALON_TOULOUSE_CONTACT_NAMES)]
+            
+            logging.info(f"🏛️ Total Contact Tousalon Toulouse: {contact_total}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Tousalon Toulouse Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_tousalon_toulouse_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour Tousalon Toulouse
+        Uniquement les conversions contenant "Itinéraire" et "Local actions - Directions"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🏛️ Recherche des conversions TOUSALON TOULOUSE ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour Tousalon Toulouse
+                is_tousalon_toulouse_directions = any(target_name in conversion_name for target_name in self.TOUSALON_TOULOUSE_DIRECTIONS_NAMES)
+                
+                if is_tousalon_toulouse_directions:
+                    directions_total += conversions_value
+                    logging.info(f"🏛️ CONVERSION TOUSALON TOULOUSE ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Tousalon Toulouse Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires Tousalon Toulouse
+            directions_conversions = [conv for conv in all_conversions 
+                                   if any(target_name in conv['name'].lower() for target_name in self.TOUSALON_TOULOUSE_DIRECTIONS_NAMES)]
+            
+            logging.info(f"🏛️ Total Itinéraires Tousalon Toulouse: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Tousalon Toulouse Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+    
+    def get_bedroom_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour Bedroom
+        Uniquement les conversions contenant "Call bouton" et "Clicks to call"
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🛏️ Recherche des conversions BEDROOM CONTACT pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Contact pour Bedroom
+                is_bedroom_contact = any(target_name in conversion_name for target_name in self.BEDROOM_CONTACT_NAMES)
+                
+                if is_bedroom_contact:
+                    contact_total += conversions_value
+                    logging.info(f"🛏️ CONVERSION BEDROOM CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Bedroom Contact ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact Bedroom
+            contact_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.BEDROOM_CONTACT_NAMES)]
+            
+            logging.info(f"🛏️ Total Contact Bedroom: {contact_total}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Bedroom Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_bedroom_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour Bedroom
+        Uniquement les conversions contenant "Itinéraires" et "Local actions - Directions"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🛏️ Recherche des conversions BEDROOM ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour Bedroom
+                is_bedroom_directions = any(target_name in conversion_name for target_name in self.BEDROOM_DIRECTIONS_NAMES)
+                
+                if is_bedroom_directions:
+                    directions_total += conversions_value
+                    logging.info(f"🛏️ CONVERSION BEDROOM ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Bedroom Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires Bedroom
+            directions_conversions = [conv for conv in all_conversions 
+                                   if any(target_name in conv['name'].lower() for target_name in self.BEDROOM_DIRECTIONS_NAMES)]
+            
+            logging.info(f"🛏️ Total Itinéraires Bedroom: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Bedroom Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+    
+    def get_cuisine_plus_perpignan_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour Cuisine Plus Perpignan
+        PAS DE CONVERSIONS CONTACT pour ce client
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            logging.info(f"🍽️ Cuisine Plus Perpignan - PAS DE CONVERSIONS CONTACT pour le client {customer_id}")
+            
+            # Pas de conversions contact pour Cuisine Plus Perpignan
+            logging.info(f"🍽️ Total Contact Cuisine Plus Perpignan: {contact_total} (aucune conversion contact)")
+            return contact_total, all_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Cuisine Plus Perpignan Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_cuisine_plus_perpignan_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour Cuisine Plus Perpignan
+        Uniquement les conversions contenant "Itinéraires"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🍽️ Recherche des conversions CUISINE PLUS PERPIGNAN ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour Cuisine Plus Perpignan
+                is_cuisine_plus_perpignan_directions = any(target_name in conversion_name for target_name in self.CUISINE_PLUS_PERPIGNAN_DIRECTIONS_NAMES)
+                
+                if is_cuisine_plus_perpignan_directions:
+                    directions_total += conversions_value
+                    logging.info(f"🍽️ CONVERSION CUISINE PLUS PERPIGNAN ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Cuisine Plus Perpignan Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires Cuisine Plus Perpignan
+            directions_conversions = [conv for conv in all_conversions 
+                                   if any(target_name in conv['name'].lower() for target_name in self.CUISINE_PLUS_PERPIGNAN_DIRECTIONS_NAMES)]
+            
+            logging.info(f"🍽️ Total Itinéraires Cuisine Plus Perpignan: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Cuisine Plus Perpignan Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+    
+    def get_flamme_creation_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour Flamme&Creation
+        Uniquement les conversions contenant "Appels" et "Clicks to call"
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🔥 Recherche des conversions FLAMME&CREATION CONTACT pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Contact pour Flamme&Creation
+                is_flamme_creation_contact = any(target_name in conversion_name for target_name in self.FLAMME_CREATION_CONTACT_NAMES)
+                
+                if is_flamme_creation_contact:
+                    contact_total += conversions_value
+                    logging.info(f"🔥 CONVERSION FLAMME&CREATION CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Flamme&Creation Contact ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact Flamme&Creation
+            contact_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.FLAMME_CREATION_CONTACT_NAMES)]
+            
+            logging.info(f"🔥 Total Contact Flamme&Creation: {contact_total}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Flamme&Creation Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_flamme_creation_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour Flamme&Creation
+        Uniquement les conversions contenant "Itinéraires" et "Local actions - Directions"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🔥 Recherche des conversions FLAMME&CREATION ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour Flamme&Creation
+                is_flamme_creation_directions = any(target_name in conversion_name for target_name in self.FLAMME_CREATION_DIRECTIONS_NAMES)
+                
+                if is_flamme_creation_directions:
+                    directions_total += conversions_value
+                    logging.info(f"🔥 CONVERSION FLAMME&CREATION ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Flamme&Creation Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires Flamme&Creation
+            directions_conversions = [conv for conv in all_conversions 
+                                   if any(target_name in conv['name'].lower() for target_name in self.FLAMME_CREATION_DIRECTIONS_NAMES)]
+            
+            logging.info(f"🔥 Total Itinéraires Flamme&Creation: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Flamme&Creation Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+    
+    def get_fl_champagne_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour FL Champagne
+        Uniquement les conversions contenant "Appels"
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🍾 Recherche des conversions FL CHAMPAGNE CONTACT pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Contact pour FL Champagne
+                is_fl_champagne_contact = any(target_name in conversion_name for target_name in self.FL_CHAMPAGNE_CONTACT_NAMES)
+                
+                if is_fl_champagne_contact:
+                    contact_total += conversions_value
+                    logging.info(f"🍾 CONVERSION FL CHAMPAGNE CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion FL Champagne Contact ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact FL Champagne
+            contact_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.FL_CHAMPAGNE_CONTACT_NAMES)]
+            
+            logging.info(f"🍾 Total Contact FL Champagne: {contact_total}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions FL Champagne Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_fl_champagne_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour FL Champagne
+        Uniquement les conversions contenant "Itinéraires"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🍾 Recherche des conversions FL CHAMPAGNE ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour FL Champagne
+                is_fl_champagne_directions = any(target_name in conversion_name for target_name in self.FL_CHAMPAGNE_DIRECTIONS_NAMES)
+                
+                if is_fl_champagne_directions:
+                    directions_total += conversions_value
+                    logging.info(f"🍾 CONVERSION FL CHAMPAGNE ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion FL Champagne Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires FL Champagne
+            directions_conversions = [conv for conv in all_conversions 
+                                   if any(target_name in conv['name'].lower() for target_name in self.FL_CHAMPAGNE_DIRECTIONS_NAMES)]
+            
+            logging.info(f"🍾 Total Itinéraires FL Champagne: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions FL Champagne Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+    
+    def get_saint_priest_givors_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour Saint Priest Givors
+        Uniquement les conversions contenant "Appel Givors", "Appel St Priest", "Appels", "Clicks to call" et "CTA"
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🏰 Recherche des conversions SAINT PRIEST GIVORS CONTACT pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Contact pour Saint Priest Givors
+                is_saint_priest_givors_contact = any(target_name in conversion_name for target_name in self.SAINT_PRIEST_GIVORS_CONTACT_NAMES)
+                
+                if is_saint_priest_givors_contact:
+                    contact_total += conversions_value
+                    logging.info(f"🏰 CONVERSION SAINT PRIEST GIVORS CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Saint Priest Givors Contact ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact Saint Priest Givors
+            contact_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.SAINT_PRIEST_GIVORS_CONTACT_NAMES)]
+            
+            logging.info(f"🏰 Total Contact Saint Priest Givors: {contact_total}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Saint Priest Givors Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_saint_priest_givors_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour Saint Priest Givors
+        Uniquement les conversions contenant "Itinéraire Saint Priest", "Itinéraire Givors" et "Local actions - Directions"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🏰 Recherche des conversions SAINT PRIEST GIVORS ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour Saint Priest Givors
+                is_saint_priest_givors_directions = any(target_name in conversion_name for target_name in self.SAINT_PRIEST_GIVORS_DIRECTIONS_NAMES)
+                
+                if is_saint_priest_givors_directions:
+                    directions_total += conversions_value
+                    logging.info(f"🏰 CONVERSION SAINT PRIEST GIVORS ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Saint Priest Givors Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires Saint Priest Givors
+            directions_conversions = [conv for conv in all_conversions 
+                                   if any(target_name in conv['name'].lower() for target_name in self.SAINT_PRIEST_GIVORS_DIRECTIONS_NAMES)]
+            
+            logging.info(f"🏰 Total Itinéraires Saint Priest Givors: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Saint Priest Givors Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+    
+    def get_france_literie_annemasse_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour France Literie Annemasse
+        Uniquement les conversions contenant "Appels" et "Clicks to call"
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🏔️ Recherche des conversions FRANCE LITERIE ANNEMASSE CONTACT pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Contact pour France Literie Annemasse (uniquement "Appels" et "Clicks to call")
+                is_france_literie_annemasse_contact = any(target_name in conversion_name for target_name in self.FRANCE_LITERIE_ANNEMASSE_CONTACT_NAMES)
+                
+                if is_france_literie_annemasse_contact:
+                    contact_total += conversions_value
+                    logging.info(f"🏔️ CONVERSION FRANCE LITERIE ANNEMASSE CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion France Literie Annemasse Contact ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact France Literie Annemasse
+            contact_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.FRANCE_LITERIE_ANNEMASSE_CONTACT_NAMES)]
+            
+            logging.info(f"🏔️ Total Contact France Literie Annemasse: {contact_total}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions France Literie Annemasse Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_france_literie_annemasse_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour France Literie Annemasse
+        Uniquement les conversions contenant "Itinéraires" et "Local actions - Directions"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🏔️ Recherche des conversions FRANCE LITERIE ANNEMASSE ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour France Literie Annemasse (uniquement "Itinéraires" et "Local actions - Directions")
+                is_france_literie_annemasse_directions = any(target_name in conversion_name for target_name in self.FRANCE_LITERIE_ANNEMASSE_DIRECTIONS_NAMES)
+                
+                if is_france_literie_annemasse_directions:
+                    directions_total += conversions_value
+                    logging.info(f"🏔️ CONVERSION FRANCE LITERIE ANNEMASSE ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion France Literie Annemasse Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires France Literie Annemasse
+            directions_conversions = [conv for conv in all_conversions 
+                                   if any(target_name in conv['name'].lower() for target_name in self.FRANCE_LITERIE_ANNEMASSE_DIRECTIONS_NAMES)]
+            
+            logging.info(f"🏔️ Total Itinéraires France Literie Annemasse: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions France Literie Annemasse Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+    
+    def get_fl_antibes_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour FL Antibes Vallauris
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🏖️ Recherche des conversions FL ANTIBES CONTACT pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # 🏖️ LOGS DÉTAILLÉS FL ANTIBES - Debug complet
+                logging.info(f"🏖️ FL ANTIBES DEBUG - Conversion trouvée: '{row.segments.conversion_action_name}'")
+                logging.info(f"🏖️ FL ANTIBES DEBUG - metrics.conversions: {row.metrics.conversions}")
+                logging.info(f"🏖️ FL ANTIBES DEBUG - metrics.all_conversions: {row.metrics.all_conversions}")
+                
+                # Logique spécifique FL Antibes : utiliser UNIQUEMENT les conversions entières
+                # Ignorer all_conversions pour éviter les conversions fractionnaires
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                    logging.info(f"🏖️ FL ANTIBES DEBUG - Utilisation de metrics.conversions: {conversions_value}")
+                else:
+                    conversions_value = 0
+                    logging.info(f"🏖️ FL ANTIBES DEBUG - Aucune conversion entière, valeur = 0")
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Utiliser la logique spécifique FL Antibes avec correspondance précise pour "cta"
+                is_fl_antibes_contact = False
+                for target_name in self.FL_ANTIBES_CONTACT_NAMES:
+                    if target_name == "cta":
+                        # Pour "cta", correspondance exacte ou avec espaces uniquement
+                        if conversion_name == "cta" or conversion_name.strip() == "cta":
+                            is_fl_antibes_contact = True
+                            break
+                    else:
+                        # Pour les autres, correspondance partielle
+                        if target_name in conversion_name:
+                            is_fl_antibes_contact = True
+                            break
+                
+                # 🏖️ LOGS DÉTAILLÉS FL ANTIBES - Vérification des noms de conversions
+                logging.info(f"🏖️ FL ANTIBES DEBUG - Noms recherchés: {self.FL_ANTIBES_CONTACT_NAMES}")
+                logging.info(f"🏖️ FL ANTIBES DEBUG - Nom de conversion: '{conversion_name}'")
+                logging.info(f"🏖️ FL ANTIBES DEBUG - Match trouvé: {is_fl_antibes_contact}")
+                
+                # Log spécial pour les conversions "cta"
+                if "cta" in conversion_name.lower():
+                    logging.info(f"🏖️ FL ANTIBES DEBUG - Conversion CTA détectée: '{conversion_name}' (valeur: {conversions_value})")
+                    if conversion_name == "cta" or conversion_name.strip() == "cta":
+                        logging.info(f"🏖️ FL ANTIBES DEBUG - ✅ CTA exacte acceptée")
+                    else:
+                        logging.info(f"🏖️ FL ANTIBES DEBUG - ❌ CTA partielle rejetée (contient CTA mais n'est pas exacte)")
+                
+                if is_fl_antibes_contact:
+                    contact_total += conversions_value
+                    logging.info(f"🏖️ CONVERSION FL ANTIBES CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion FL Antibes Contact ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact FL Antibes (Appels, CTA, Clicks to call)
+            contact_conversions = [conv for conv in all_conversions 
+                                 if any(target_name in conv['name'].lower() for target_name in self.FL_ANTIBES_CONTACT_NAMES)]
+            
+            logging.info(f"🏖️ Total Contact FL Antibes: {contact_total}")
+            logging.info(f"🏖️ FL ANTIBES RÉSUMÉ - Total final: {contact_total}")
+            logging.info(f"🏖️ FL ANTIBES RÉSUMÉ - Conversions trouvées: {len(contact_conversions)}")
+            for conv in contact_conversions:
+                logging.info(f"🏖️ FL ANTIBES RÉSUMÉ - {conv['name']}: {conv['conversions']}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions FL Antibes Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_fl_antibes_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour FL Antibes Vallauris
+        Uniquement "Itinéraires" et "Local actions - Directions"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🏖️ Recherche des conversions FL ANTIBES ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour FL Antibes (uniquement "Itinéraires" et "Local actions - Directions")
+                is_fl_antibes_directions = any(target_name in conversion_name for target_name in self.FL_ANTIBES_DIRECTIONS_NAMES)
+                
+                if is_fl_antibes_directions:
+                    directions_total += conversions_value
+                    logging.info(f"🏖️ CONVERSION FL ANTIBES ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion FL Antibes Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires FL Antibes
+            directions_conversions = [conv for conv in all_conversions 
+                                    if any(target_name in conv['name'].lower() for target_name in self.FL_ANTIBES_DIRECTIONS_NAMES)]
+            
+            logging.info(f"🏖️ Total Itinéraires FL Antibes: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions FL Antibes Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+    
+    
+    
     def get_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
         """
         Récupère les données de conversions Itinéraires (utilise la nouvelle méthode)
@@ -140,6 +3099,70 @@ class GoogleAdsConversionsService:
                                  if any(target_name in conv['name'].lower() for target_name in self.TARGET_DIRECTIONS_NAMES)]
         
         return directions_total, directions_conversions
+    
+    def get_addario_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour Addario
+        Uniquement les conversions contenant "Itinéraires" et "Local actions - Directions"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🎯 Recherche des conversions ADDARIO ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour Addario (uniquement "Itinéraires" et "Local actions - Directions")
+                is_addario_directions = any(target_name in conversion_name for target_name in self.ADDARIO_DIRECTIONS_NAMES)
+                
+                if is_addario_directions:
+                    directions_total += conversions_value
+                    logging.info(f"🎯 CONVERSION ADDARIO ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"⚠️ Conversion Addario ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires Addario
+            directions_conversions = [conv for conv in all_conversions 
+                                     if any(target_name in conv['name'].lower() for target_name in self.ADDARIO_DIRECTIONS_NAMES)]
+            
+            logging.info(f"🎯 Total Itinéraires Addario: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Addario pour {customer_id}: {e}")
+            return directions_total, all_conversions
     
     def update_contact_conversions_in_sheet(self, client_name: str, month: str, conversions_total: int) -> bool:
         """
@@ -258,10 +3281,144 @@ class GoogleAdsConversionsService:
         try:
             logging.info(f"🎯 Début du scraping Contact pour {client_name} (ID: {customer_id})")
             
-            # Récupérer les données de conversions Contact
-            total_conversions, found_conversions = self.get_contact_conversions_data(
-                customer_id, start_date, end_date
-            )
+            # Vérifier si c'est A.G. Cryolipolyse pour utiliser la logique spécifique
+            if customer_id == "9321943301" or client_name == "A.G. Cryolipolyse":
+                logging.info(f"🧊 Utilisation de la logique spécifique Cryolipolyse pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique Cryolipolyse
+                total_conversions, found_conversions = self.get_cryolipolyse_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "3259500758" or client_name == "Crozatier Dijon":
+                logging.info(f"🏪 Utilisation de la logique spécifique Crozatier pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique Crozatier
+                total_conversions, found_conversions = self.get_crozatier_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "1810240249" or client_name == "Denteva":
+                logging.info(f"🦷 Utilisation de la logique spécifique Denteva pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique Denteva
+                total_conversions, found_conversions = self.get_denteva_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "5461114350" or client_name == "EvoPro Informatique":
+                logging.info(f"💻 Utilisation de la logique spécifique EvoPro pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique EvoPro
+                total_conversions, found_conversions = self.get_evopro_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "5104651305" or client_name == "France Literie Aix":
+                logging.info(f"🛏️ Utilisation de la logique spécifique France Literie Aix pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique France Literie Aix
+                total_conversions, found_conversions = self.get_france_literie_aix_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "7349999845" or client_name == "France Literie Dijon":
+                logging.info(f"🏰 Utilisation de la logique spécifique France Literie Dijon pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique France Literie Dijon
+                total_conversions, found_conversions = self.get_france_literie_dijon_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "7807237268" or client_name == "France Literie Narbonne":
+                logging.info(f"🏛️ Utilisation de la logique spécifique France Literie Narbonne pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique France Literie Narbonne
+                total_conversions, found_conversions = self.get_france_literie_narbonne_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "1226105597" or client_name == "France Literie Perpignan":
+                logging.info(f"🏰 Utilisation de la logique spécifique France Literie Perpignan pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique France Literie Perpignan
+                total_conversions, found_conversions = self.get_france_literie_perpignan_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "4854280249" or client_name == "Kaltea Aubagne":
+                logging.info(f"🌡️ Utilisation de la logique spécifique Kaltea Aubagne pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique Kaltea Aubagne
+                total_conversions, found_conversions = self.get_kaltea_aubagne_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "1189918252" or client_name == "Kaltea Chalon sur Saône":
+                logging.info(f"🌡️ Utilisation de la logique spécifique Kaltea Chalon pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique Kaltea Chalon
+                total_conversions, found_conversions = self.get_kaltea_chalon_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "5074336650" or client_name == "Kaltea Lyon Sud":
+                logging.info(f"🌡️ Utilisation de la logique spécifique Kaltea Lyon pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique Kaltea Lyon
+                total_conversions, found_conversions = self.get_kaltea_lyon_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "5901565913" or client_name == "Laserel":
+                logging.info(f"🔬 Utilisation de la logique spécifique Laserel pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique Laserel
+                total_conversions, found_conversions = self.get_laserel_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "4865583978" or client_name == "Star Literie":
+                logging.info(f"⭐ Utilisation de la logique spécifique Star Literie pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique Star Literie
+                total_conversions, found_conversions = self.get_star_literie_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "3245028529" or client_name == "Tousalon Perpignan":
+                logging.info(f"💇 Utilisation de la logique spécifique Tousalon Perpignan pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique Tousalon Perpignan
+                total_conversions, found_conversions = self.get_tousalon_perpignan_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "4913925892" or client_name == "Tousalon Toulouse":
+                logging.info(f"🏛️ Utilisation de la logique spécifique Tousalon Toulouse pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique Tousalon Toulouse
+                total_conversions, found_conversions = self.get_tousalon_toulouse_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "2620320258" or client_name == "Bedroom Perpignan":
+                logging.info(f"🛏️ Utilisation de la logique spécifique Bedroom pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique Bedroom
+                total_conversions, found_conversions = self.get_bedroom_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "9360801546" or client_name == "Cuisine Plus Perpignan":
+                logging.info(f"🍽️ Utilisation de la logique spécifique Cuisine Plus Perpignan pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique Cuisine Plus Perpignan (pas de contact)
+                total_conversions, found_conversions = self.get_cuisine_plus_perpignan_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "9576529976" or client_name == "Flamme&Creation":
+                logging.info(f"🔥 Utilisation de la logique spécifique Flamme&Creation pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique Flamme&Creation
+                total_conversions, found_conversions = self.get_flamme_creation_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "1842495793" or client_name == "France Literie Champagne":
+                logging.info(f"🍾 Utilisation de la logique spécifique FL Champagne pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique FL Champagne
+                total_conversions, found_conversions = self.get_fl_champagne_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "3511211392" or client_name == "France Literie Saint-Priest & Givors":
+                logging.info(f"🏰 Utilisation de la logique spécifique Saint Priest Givors pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique Saint Priest Givors
+                total_conversions, found_conversions = self.get_saint_priest_givors_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "2744128994" or client_name == "France Literie Annemasse":
+                logging.info(f"🏔️ Utilisation de la logique spécifique France Literie Annemasse pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique France Literie Annemasse
+                total_conversions, found_conversions = self.get_france_literie_annemasse_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "2485486745" or client_name == "France Literie Antibes Vallauris":
+                logging.info(f"🏖️ Utilisation de la logique spécifique FL Antibes Vallauris pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique FL Antibes Vallauris
+                total_conversions, found_conversions = self.get_fl_antibes_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            else:
+                # Récupérer les données de conversions Contact avec la logique standard
+                total_conversions, found_conversions = self.get_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
             
             # Mettre à jour le Google Sheet
             success = self.update_contact_conversions_in_sheet(client_name, month, total_conversions)
@@ -306,10 +3463,138 @@ class GoogleAdsConversionsService:
         try:
             logging.info(f"🎯 Début du scraping Itinéraires pour {client_name} (ID: {customer_id})")
             
-            # Récupérer les données de conversions Itinéraires
-            total_conversions, found_conversions = self.get_directions_conversions_data(
-                customer_id, start_date, end_date
-            )
+            # Vérifier si c'est Addario pour utiliser la logique spécifique
+            if customer_id == "1513412386" or client_name == "Addario":
+                logging.info(f"🎯 Utilisation de la logique spécifique Addario pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique Addario
+                total_conversions, found_conversions = self.get_addario_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "1810240249" or client_name == "Denteva":
+                logging.info(f"🦷 Utilisation de la logique spécifique Denteva pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique Denteva
+                total_conversions, found_conversions = self.get_denteva_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "5461114350" or client_name == "EvoPro Informatique":
+                logging.info(f"💻 Utilisation de la logique spécifique EvoPro pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique EvoPro
+                total_conversions, found_conversions = self.get_evopro_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "5104651305" or client_name == "France Literie Aix":
+                logging.info(f"🛏️ Utilisation de la logique spécifique France Literie Aix pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique France Literie Aix
+                total_conversions, found_conversions = self.get_france_literie_aix_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "7349999845" or client_name == "France Literie Dijon":
+                logging.info(f"🏰 Utilisation de la logique spécifique France Literie Dijon pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique France Literie Dijon
+                total_conversions, found_conversions = self.get_france_literie_dijon_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "7807237268" or client_name == "France Literie Narbonne":
+                logging.info(f"🏛️ Utilisation de la logique spécifique France Literie Narbonne pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique France Literie Narbonne
+                total_conversions, found_conversions = self.get_france_literie_narbonne_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "1226105597" or client_name == "France Literie Perpignan":
+                logging.info(f"🏰 Utilisation de la logique spécifique France Literie Perpignan pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique France Literie Perpignan
+                total_conversions, found_conversions = self.get_france_literie_perpignan_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "4854280249" or client_name == "Kaltea Aubagne":
+                logging.info(f"🌡️ Utilisation de la logique spécifique Kaltea Aubagne pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique Kaltea Aubagne
+                total_conversions, found_conversions = self.get_kaltea_aubagne_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "1189918252" or client_name == "Kaltea Chalon sur Saône":
+                logging.info(f"🌡️ Utilisation de la logique spécifique Kaltea Chalon pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique Kaltea Chalon
+                total_conversions, found_conversions = self.get_kaltea_chalon_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "5074336650" or client_name == "Kaltea Lyon Sud":
+                logging.info(f"🌡️ Utilisation de la logique spécifique Kaltea Lyon pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique Kaltea Lyon
+                total_conversions, found_conversions = self.get_kaltea_lyon_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "5901565913" or client_name == "Laserel":
+                logging.info(f"🔬 Utilisation de la logique spécifique Laserel pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique Laserel
+                total_conversions, found_conversions = self.get_laserel_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "4865583978" or client_name == "Star Literie":
+                logging.info(f"⭐ Utilisation de la logique spécifique Star Literie pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique Star Literie
+                total_conversions, found_conversions = self.get_star_literie_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "3245028529" or client_name == "Tousalon Perpignan":
+                logging.info(f"💇 Utilisation de la logique spécifique Tousalon Perpignan pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique Tousalon Perpignan
+                total_conversions, found_conversions = self.get_tousalon_perpignan_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "4913925892" or client_name == "Tousalon Toulouse":
+                logging.info(f"🏛️ Utilisation de la logique spécifique Tousalon Toulouse pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique Tousalon Toulouse
+                total_conversions, found_conversions = self.get_tousalon_toulouse_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "2620320258" or client_name == "Bedroom Perpignan":
+                logging.info(f"🛏️ Utilisation de la logique spécifique Bedroom pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique Bedroom
+                total_conversions, found_conversions = self.get_bedroom_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "9360801546" or client_name == "Cuisine Plus Perpignan":
+                logging.info(f"🍽️ Utilisation de la logique spécifique Cuisine Plus Perpignan pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique Cuisine Plus Perpignan
+                total_conversions, found_conversions = self.get_cuisine_plus_perpignan_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "9576529976" or client_name == "Flamme&Creation":
+                logging.info(f"🔥 Utilisation de la logique spécifique Flamme&Creation pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique Flamme&Creation
+                total_conversions, found_conversions = self.get_flamme_creation_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "1842495793" or client_name == "France Literie Champagne":
+                logging.info(f"🍾 Utilisation de la logique spécifique FL Champagne pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique FL Champagne
+                total_conversions, found_conversions = self.get_fl_champagne_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "3511211392" or client_name == "France Literie Saint-Priest & Givors":
+                logging.info(f"🏰 Utilisation de la logique spécifique Saint Priest Givors pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique Saint Priest Givors
+                total_conversions, found_conversions = self.get_saint_priest_givors_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "2744128994" or client_name == "France Literie Annemasse":
+                logging.info(f"🏔️ Utilisation de la logique spécifique France Literie Annemasse pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique France Literie Annemasse
+                total_conversions, found_conversions = self.get_france_literie_annemasse_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "2485486745" or client_name == "France Literie Antibes Vallauris":
+                logging.info(f"🏖️ Utilisation de la logique spécifique FL Antibes Vallauris pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique FL Antibes Vallauris
+                total_conversions, found_conversions = self.get_fl_antibes_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            else:
+                # Récupérer les données de conversions Itinéraires avec la logique standard
+                total_conversions, found_conversions = self.get_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
             
             # Mettre à jour le Google Sheet
             success = self.update_directions_conversions_in_sheet(client_name, month, total_conversions)

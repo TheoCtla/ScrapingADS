@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import ReportHeader from './components/unified/ReportHeader/ReportHeader';
 import ClientSelector from './components/unified/ClientSelector/ClientSelector';
@@ -226,9 +226,9 @@ const App: React.FC = () => {
   };
 
   // Gestionnaire pour les informations client (NOUVEAU)
-  const handleClientInfoChange = (info: any) => {
+  const handleClientInfoChange = useCallback((info: any) => {
     setClientInfo(info);
-  };
+  }, []);
 
   // Alerte globale pour rappeler Orgeval et Melun
   useEffect(() => {
@@ -252,7 +252,7 @@ const App: React.FC = () => {
   // Fonction pour obtenir les clients filtrés de la searchbar
   const getFilteredClientsFromSearchbar = async (searchTerm: string = '') => {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/list-filtered-clients`, {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5050'}/list-filtered-clients`, {
         search_term: searchTerm
       }, {
         withCredentials: true,
@@ -328,7 +328,7 @@ const App: React.FC = () => {
       
               console.log('DEBUG: payload unifié envoyé:', payload);
       
-              const response = await axios.post(`${import.meta.env.VITE_API_URL}/export-unified-report`, payload);
+              const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5050'}/export-unified-report`, payload);
 
       console.log('🔧 DEBUG: response reçue:', response);
 
@@ -410,7 +410,7 @@ const App: React.FC = () => {
       
       console.log(`📤 Envoi du payload pour ${clientName}:`, payload);
       
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/export-unified-report`, payload);
+      const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5050'}/export-unified-report`, payload);
       
       if (response.data.success) {
         console.log(`✅ Succès pour ${clientName}:`, response.data.message);
