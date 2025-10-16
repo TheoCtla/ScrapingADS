@@ -60,9 +60,8 @@ Config.ensure_directories()
 # Valider que toutes les variables sensibles sont définies
 try:
     Config.validate_required_vars()
-    logging.info("✅ Toutes les variables d'environnement sont configurées")
 except ValueError as e:
-    logging.error(f"❌ Erreur de configuration : {e}")
+    logging.error(f"Erreur de configuration : {e}")
     raise
 
 # Services globaux (initialisation paresseuse)
@@ -108,7 +107,7 @@ def list_authorized_clients():
             "count": len(allowlist)
         })
     except Exception as e:
-        logging.error(f"❌ Erreur lors de la récupération de la liste blanche: {str(e)}")
+        logging.error(f"Erreur lors de la récupération de la liste blanche: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 @app.route("/list-filtered-clients", methods=["POST"])
@@ -132,7 +131,7 @@ def list_filtered_clients():
             "total_count": len(allowlist)
         })
     except Exception as e:
-        logging.error(f"❌ Erreur lors de la récupération des clients filtrés: {str(e)}")
+        logging.error(f"Erreur lors de la récupération des clients filtrés: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 @app.route("/resolve-client", methods=["POST"])
@@ -161,7 +160,7 @@ def resolve_client():
         })
         
     except Exception as e:
-        logging.error(f"❌ Erreur lors de la résolution du client: {str(e)}")
+        logging.error(f"Erreur lors de la résolution du client: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 # ================================
@@ -176,7 +175,7 @@ def list_google_customers():
         customers_info = google_auth.list_customers()
         return jsonify(customers_info)
     except Exception as e:
-        logging.error(f"❌ Erreur lors de la récupération des clients Google: {str(e)}")
+        logging.error(f"Erreur lors de la récupération des clients Google: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 @app.route("/export-report", methods=["POST"])
@@ -199,7 +198,7 @@ def export_google_report():
     channel_filter = data.get("channel_filter", ["SEARCH", "PERFORMANCE_MAX", "DISPLAY"])
 
     if not customer_id or not start_date or not end_date:
-        logging.error("❌ Paramètres manquants dans /export-report")
+        logging.error("Paramètres manquants dans /export-report")
         return jsonify({"error": "Paramètres manquants"}), 400
 
     try:
@@ -208,7 +207,7 @@ def export_google_report():
         response_data = google_reports.get_campaign_data(customer_id, start_date, end_date, channel_filter)
         
         if not response_data:
-            logging.warning("⚠️ Aucune donnée retournée par la requête GAQL")
+            logging.warning("Aucune donnée retournée par la requête GAQL")
             return jsonify({"error": "Aucune donnée trouvée"}), 404
         
         # Traitement des données pour le CSV
@@ -227,7 +226,7 @@ def export_google_report():
         # Mise à jour automatique du Google Sheet
         if sheet_month and customer_id:
             try:
-                logging.info(f"📊 Tentative de mise à jour du Google Sheet pour {customer_id}, mois: {sheet_month}")
+                logging.info(f" Tentative de mise à jour du Google Sheet pour {customer_id}, mois: {sheet_month}")
                 
                 # Calculer les métriques virtuelles
                 virtual_metrics = google_reports.calculate_channel_specific_metrics(response_data, metrics)
@@ -242,11 +241,11 @@ def export_google_report():
                 sheet_client_name = google_mappings.get_sheet_name_for_customer(customer_id)
                 
                 if not sheet_client_name:
-                    logging.warning(f"⚠️ Pas de mapping trouvé pour le customer_id: {customer_id}")
-                    logging.info(f"📋 Onglets disponibles: {available_sheets}")
-                    logging.info(f"💡 Ajoutez le mapping dans client_mappings.json: \"{customer_id}\": \"Nom_Onglet\"")
+                    logging.warning(f"Pas de mapping trouvé pour le customer_id: {customer_id}")
+                    logging.info(f"Onglets disponibles: {available_sheets}")
+                    logging.info(f"Ajoutez le mapping dans client_mappings.json: \"{customer_id}\": \"Nom_Onglet\"")
                 else:
-                    logging.info(f"📋 Mapping manuel trouvé: {customer_id} -> {sheet_client_name}")
+                    logging.info(f"Mapping manuel trouvé: {customer_id} -> {sheet_client_name}")
                 
                 # Procéder à la mise à jour si un onglet a été trouvé
                 if sheet_client_name and sheet_client_name in available_sheets:
@@ -266,7 +265,7 @@ def export_google_report():
                         
                         if updates:
                             sheets_service.update_sheet_data(sheet_client_name, updates)
-                            logging.info(f"✅ Google Sheet mis à jour avec succès: {len(updates)} cellules")
+                            logging.info(f"Google Sheet mis à jour avec succès: {len(updates)} cellules")
                         
                         # Scraping Contact si demandé
                         contact_enabled = data.get("contact", False)
@@ -277,9 +276,9 @@ def export_google_report():
                                     customer_id, sheet_client_name, start_date, end_date, sheet_month
                                 )
                                 if contact_result.get('success'):
-                                    logging.info(f"✅ Scraping Contact réussi: {contact_result.get('total_conversions')} conversions")
+                                    logging.info(f"Scraping Contact réussi: {contact_result.get('total_conversions')} conversions")
                             except Exception as e:
-                                logging.error(f"❌ Erreur lors du scraping Contact: {e}")
+                                logging.error(f"Erreur lors du scraping Contact: {e}")
                         
                         # Scraping Itinéraires si demandé
                         itineraire_enabled = data.get("itineraire", False)
@@ -290,17 +289,17 @@ def export_google_report():
                                     customer_id, sheet_client_name, start_date, end_date, sheet_month
                                 )
                                 if directions_result.get('success'):
-                                    logging.info(f"✅ Scraping Itinéraires réussi: {directions_result.get('total_conversions')} conversions")
+                                    logging.info(f"Scraping Itinéraires réussi: {directions_result.get('total_conversions')} conversions")
                             except Exception as e:
-                                logging.error(f"❌ Erreur lors du scraping Itinéraires: {e}")
+                                logging.error(f"Erreur lors du scraping Itinéraires: {e}")
                                 
             except Exception as e:
-                logging.error(f"❌ Erreur lors de la mise à jour du Google Sheet: {str(e)}")
+                logging.error(f"Erreur lors de la mise à jour du Google Sheet: {str(e)}")
         
         return send_file(filepath, as_attachment=True)
         
     except Exception as e:
-        logging.error(f"❌ Erreur lors de l'export Google: {str(e)}")
+        logging.error(f"Erreur lors de l'export Google: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 # ================================
@@ -323,11 +322,11 @@ def list_meta_accounts():
                 "status": account["account_status"]
             })
 
-        logging.info(f"📋 {len(accounts_info)} comptes Meta accessibles au total")
+        logging.info(f" {len(accounts_info)} comptes Meta accessibles au total")
         return jsonify(accounts_info)
 
     except Exception as e:
-        logging.error(f"❌ Erreur lors de la récupération des comptes Meta: {str(e)}")
+        logging.error(f"Erreur lors de la récupération des comptes Meta: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 # ================================
@@ -337,10 +336,7 @@ def list_meta_accounts():
 @app.route("/export-unified-report", methods=["POST"])
 @with_concurrency_limit("unified_report_export", timeout=120)
 def export_unified_report():
-    """Export unifié pour Google Ads + Meta Ads avec checkboxes"""
-    logging.info("🚀 ROUTE /export-unified-report appelée")
     data = request.json
-    logging.info(f"📥 Données reçues: {data}")
 
     # Paramètres communs
     start_date = data.get("start_date")
@@ -357,7 +353,6 @@ def export_unified_report():
     # Ajouter automatiquement la métrique de coût si elle n'est pas sélectionnée
     if meta_metrics and "meta.spend" not in meta_metrics:
         meta_metrics.append("meta.spend")
-        logging.info("🔧 Ajout automatique de la métrique 'meta.spend' au rapport unifié")
 
     # Paramètres de scraping
     contact_enabled = data.get("contact", False)
@@ -369,8 +364,6 @@ def export_unified_report():
     if not selected_client:
         return jsonify({"error": "Veuillez sélectionner un client"}), 400
 
-    # NOUVEAU: Résolution du client sélectionné
-    logging.info(f"🎯 Traitement du client sélectionné: {selected_client}")
     
     # Valider et résoudre le client
     client_resolver = get_service('client_resolver')
@@ -385,7 +378,6 @@ def export_unified_report():
     google_customer_id = resolved_accounts["googleAds"]["customerId"] if resolved_accounts["googleAds"] else None
     meta_account_id = resolved_accounts["metaAds"]["adAccountId"] if resolved_accounts["metaAds"] else None
     
-    logging.info(f"🔍 IDs résolus pour '{selected_client}': Google={google_customer_id}, Meta={meta_account_id}")
     
     # Vérifier qu'au moins une plateforme est configurée
     if not google_customer_id and not meta_account_id:
@@ -400,7 +392,7 @@ def export_unified_report():
 
         # ===== TRAITEMENT GOOGLE ADS =====
         if google_customer_id and google_metrics:
-            logging.info(f"📊 Traitement Google Ads pour '{selected_client}' (ID: {google_customer_id})")
+            logging.info(f" Traitement Google Ads pour '{selected_client}' (ID: {google_customer_id})")
             
             try:
                 # Récupérer les données de campagne
@@ -445,7 +437,7 @@ def export_unified_report():
                                                 google_customer_id, sheet_client_name, start_date, end_date, sheet_month
                                             )
                                         except Exception as e:
-                                            logging.error(f"❌ Erreur scraping Contact Google {google_customer_id}: {e}")
+                                            logging.error(f"Erreur scraping Contact Google {google_customer_id}: {e}")
                                     
                                     if itineraire_enabled:
                                         try:
@@ -454,7 +446,7 @@ def export_unified_report():
                                                 google_customer_id, sheet_client_name, start_date, end_date, sheet_month
                                             )
                                         except Exception as e:
-                                            logging.error(f"❌ Erreur scraping Itinéraires Google {google_customer_id}: {e}")
+                                            logging.error(f"Erreur scraping Itinéraires Google {google_customer_id}: {e}")
                             else:
                                 failed_updates.append(f"Google - {selected_client}: Mois '{sheet_month}' non trouvé")
                         else:
@@ -463,19 +455,19 @@ def export_unified_report():
                     failed_updates.append(f"Google - {selected_client}: Aucune donnée Google Ads")
                     
             except Exception as e:
-                logging.error(f"❌ Erreur Google Ads pour {selected_client}: {e}")
+                logging.error(f"Erreur Google Ads pour {selected_client}: {e}")
                 failed_updates.append(f"Google - {selected_client}: Erreur API")
         elif google_metrics and not google_customer_id:
             platform_warnings.append("Google Ads non configuré pour ce client")
 
         # ===== TRAITEMENT META ADS (OPTIMISÉ) =====
         if meta_account_id and meta_metrics:
-            logging.info(f"📊 Traitement Meta Ads pour '{selected_client}' (ID: {meta_account_id})")
+            logging.info(f" Traitement Meta Ads pour '{selected_client}' (ID: {meta_account_id})")
             
             try:
                 # Récupérer les données Meta avec timeout strict
                 meta_reports = get_service('meta_reports')
-                logging.info(f"🔄 Début récupération Meta pour {meta_account_id}")
+                logging.info(TDébut récupération Meta pour {meta_account_id}")
                 
                 # Utiliser un timeout global pour éviter les blocages
                 import threading
@@ -493,7 +485,7 @@ def export_unified_report():
                 try:
                     insights = meta_reports.get_meta_insights(meta_account_id, start_date, end_date)
                     timeout_timer.cancel()  # Annuler le timeout
-                    logging.info(f"✅ Données Meta récupérées: {insights is not None}")
+                    logging.info(f"Données Meta récupérées: {insights is not None}")
                     
                     if insights:
                         # Récupérer le CPL moyen des campagnes avec conversions > 0
@@ -530,7 +522,7 @@ def export_unified_report():
                                                     'range': f"{column_letter}{month_row}",
                                                     'value': metric_value
                                                 })
-                                                logging.info(f"📊 {column_name}: {metric_value} → {column_letter}{month_row}")
+                                                logging.info(f" {column_name}: {metric_value} → {column_letter}{month_row}")
                                     
                                     if updates:
                                         sheets_service.update_sheet_data(sheet_name, updates)
@@ -553,8 +545,8 @@ def export_unified_report():
                         raise timeout_error
                     
             except Exception as e:
-                logging.error(f"❌ Erreur Meta Ads pour {selected_client}: {e}")
-                logging.error(f"❌ Type d'erreur: {type(e).__name__}")
+                logging.error(f"Erreur Meta Ads pour {selected_client}: {e}")
+                logging.error(f"Type d'erreur: {type(e).__name__}")
                 failed_updates.append(f"Meta - {selected_client}: Erreur API - {str(e)[:100]}")
                 
         elif meta_metrics and not meta_account_id:
@@ -562,9 +554,9 @@ def export_unified_report():
 
         # Log des résultats
         if successful_updates:
-            logging.info(f"✅ Mises à jour réussies: {successful_updates}")
+            logging.info(f"Mises à jour réussies: {successful_updates}")
         if failed_updates:
-            logging.warning(f"⚠️ Échecs: {failed_updates}")
+            logging.warning(f" Échecs: {failed_updates}")
         if platform_warnings:
             logging.info(f"ℹ️ Avertissements plateformes: {platform_warnings}")
 
@@ -583,7 +575,7 @@ def export_unified_report():
         })
 
     except Exception as e:
-        logging.error(f"❌ Erreur lors de l'export unifié: {str(e)}")
+        logging.error(f"Erreur lors de l'export unifié: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 # ================================
@@ -606,7 +598,7 @@ def concurrency_status():
             "timestamp": datetime.now().isoformat()
         }), 200
     except Exception as e:
-        logging.error(f"❌ Erreur lors de la récupération du statut de concurrence: {e}")
+        logging.error(f"Erreur lors de la récupération du statut de concurrence: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route("/", methods=["GET"])
@@ -642,7 +634,7 @@ def export_meta_only():
             return jsonify({"error": "Aucun compte Meta configuré pour ce client"}), 400
         
         # Traitement Meta avec timeout strict
-        logging.info(f"🔄 Début traitement Meta séparé pour {selected_client}")
+        logging.info(f"Traitement Meta séparé pour {selected_client}")
         
         # TODO: Implémenter le traitement Meta ici une fois les problèmes résolus
         return jsonify({
@@ -652,7 +644,7 @@ def export_meta_only():
         })
         
     except Exception as e:
-        logging.error(f"❌ Erreur endpoint Meta séparé: {e}")
+        logging.error(f"Erreur endpoint Meta séparé: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route("/update_sheet", methods=["POST"])
@@ -672,7 +664,7 @@ def update_sheet():
                 "error": "Paramètres manquants. Requis: mois, client, data"
             }), 400
         
-        logging.info(f"🔄 Début de mise à jour pour client '{client_name}', mois '{mois}'")
+        logging.info("Début de mise à jour pour client '{client_name}', mois '{mois}'")
         
         # Vérifier que l'onglet du client existe
         sheets_service = get_service('sheets_service')
@@ -729,7 +721,7 @@ def update_sheet():
             }), 400
     
     except Exception as e:
-        logging.error(f"❌ Erreur lors de la mise à jour du sheet: {str(e)}")
+        logging.error(f"Erreur lors de la mise à jour du sheet: {str(e)}")
         return jsonify({
             "error": f"Erreur interne: {str(e)}"
         }), 500
@@ -764,7 +756,7 @@ def test_auto_detection():
         })
         
     except Exception as e:
-        logging.error(f"❌ Erreur test auto-détection: {str(e)}")
+        logging.error(f"Erreur test auto-détection: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 # ================================
@@ -790,7 +782,7 @@ def scrape_light_contact():
         return jsonify(result), 200 if result.get("success") else 500
         
     except Exception as e:
-        logging.error(f"❌ Erreur scraping Contact léger: {e}")
+        logging.error(f"Erreur scraping Contact léger: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route("/scrape-light-directions", methods=["POST"])
@@ -812,7 +804,7 @@ def scrape_light_directions():
         return jsonify(result), 200 if result.get("success") else 500
         
     except Exception as e:
-        logging.error(f"❌ Erreur scraping Itinéraires léger: {e}")
+        logging.error(f"Erreur scraping Itinéraires léger: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route("/scrape-website-light", methods=["POST"])
@@ -833,7 +825,7 @@ def scrape_website_light():
         return jsonify(result), 200 if result.get("success") else 500
         
     except Exception as e:
-        logging.error(f"❌ Erreur scraping site léger: {e}")
+        logging.error(f"Erreur scraping site léger: {e}")
         return jsonify({"error": str(e)}), 500
 
 # ================================
@@ -841,8 +833,8 @@ def scrape_website_light():
 # ================================
 
 if __name__ == "__main__":
-    logging.info("🚀 Démarrage de l'application de reporting publicitaire")
-    logging.info(f"📋 Configuration chargée:")
+    logging.info("🚀 Démarrage de l'application de scraping ads")
+    logging.info(f" Configuration chargée:")
     logging.info(f"   - Port: {Config.FLASK.PORT}")
     logging.info(f"   - Debug: {Config.FLASK.DEBUG}")
     logging.info(f"   - CORS Origins: {Config.FLASK.CORS_ORIGINS}")
