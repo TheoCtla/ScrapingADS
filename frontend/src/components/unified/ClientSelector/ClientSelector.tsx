@@ -41,7 +41,6 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
           if (onAuthorizedClientsChange) {
             onAuthorizedClientsChange(response.data.clients);
           }
-          console.log(`✅ ${response.data.count} clients autorisés chargés`);
         } else {
           throw new Error('Format de réponse invalide');
         }
@@ -73,7 +72,6 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
 
       if (response.data && response.data.client_info) {
         onClientInfoChange(response.data.client_info);
-        console.log('✅ Informations client résolues:', response.data.client_info);
       }
     } catch (error: any) {
       console.error('❌ Erreur lors de la résolution du client:', error);

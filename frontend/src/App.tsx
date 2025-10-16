@@ -7,6 +7,7 @@ import MetricsSelector from './components/google/GoogleMetricsSelector/MetricsSe
 import MetaMetricsSelector from './components/meta/MetaMetricsSelector/MetaMetricsSelector';
 import UnifiedDownloadButton from './components/unified/UnifiedDownloadButton/UnifiedDownloadButton';
 import BulkScrapingProgress from './components/unified/BulkScrapingProgress/BulkScrapingProgress';
+import SuccessModal from './components/SuccessModal/SuccessModal';
 import { QUOTA_CONFIG, getRetryDelay, isQuotaError } from './config/quotas';
 import './App.css';
 
@@ -44,6 +45,14 @@ const App: React.FC = () => {
   // État du client sélectionné (NOUVEAU)
   const [selectedClient, setSelectedClient] = useState<string>('');
   const [clientInfo, setClientInfo] = useState<any>(null);
+  
+  // État pour la modal de succès
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successData, setSuccessData] = useState({
+    message: '',
+    successfulUpdates: 0,
+    failedUpdates: 0
+  });
   
   // État pour le scraping en masse
   const [authorizedClients, setAuthorizedClients] = useState<string[]>([]);
@@ -272,15 +281,6 @@ const App: React.FC = () => {
 
 
   const handleUnifiedDownload = async () => {
-    console.log('DEBUG: handleUnifiedDownload appelée');
-    console.log('DEBUG: selectedClient:', selectedClient);
-    console.log('DEBUG: clientInfo:', clientInfo);
-    console.log('DEBUG: startDate:', startDate);
-    console.log('DEBUG: endDate:', endDate);
-    console.log('DEBUG: selectedGoogleMetrics:', selectedGoogleMetrics);
-    console.log('DEBUG: selectedMetaMetrics:', selectedMetaMetrics);
-    
-    // Vérifier qu'un client est sélectionné
     if (!selectedClient) {
       alert('Veuillez sélectionner un client');
       return;
@@ -299,7 +299,6 @@ const App: React.FC = () => {
     } else {
       sendType = 'Aucune plateforme configurée';
     }
-    console.log(`🎯 Mode d'envoi: ${sendType}`);
     
     if (sendType === 'Aucune plateforme configurée') {
       alert('Aucune plateforme configurée pour ce client ou aucune métrique sélectionnée');
@@ -326,18 +325,19 @@ const App: React.FC = () => {
         meta_metrics: selectedMetaMetrics.map((m: { value: string }) => m.value),
       };
       
-              console.log('DEBUG: payload unifié envoyé:', payload);
       
               const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5050'}/export-unified-report`, payload);
 
-      console.log('🔧 DEBUG: response reçue:', response);
 
       if (response.data.success) {
-        alert(`Succès ! ${response.data.message}\n\n` +
-              `Mises à jour réussies: ${response.data.successful_updates.length}\n` +
-              `Échecs: ${response.data.failed_updates.length}`);
+        // Afficher la belle popup au lieu de l'alerte
+        setSuccessData({
+          message: response.data.message,
+          successfulUpdates: response.data.successful_updates.length,
+          failedUpdates: response.data.failed_updates.length
+        });
+        setShowSuccessModal(true);
         
-        console.log('Mises à jour réussies:', response.data.successful_updates);
         if (response.data.failed_updates.length > 0) {
           console.log('Échecs:', response.data.failed_updates);
         }
@@ -346,7 +346,6 @@ const App: React.FC = () => {
         console.error('Response body:', response.data);
       }
       
-      console.log('🔧 DEBUG: Envoi au Google Sheet terminé avec succès');
     } catch (error: any) {
               console.error('ERROR: Error downloading unified report:', error);
       
@@ -388,7 +387,6 @@ const App: React.FC = () => {
   // Fonction pour traiter un client individuel (réutilise la logique existante)
   const processSingleClient = async (clientName: string, context: any) => {
     try {
-      console.log(`🔄 Début du traitement pour le client: ${clientName}`);
       
       const payload = {
         // Paramètres communs
@@ -697,6 +695,15 @@ const App: React.FC = () => {
         onCancel={handleCancelBulkScraping}
         completedClients={bulkScrapingState.completedClients}
         failedClients={bulkScrapingState.failedClients}
+      />
+      
+      {/* Modal de succès */}
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        message={successData.message}
+        successfulUpdates={successData.successfulUpdates}
+        failedUpdates={successData.failedUpdates}
       />
     </div>
   );

@@ -84,12 +84,12 @@ class GoogleSheetsService:
             ).execute()
             
             values = result.get('values', [])
-            logging.info(f"🔍 Recherche du mois '{month_to_search}' (original: '{month}') dans l'onglet '{worksheet_name}'")
+            # Recherche du mois '{month_to_search}' (original: '{month}') dans l'onglet '{worksheet_name}'
             
             for i, row in enumerate(values):
                 if row and len(row) > 0 and row[0].strip() == month_to_search.strip():
                     row_number = i + 1  # 1-indexed
-                    logging.info(f"✅ Mois '{month_to_search}' trouvé à la ligne {row_number}")
+                    # Mois '{month_to_search}' trouvé à la ligne {row_number}
                     return row_number
             
             logging.warning(f"⚠️ Mois '{month_to_search}' non trouvé dans l'onglet '{worksheet_name}'")
@@ -123,13 +123,13 @@ class GoogleSheetsService:
                 return None
             
             headers = values[0]
-            logging.info(f"🔍 En-têtes trouvés dans '{worksheet_name}': {headers}")
+            # En-têtes trouvés dans '{worksheet_name}': {headers}
             
             for i, header in enumerate(headers):
                 if header and header.strip() == metric_name.strip():
                     # Convertir l'index en lettre de colonne
                     column_letter = self._index_to_column_letter(i)
-                    logging.info(f"✅ Métrique '{metric_name}' trouvée dans la colonne {column_letter}")
+                    # Métrique '{metric_name}' trouvée dans la colonne {column_letter}
                     return column_letter
             
             logging.warning(f"⚠️ Métrique '{metric_name}' non trouvée dans l'onglet '{worksheet_name}'")
@@ -179,7 +179,7 @@ class GoogleSheetsService:
                     'values': [[update['value']]]
                 })
             
-            logging.info(f"📊 Préparation de la mise à jour batch pour {len(updates)} cellules")
+            # Préparation de la mise à jour batch pour {len(updates)} cellules
             logging.info(f"📋 Données à mettre à jour: {batch_update_data}")
             
             # Exécuter la mise à jour
@@ -189,7 +189,7 @@ class GoogleSheetsService:
             ).execute()
             
             updated_cells = result.get('totalUpdatedCells', 0)
-            logging.info(f"✅ Mise à jour réussie: {updated_cells} cellules modifiées")
+            # Mise à jour réussie: {updated_cells} cellules modifiées
             
             return [f"{update['range']}: {update['value']}" for update in updates]
             
@@ -220,7 +220,7 @@ class GoogleSheetsService:
                 body=body
             ).execute()
             
-            logging.info(f"✅ Cellule {full_range} mise à jour avec la valeur {value}")
+            # Cellule {full_range} mise à jour avec la valeur {value}
             return True
             
         except Exception as e:

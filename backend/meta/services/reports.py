@@ -96,7 +96,7 @@ class MetaAdsReportsService:
                 "limit": 50  # Réduire la limite pour éviter timeout
             }
             
-            logging.info(f"🔍 Appel API Meta pour {ad_account_id}: {start_date} à {end_date} (niveau campagne)")
+            # Appel API Meta pour {ad_account_id}: {start_date} à {end_date} (niveau campagne)
             
             # Gérer la pagination pour récupérer toutes les campagnes
             all_data = []
@@ -132,7 +132,7 @@ class MetaAdsReportsService:
                 logging.warning(f"⚠️ Limite de pages atteinte ({max_pages}) pour la récupération des insights Meta")
             
             data = all_data
-            logging.info(f"📊 Données Meta reçues: {len(data)} campagnes")
+            # Données Meta reçues: {len(data)} campagnes
             
             if not data:
                 logging.warning(f"⚠️ Aucune donnée de campagne trouvée pour {ad_account_id}")
@@ -210,10 +210,10 @@ class MetaAdsReportsService:
             # CPC = Total Spend / Total Link Clicks (CORRECT !)
             aggregated_data["cpc"] = (total_spend / total_link_clicks) if total_link_clicks > 0 else 0
             
-            logging.info(f"🎯 Agrégation finale: {total_clicks} clics, {total_link_clicks} link_clicks, {total_impressions} impressions")
+            # Agrégation finale: {total_clicks} clics, {total_link_clicks} link_clicks, {total_impressions} impressions
             logging.info(f"💰 Spend total: {total_spend}€, Spend avec contacts: {total_spend_with_contacts}€")
-            logging.info(f"🎯 CTR calculé: {aggregated_data['ctr']:.2f}%, CPC calculé: {aggregated_data['cpc']:.2f}€ (basé sur link_clicks)")
-            logging.info(f"📊 {valid_campaigns} campagnes avec données sur {len(data)} campagnes totales")
+            # CTR calculé: {aggregated_data['ctr']:.2f}%, CPC calculé: {aggregated_data['cpc']:.2f}€ (basé sur link_clicks)
+            # {valid_campaigns} campagnes avec données sur {len(data)} campagnes totales
             
             return aggregated_data
             
@@ -243,7 +243,7 @@ class MetaAdsReportsService:
                 "time_range": f'{{"since":"{start_date}","until":"{end_date}"}}'
             }
             
-            logging.info(f"🔍 DEBUG: Appel API Meta campagnes pour CPL moyen {ad_account_id}: {start_date} à {end_date}")
+            # DEBUG: Appel API Meta campagnes pour CPL moyen {ad_account_id}: {start_date} à {end_date}
             
             response = self._make_meta_request_with_retry(url, params)
             if response is None:
@@ -253,7 +253,7 @@ class MetaAdsReportsService:
             response_data = response.json()
             data = response_data.get("data", [])
             
-            logging.info(f"📊 DEBUG: Données campagnes Meta reçues: {len(data)} campagnes")
+            # DEBUG: Données campagnes Meta reçues: {len(data)} campagnes
             
             valid_cpls = []
             
@@ -264,15 +264,15 @@ class MetaAdsReportsService:
                 impressions = int(campaign.get('impressions', 0))
                 actions = campaign.get('actions', [])
                 
-                logging.info(f"🔍 DEBUG Campagne {i+1}: '{campaign_name}'")
-                logging.info(f"   - Spend: {spend}€")
-                logging.info(f"   - Impressions: {impressions}")
-                logging.info(f"   - Actions: {actions}")
-                logging.info(f"   - Cost_per_result brut: {cost_per_result}")
+                # DEBUG Campagne {i+1}: '{campaign_name}'
+                # Debug: Spend: {spend}€
+                # Debug: Impressions: {impressions}
+                # Debug: Actions: {actions}
+                # Debug: Cost_per_result brut: {cost_per_result}
                 
                 # Condition pour campagne active : spend > 0 ET impressions > 0
                 is_active = spend > 0 and impressions > 0
-                logging.info(f"   - Campagne active ? {is_active}")
+                # Debug: Campagne active ? {is_active}
                 
                 if not is_active:
                     logging.info(f"   ❌ Campagne '{campaign_name}' ignorée (inactive)")
@@ -280,7 +280,7 @@ class MetaAdsReportsService:
                 
                 # Analyser cost_per_result
                 if cost_per_result:
-                    logging.info(f"   - Cost_per_result existe, longueur: {len(cost_per_result) if isinstance(cost_per_result, list) else 'Not a list'}")
+                    # Debug: Cost_per_result existe, longueur: {len(cost_per_result) if isinstance(cost_per_result, list) else 'Not a list'}
                     
                     if isinstance(cost_per_result, list) and len(cost_per_result) > 0:
                         for j, cpr_item in enumerate(cost_per_result):
@@ -312,8 +312,8 @@ class MetaAdsReportsService:
             if valid_cpls:
                 average_cpl = sum(valid_cpls) / len(valid_cpls)
                 logging.info(f"📈 CPL moyen calculé: {average_cpl:.2f}€ sur {len(valid_cpls)} campagnes actives")
-                logging.info(f"📊 Détail des CPL: {[round(cpl, 2) for cpl in valid_cpls]}")
-                logging.info(f"🎯 RÉSULTAT FINAL: {round(average_cpl, 2)}€")
+                # Détail des CPL: {[round(cpl, 2) for cpl in valid_cpls]}
+                # RÉSULTAT FINAL: {round(average_cpl, 2)}€
                 return round(average_cpl, 2)
             else:
                 logging.warning(f"⚠️ AUCUNE campagne active avec cost_per_result trouvée pour {ad_account_id}")
@@ -362,20 +362,20 @@ class MetaAdsReportsService:
             # CONTACTS : Actions de génération de leads
             if action_type in ['onsite_web_lead', 'lead', 'offsite_conversion.fb_pixel_lead']:
                 contact_conversions += total_value
-                logging.info(f"✅ CONTACT DÉTECTÉ: '{action_type}' = {total_value}")
+                # CONTACT DÉTECTÉ: '{action_type}' = {total_value}
                 
             # RECHERCHES : Actions de recherche de lieux
             elif action_type == 'offsite_conversion.fb_pixel_custom':
                 search_conversions += total_value
-                logging.info(f"✅ RECHERCHE DÉTECTÉE: '{action_type}' = {total_value}")
+                # RECHERCHE DÉTECTÉE: '{action_type}' = {total_value}
                 
             # Autres actions (debug seulement)
             else:
                 logging.info(f"ℹ️ ACTION AUTRE: '{action_type}' = {total_value}")
         
-        logging.info(f"🎯 Actions agrégées: Contact={contact_conversions}, Recherche={search_conversions}")
+        # Actions agrégées: Contact={contact_conversions}, Recherche={search_conversions}
         if action_totals:
-            logging.info(f"🔍 Détail actions par type: {action_totals}")
+            # Détail actions par type: {action_totals}
             logging.info("📋 ANALYSE DES ACTIONS META :")
             for action_type, value in action_totals.items():
                 if 'contact' in action_type.lower() or 'lead' in action_type.lower() or 'form' in action_type.lower():

@@ -478,18 +478,21 @@ def export_unified_report():
                 logging.info(f"🔄 Début récupération Meta pour {meta_account_id}")
                 
                 # Utiliser un timeout global pour éviter les blocages
-                import signal
+                import threading
+                import time
                 
-                def timeout_handler(signum, frame):
-                    raise TimeoutError("Timeout Meta Ads")
+                timeout_occurred = threading.Event()
+                
+                def timeout_handler():
+                    timeout_occurred.set()
                 
                 # Définir un timeout de 60 secondes pour Meta
-                signal.signal(signal.SIGALRM, timeout_handler)
-                signal.alarm(60)
+                timeout_timer = threading.Timer(60.0, timeout_handler)
+                timeout_timer.start()
                 
                 try:
                     insights = meta_reports.get_meta_insights(meta_account_id, start_date, end_date)
-                    signal.alarm(0)  # Annuler le timeout
+                    timeout_timer.cancel()  # Annuler le timeout
                     logging.info(f"✅ Données Meta récupérées: {insights is not None}")
                     
                     if insights:
@@ -541,10 +544,13 @@ def export_unified_report():
                     else:
                         failed_updates.append(f"Meta - {selected_client}: Aucune donnée Meta Ads")
                         
-                except TimeoutError:
-                    signal.alarm(0)  # Annuler le timeout
-                    logging.error(f"⏰ Timeout Meta Ads pour {selected_client} (60s dépassé)")
-                    failed_updates.append(f"Meta - {selected_client}: Timeout (60s)")
+                except Exception as timeout_error:
+                    timeout_timer.cancel()  # Annuler le timeout
+                    if timeout_occurred.is_set():
+                        logging.error(f"Timeout Meta Ads pour {selected_client} (60s dépassé)")
+                        failed_updates.append(f"Meta - {selected_client}: Timeout (60s)")
+                    else:
+                        raise timeout_error
                     
             except Exception as e:
                 logging.error(f"❌ Erreur Meta Ads pour {selected_client}: {e}")

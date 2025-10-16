@@ -25,8 +25,8 @@ class ClientResolverService:
             self.allowlist = config.get("allowlist", [])
             self.mappings = config.get("mappings", {})
             
-            logging.info(f"✅ Liste blanche chargée: {len(self.allowlist)} clients autorisés")
-            logging.info(f"✅ Mappings chargés: {len(self.mappings)} configurations")
+            # Liste blanche chargée: {len(self.allowlist)} clients autorisés
+            # Mappings chargés: {len(self.mappings)} configurations
             
         except FileNotFoundError:
             logging.error(f"❌ Fichier de configuration non trouvé: {self.allowlist_path}")
@@ -74,7 +74,7 @@ class ClientResolverService:
         google_id = resolved_accounts["googleAds"].get("customerId") if resolved_accounts["googleAds"] else "Non configuré"
         meta_id = resolved_accounts["metaAds"].get("adAccountId") if resolved_accounts["metaAds"] else "Non configuré"
         
-        logging.info(f"🔍 Résolution client '{client_name}': Google={google_id}, Meta={meta_id}")
+        # Résolution client '{client_name}': Google={google_id}, Meta={meta_id}
         
         return resolved_accounts
     
