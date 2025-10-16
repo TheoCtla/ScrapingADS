@@ -11,7 +11,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 
 # Charger les variables d'environnement depuis .env
-load_dotenv()
+load_dotenv()H
 
 # Configuration
 from backend.config.settings import Config
