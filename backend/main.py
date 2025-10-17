@@ -11,7 +11,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 
 # Charger les variables d'environnement depuis .env
-load_dotenv()H
+load_dotenv()
 
 # Configuration
 from backend.config.settings import Config
@@ -467,7 +467,7 @@ def export_unified_report():
             try:
                 # Récupérer les données Meta avec timeout strict
                 meta_reports = get_service('meta_reports')
-                logging.info(TDébut récupération Meta pour {meta_account_id}")
+                logging.info(f"Début récupération Meta pour {meta_account_id}")
                 
                 # Utiliser un timeout global pour éviter les blocages
                 import threading
@@ -483,56 +483,91 @@ def export_unified_report():
                 timeout_timer.start()
                 
                 try:
-                    insights = meta_reports.get_meta_insights(meta_account_id, start_date, end_date)
-                    timeout_timer.cancel()  # Annuler le timeout
-                    logging.info(f"Données Meta récupérées: {insights is not None}")
+                    # Vérifier si la métrique "Contact Meta" est sélectionnée
+                    use_new_contacts_method = "meta.contact" in meta_metrics
                     
-                    if insights:
-                        # Récupérer le CPL moyen des campagnes avec conversions > 0
-                        cpl_average = meta_reports.get_meta_campaigns_cpl_average(meta_account_id, start_date, end_date)
+                    if use_new_contacts_method:
+                        logging.info(f"🔄 Utilisation de la nouvelle méthode getContactsResults() pour les contacts Meta")
+                        # Utiliser la nouvelle méthode pour récupérer les contacts via /insights avec results
+                        contacts_campaigns = meta_reports.getContactsResults(meta_account_id, start_date, end_date)
                         
-                        # Calculer les métriques avec le nouveau CPL
-                        metrics = meta_reports.calculate_meta_metrics(insights, cpl_average)
-                        
-                        # Mettre à jour le Google Sheet si demandé
-                        if sheet_month:
-                            meta_mappings = get_service('meta_mappings')
-                            sheet_name = meta_mappings.get_sheet_name_for_account(meta_account_id)
-                            meta_metrics_mapping = meta_mappings.get_meta_metrics_mapping()
+                        if contacts_campaigns:
+                            # Calculer le total des contacts
+                            total_contacts = sum(campaign['contacts_meta'] for campaign in contacts_campaigns)
+                            logging.info(f"📊 Total contacts Meta via results: {total_contacts}")
                             
-                            if sheet_name and sheet_name in available_sheets:
-                                month_row = sheets_service.get_row_for_month(sheet_name, sheet_month)
+                            # Créer les métriques avec les contacts via results
+                            metrics = {
+                                "Contact Meta": total_contacts
+                            }
+                            
+                            # Ajouter les autres métriques si elles sont sélectionnées
+                            if any(metric in meta_metrics for metric in ["meta.clicks", "meta.impressions", "meta.ctr", "meta.cpc", "meta.cpl", "meta.spend", "meta.recherche_lieux"]):
+                                # Récupérer les insights classiques pour les autres métriques
+                                insights = meta_reports.get_meta_insights(meta_account_id, start_date, end_date)
+                                if insights:
+                                    cpl_average = meta_reports.get_meta_campaigns_cpl_average(meta_account_id, start_date, end_date)
+                                    other_metrics = meta_reports.calculate_meta_metrics(insights, cpl_average, meta_account_id, start_date, end_date)
+                                    
+                                    # Fusionner les métriques (priorité aux contacts via results)
+                                    for key, value in other_metrics.items():
+                                        if key != "Contact Meta":  # Ne pas écraser les contacts via results
+                                            metrics[key] = value
+                        else:
+                            logging.warning(f"⚠️ Aucune donnée de contacts via results trouvée")
+                            metrics = {}
+                    else:
+                        # Utiliser l'ancienne méthode pour toutes les métriques
+                        insights = meta_reports.get_meta_insights(meta_account_id, start_date, end_date)
+                        timeout_timer.cancel()  # Annuler le timeout
+                        logging.info(f"Données Meta récupérées: {insights is not None}")
+                        
+                        if insights:
+                            # Récupérer le CPL moyen des campagnes avec conversions > 0
+                            cpl_average = meta_reports.get_meta_campaigns_cpl_average(meta_account_id, start_date, end_date)
+                            
+                            # Calculer les métriques avec le nouveau CPL et scraping interface
+                            metrics = meta_reports.calculate_meta_metrics(insights, cpl_average, meta_account_id, start_date, end_date)
+                    
+                    # Mettre à jour le Google Sheet si demandé (pour les deux méthodes)
+                    if metrics and sheet_month:
+                        meta_mappings = get_service('meta_mappings')
+                        sheet_name = meta_mappings.get_sheet_name_for_account(meta_account_id)
+                        meta_metrics_mapping = meta_mappings.get_meta_metrics_mapping()
+                        
+                        if sheet_name and sheet_name in available_sheets:
+                            month_row = sheets_service.get_row_for_month(sheet_name, sheet_month)
+                            
+                            if month_row:
+                                updates = []
                                 
-                                if month_row:
-                                    updates = []
+                                # Ne traiter que les métriques sélectionnées par l'utilisateur
+                                for selected_metric in meta_metrics:
+                                    # Convertir la valeur frontend vers le nom de colonne
+                                    column_name = meta_metrics_mapping.get(selected_metric)
                                     
-                                    # Ne traiter que les métriques sélectionnées par l'utilisateur
-                                    for selected_metric in meta_metrics:
-                                        # Convertir la valeur frontend vers le nom de colonne
-                                        column_name = meta_metrics_mapping.get(selected_metric)
+                                    if column_name and column_name in metrics:
+                                        # Récupérer la valeur directement depuis les métriques calculées
+                                        metric_value = metrics[column_name]
                                         
-                                        if column_name and column_name in metrics:
-                                            # Récupérer la valeur directement depuis les métriques calculées
-                                            metric_value = metrics[column_name]
-                                            
-                                            column_letter = sheets_service.get_column_for_metric(sheet_name, column_name)
-                                            
-                                            if column_letter:
-                                                updates.append({
-                                                    'range': f"{column_letter}{month_row}",
-                                                    'value': metric_value
-                                                })
-                                                logging.info(f" {column_name}: {metric_value} → {column_letter}{month_row}")
-                                    
-                                    if updates:
-                                        sheets_service.update_sheet_data(sheet_name, updates)
-                                        successful_updates.append(f"Meta - {sheet_name}: {len(updates)} cellules")
-                                    else:
-                                        failed_updates.append(f"Meta - {selected_client}: Aucune colonne trouvée")
+                                        column_letter = sheets_service.get_column_for_metric(sheet_name, column_name)
+                                        
+                                        if column_letter:
+                                            updates.append({
+                                                'range': f"{column_letter}{month_row}",
+                                                'value': metric_value
+                                            })
+                                            logging.info(f" {column_name}: {metric_value} → {column_letter}{month_row}")
+                                
+                                if updates:
+                                    sheets_service.update_sheet_data(sheet_name, updates)
+                                    successful_updates.append(f"Meta - {sheet_name}: {len(updates)} cellules")
                                 else:
-                                    failed_updates.append(f"Meta - {selected_client}: Mois '{sheet_month}' non trouvé")
+                                    failed_updates.append(f"Meta - {selected_client}: Aucune colonne trouvée")
                             else:
-                                failed_updates.append(f"Meta - {selected_client}: Pas de mapping vers un onglet Google Sheet")
+                                failed_updates.append(f"Meta - {selected_client}: Mois '{sheet_month}' non trouvé")
+                        else:
+                            failed_updates.append(f"Meta - {selected_client}: Pas de mapping vers un onglet Google Sheet")
                     else:
                         failed_updates.append(f"Meta - {selected_client}: Aucune donnée Meta Ads")
                         
