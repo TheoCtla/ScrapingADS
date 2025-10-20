@@ -21,7 +21,6 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
   const [authorizedClients, setAuthorizedClients] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showReminder, setShowReminder] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Charger la liste des clients autorisés au montage du composant
@@ -84,10 +83,23 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
     resolveClientInfo();
   }, [resolveClientInfo]);
 
-  // Filtrer les clients basé sur le terme de recherche
-  const filteredClients = authorizedClients.filter(client =>
-    client.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Fonction pour normaliser les chaînes (supprimer accents, tirets, etc.)
+  const normalizeString = (str: string): string => {
+    return str
+      .toLowerCase()
+      .normalize('NFD') // Décompose les caractères accentués
+      .replace(/[\u0300-\u036f]/g, '') // Supprime les accents
+      .replace(/[-_.,;:!?()[\]{}'"]/g, '') // Supprime la ponctuation et tirets
+      .replace(/\s+/g, ' ') // Normalise les espaces multiples
+      .trim();
+  };
+
+  // Filtrer les clients basé sur le terme de recherche (insensible aux accents)
+  const filteredClients = authorizedClients.filter(client => {
+    const normalizedClient = normalizeString(client);
+    const normalizedSearchTerm = normalizeString(searchTerm);
+    return normalizedClient.includes(normalizedSearchTerm);
+  });
 
   // Fermer le dropdown si on clique à l'extérieur
   useEffect(() => {
@@ -105,15 +117,6 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
     onSelectClient(clientName);
     setIsOpen(false);
     setSearchTerm('');
-    
-    // Afficher le rappel pour Orgeval et Melun
-    if (clientName === 'AvivA Orgeval' || clientName === 'AvivA Melun') {
-      setShowReminder(true);
-      setTimeout(() => {
-        alert('⚠️ RAPPEL IMPORTANT ⚠️\n\nCommence par faire Orgeval et Melun à la main !\n\nAssurez-vous que les données sont correctes avant de continuer.');
-        setShowReminder(false);
-      }, 100);
-    }
   };
 
   if (loading) {
@@ -138,12 +141,6 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
     <div className="client-selector-container">
       <h3 className="client-selector-title">Sélection du Client</h3>
       
-      {/* Alerte pour Orgeval et Melun */}
-      {showReminder && (
-        <div className="client-reminder-alert">
-          ⚠️ RAPPEL : Commence par faire Orgeval et Melun à la main !
-        </div>
-      )}
       
       <div ref={dropdownRef} className="client-dropdown-container">
         {/* Bouton principal du dropdown */}
@@ -176,16 +173,11 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
                 filteredClients.map((client) => (
                   <div
                     key={client}
-                    className={`client-item ${client === selectedClient ? 'selected' : ''} ${
-                      client === 'AvivA Orgeval' || client === 'AvivA Melun' ? 'priority-client' : ''
-                    }`}
+                    className={`client-item ${client === selectedClient ? 'selected' : ''}`}
                     onClick={() => handleSelectClient(client)}
                   >
                     <div className="client-name">
                       {client}
-                      {(client === 'AvivA Orgeval' || client === 'AvivA Melun') && (
-                        <span className="priority-badge">⚠️ Manuel</span>
-                      )}
                     </div>
                   </div>
                 ))

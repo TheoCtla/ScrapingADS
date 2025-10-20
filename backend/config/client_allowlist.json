@@ -12,6 +12,7 @@
     "AvivA Orgeval",
     "Crozatier Dijon",
     "Denteva",
+    "Emma Merignac",
     "EvoPro Informatique",
     "France Literie Aix",
     "France Literie Annemasse",
@@ -23,6 +24,7 @@
     "Kaltea Chalon sur Saône",
     "Kaltea Lyon Sud",
     "Laserel",
+    "Laserel Auxerre",
     "LyleOO",
     "Meuble Rigaud",
     "My Salon Aubière",
@@ -36,7 +38,10 @@
     "France Literie Saint-Priest & Givors",
     "France Literie Champagne",
     "Bedroom Perpignan",
-    "Cuisine Plus Perpignan"
+    "Cuisine Plus Perpignan",
+    "Création contemporaine",
+    "Roche bobois Lyon Centre",
+    "Roche bobois Saint-Bonnet"
   ],
   "mappings": {
     "A.G. Cryolipolyse": {
@@ -76,7 +81,7 @@
         "customerId": null
       },
       "metaAds": {
-        "adAccountId": null
+        "adAccountId": "741870159968483"
       }
     },
     "AvivA Montigny": {
@@ -92,7 +97,7 @@
         "customerId": null
       },
       "metaAds": {
-        "adAccountId": null
+        "adAccountId": "741870159968483"
       }
     },
     "Crozatier Dijon": {
@@ -108,6 +113,14 @@
         "customerId": "1810240249"
       },
       "metaAds": null
+    },
+    "Emma Merignac": {
+      "googleAds": {
+        "customerId": "6090621431"
+      },
+      "metaAds": {
+        "adAccountId": "2569730083369971"
+      }
     },
     "EvoPro Informatique": {
       "googleAds": {
@@ -195,6 +208,14 @@
       },
       "metaAds": {
         "adAccountId": "5093614030719328"
+      }
+    },
+    "Laserel Auxerre": {
+      "googleAds": {
+        "customerId": "3345723560"
+      },
+      "metaAds": {
+        "adAccountId": "24091205780561835"
       }
     },
     "LyleOO": {
@@ -305,6 +326,33 @@
       },
       "metaAds": {
         "adAccountId": "538724497223368"
+      }
+    },
+    "Création contemporaine": {
+      "googleAds": {
+        "customerId": "2210445091"
+      },
+      "metaAds": {
+        "adAccountId": "1646264850112150",
+        "campaignFilter": "CContemporaine"
+      }
+    },
+    "Roche bobois Lyon Centre": {
+      "googleAds": {
+        "customerId": "3938194507"
+      },
+      "metaAds": {
+        "adAccountId": "1646264850112150",
+        "campaignFilter": "Lyon"
+      }
+    },
+    "Roche bobois Saint-Bonnet": {
+      "googleAds": {
+        "customerId": "6841136645"
+      },
+      "metaAds": {
+        "adAccountId": "1646264850112150",
+        "campaignFilter": "St Bonnet"
       }
     }
   },

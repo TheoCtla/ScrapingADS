@@ -150,6 +150,7 @@ class ClientResolverService:
             },
             "meta_ads": {
                 "configured": bool(client_mapping.get("metaAds")),
-                "ad_account_id": client_mapping.get("metaAds", {}).get("adAccountId") if client_mapping.get("metaAds") else None
+                "ad_account_id": client_mapping.get("metaAds", {}).get("adAccountId") if client_mapping.get("metaAds") else None,
+                "campaign_filter": client_mapping.get("metaAds", {}).get("campaignFilter") if client_mapping.get("metaAds") else None
             }
         }

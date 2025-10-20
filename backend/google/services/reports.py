@@ -33,7 +33,8 @@ class GoogleAdsReportsService:
         }
     
     def get_campaign_data(self, customer_id: str, start_date: str, end_date: str, 
-                         channel_filter: List[str] = None) -> List:
+                         channel_filter: List[str] = None,
+                         only_enabled: bool = False) -> List:
         """
         Récupère les données de campagne pour un client donné
         
@@ -73,6 +74,10 @@ class GoogleAdsReportsService:
             segments.date BETWEEN '{start_date}' AND '{end_date}'
             AND campaign.advertising_channel_type IN ({','.join([f"'{c}'" for c in channel_filter])})
         """
+
+        if only_enabled:
+            # Appliquer le filtre statut actif uniquement pour les clients ciblés (ex: Emma)
+            query += "\n            AND campaign.status = 'ENABLED'"
 
         logging.info(f"🔍 Récupération des données de campagne pour {customer_id}")
         logging.info(f"📅 Période: {start_date} à {end_date}")
@@ -153,10 +158,11 @@ class GoogleAdsReportsService:
                 total_data['cpc_count'] += 1
         
         # Log des résultats de debug
-        logging.info(f"📊 Nombre total de lignes traitées: {total_rows}")
-        logging.info(f"📈 Canaux trouvés: {channels_found}")
-        logging.info(f"💰 Données par canal: {channel_data}")
-        logging.info(f"🎯 Totaux globaux: {total_data}")
+        logging.info(f"GOOGLE → COMPOSITION SOURCES (brut)")
+        logging.info(f"  lignes traitées: {total_rows}")
+        logging.info(f"  canaux trouvés: {channels_found}")
+        logging.info(f"  par canal: {channel_data}")
+        logging.info(f"  totaux globaux: {total_data}")
         
         # Calculer les métriques virtuelles
         virtual_metrics = {}
@@ -201,6 +207,13 @@ class GoogleAdsReportsService:
         virtual_metrics['metrics.conversions'] = total_conversions
         virtual_metrics['metrics.phone_calls'] = total_phone_calls
         
+        logging.info("GOOGLE → MÉTRIQUES ENVOYÉES AU SHEET (avec composition)")
+        logging.info(f"  Cout Google ADS = sum(cost_micros)/1e6 = {virtual_metrics['metrics.cost_micros']}")
+        logging.info(f"  Clics search = {virtual_metrics['metrics.clicks_search']}; Impressions Search = {virtual_metrics['metrics.impressions_search']}; Cout Search = {virtual_metrics['metrics.cost_search']}; CPC Search = {virtual_metrics['metrics.average_cpc_search']}")
+        logging.info(f"  Clics Perf Max = {virtual_metrics['metrics.clicks_perfmax']}; Impressions Perf Max = {virtual_metrics['metrics.impressions_perfmax']}; Cout PM = {virtual_metrics['metrics.cost_perfmax']}; CPC Perf Max = {virtual_metrics['metrics.average_cpc_perfmax']}")
+        logging.info(f"  Clics Display = {virtual_metrics['metrics.clicks_display']}; Impressions Display = {virtual_metrics['metrics.impressions_display']}; Cout Display = {virtual_metrics['metrics.cost_display']}; CPC Display = {virtual_metrics['metrics.average_cpc_display']}")
+        logging.info(f"  Total Clic = {virtual_metrics['metrics.total_clicks']}; Total Impressions = {virtual_metrics['metrics.impressions']}; Total CPC moyen = {virtual_metrics['metrics.average_cpc']}; CTR Google = {virtual_metrics['metrics.ctr']}")
+
         return virtual_metrics
     
     def process_virtual_metrics_data(self, response_data: List, selected_metrics: List[str]) -> Tuple[List[str], List[List], List[List]]:

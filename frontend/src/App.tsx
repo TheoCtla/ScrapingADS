@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import axios from 'axios';
 import ReportHeader from './components/unified/ReportHeader/ReportHeader';
 import ClientSelector from './components/unified/ClientSelector/ClientSelector';
@@ -239,18 +239,6 @@ const App: React.FC = () => {
     setClientInfo(info);
   }, []);
 
-  // Alerte globale pour rappeler Orgeval et Melun
-  useEffect(() => {
-    // Afficher l'alerte une seule fois au chargement de l'application
-    const hasShownReminder = sessionStorage.getItem('orgeval-melun-reminder');
-    
-    if (!hasShownReminder) {
-      setTimeout(() => {
-        alert('⚠️ RAPPEL IMPORTANT ⚠️\n\nCommence par faire Orgeval et Melun à la main !\n\nAssurez-vous que les données sont correctes avant de continuer avec les autres clients.');
-        sessionStorage.setItem('orgeval-melun-reminder', 'shown');
-      }, 2000); // Délai de 2 secondes pour laisser l'interface se charger
-    }
-  }, []);
 
   // Gestionnaire pour la liste des clients autorisés
   const handleAuthorizedClientsChange = (clients: string[]) => {

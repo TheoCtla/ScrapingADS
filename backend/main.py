@@ -110,18 +110,24 @@ def list_authorized_clients():
         logging.error(f"Erreur lors de la récupération de la liste blanche: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
+def normalize_string(text: str) -> str:
+    """Normalise une chaîne en supprimant accents, tirets et caractères spéciaux"""
+    import unicodedata
+    return unicodedata.normalize('NFD', text.lower()).encode('ascii', 'ignore').decode('ascii')
+
 @app.route("/list-filtered-clients", methods=["POST"])
 def list_filtered_clients():
     """Liste les clients autorisés filtrés (simule la searchbar)"""
     try:
         data = request.json
-        search_term = data.get("search_term", "").lower()
+        search_term = data.get("search_term", "")
         
         client_resolver = get_service('client_resolver')
         allowlist = client_resolver.get_allowlist()
         
         if search_term:
-            filtered_clients = [client for client in allowlist if search_term in client.lower()]
+            normalized_search = normalize_string(search_term)
+            filtered_clients = [client for client in allowlist if normalized_search in normalize_string(client)]
         else:
             filtered_clients = allowlist
         
@@ -377,6 +383,34 @@ def export_unified_report():
     # Extraire les IDs résolus
     google_customer_id = resolved_accounts["googleAds"]["customerId"] if resolved_accounts["googleAds"] else None
     meta_account_id = resolved_accounts["metaAds"]["adAccountId"] if resolved_accounts["metaAds"] else None
+    meta_campaign_filter = resolved_accounts["metaAds"]["campaignFilter"] if resolved_accounts["metaAds"] else None
+
+    # Détection Emma (par nom et/ou par IDs connus)
+    is_emma = selected_client == "Emma Merignac" or google_customer_id == "6090621431" or meta_account_id == "2569730083369971"
+    
+    # Détection Roche Bobois Lyon Centre (contacts et recherches forcés à 0)
+    is_roche_lyon = selected_client == "Roche bobois Lyon Centre" or google_customer_id == "3938194507"
+    
+    # Détection Création contemporaine (contacts et recherches forcés à 0)
+    is_creation_contemporaine = selected_client == "Création contemporaine" or google_customer_id == "2210445091"
+    
+    # Détection Roche Bobois Saint-Bonnet (contacts et recherches forcés à 0)
+    is_roche_saint_bonnet = selected_client == "Roche bobois Saint-Bonnet" or google_customer_id == "6841136645"
+
+    # Filtre nom campagne Meta par convention de nommage du client
+    meta_campaign_name_filter = None
+    if is_emma:
+        meta_campaign_name_filter = "Emma"
+    elif meta_campaign_filter:
+        # Utiliser le filtre spécifique configuré pour le client
+        meta_campaign_name_filter = meta_campaign_filter
+    else:
+        # Logique de fallback pour les anciens clients
+        sel_lower = (selected_client or "").lower()
+        if "orgeval" in sel_lower:
+            meta_campaign_name_filter = "Orgeval"
+        elif "melun" in sel_lower:
+            meta_campaign_name_filter = "Melun"
     
     
     # Vérifier qu'au moins une plateforme est configurée
@@ -397,7 +431,16 @@ def export_unified_report():
             try:
                 # Récupérer les données de campagne
                 google_reports = get_service('google_reports')
-                response_data = google_reports.get_campaign_data(google_customer_id, start_date, end_date)
+                if is_emma:
+                    logging.info("Emma détecté — filtrage campagnes Google: ENABLED uniquement (GAQL)")
+                response_data = google_reports.get_campaign_data(
+                    google_customer_id,
+                    start_date,
+                    end_date,
+                    only_enabled=is_emma
+                )
+                if is_emma:
+                    logging.info(f"Emma Google — campagnes (après filtre): {len(response_data) if response_data else 0}")
                 
                 if response_data:
                     # Calculer les métriques virtuelles
@@ -488,12 +531,25 @@ def export_unified_report():
                     
                     if use_new_contacts_method:
                         logging.info(f"🔄 Utilisation de la nouvelle méthode getContactsResults() pour les contacts Meta")
+                        
                         # Utiliser la nouvelle méthode pour récupérer les contacts via /insights avec results
-                        contacts_campaigns = meta_reports.getContactsResults(meta_account_id, start_date, end_date)
+                        if is_emma:
+                            logging.info("Emma détecté — filtrage campagnes Meta: ACTIVE uniquement (effective_status) + nom contient 'Emma' (insensible à la casse)")
+                        if meta_campaign_name_filter:
+                            logging.info(f"Filtre nom campagne Meta: contient '{meta_campaign_name_filter}' (insensible à la casse)")
+                        contacts_campaigns = meta_reports.getContactsResults(
+                            meta_account_id,
+                            start_date,
+                            end_date,
+                            only_active=is_emma,
+                            name_contains_ci=meta_campaign_name_filter
+                        )
                         
                         if contacts_campaigns:
                             # Calculer le total des contacts
                             total_contacts = sum(campaign['contacts_meta'] for campaign in contacts_campaigns)
+                            if is_emma:
+                                logging.info(f"Emma Meta — campagnes contacts (après filtre): {len(contacts_campaigns)}")
                             logging.info(f"📊 Total contacts Meta via results: {total_contacts}")
                             
                             # Créer les métriques avec les contacts via results
@@ -501,24 +557,57 @@ def export_unified_report():
                                 "Contact Meta": total_contacts
                             }
                             
+                            
                             # Ajouter les autres métriques si elles sont sélectionnées
                             if any(metric in meta_metrics for metric in ["meta.clicks", "meta.impressions", "meta.ctr", "meta.cpc", "meta.cpl", "meta.spend", "meta.recherche_lieux"]):
                                 # Récupérer les insights classiques pour les autres métriques
-                                insights = meta_reports.get_meta_insights(meta_account_id, start_date, end_date)
+                                insights = meta_reports.get_meta_insights(
+                                    meta_account_id,
+                                    start_date,
+                                    end_date,
+                                    only_active=is_emma,
+                                    name_contains_ci=meta_campaign_name_filter
+                                )
                                 if insights:
                                     cpl_average = meta_reports.get_meta_campaigns_cpl_average(meta_account_id, start_date, end_date)
-                                    other_metrics = meta_reports.calculate_meta_metrics(insights, cpl_average, meta_account_id, start_date, end_date)
+                                    other_metrics = meta_reports.calculate_meta_metrics(insights, cpl_average, meta_account_id, start_date, end_date, contacts_total=total_contacts)
+                                    if is_emma and isinstance(insights, dict) and 'campaign_count' in insights:
+                                        logging.info(f"Emma Meta — campagnes insights (après filtre): {insights['campaign_count']}")
                                     
                                     # Fusionner les métriques (priorité aux contacts via results)
                                     for key, value in other_metrics.items():
                                         if key != "Contact Meta":  # Ne pas écraser les contacts via results
                                             metrics[key] = value
+                            
+                            # Cas spécial pour Roche Bobois Lyon Centre, Création contemporaine et Roche Saint-Bonnet (contacts et recherches forcés à 0)
+                            if is_roche_lyon:
+                                logging.info("Roche Bobois Lyon Centre détecté — contacts et recherches forcés à 0")
+                                metrics["Contact Meta"] = 0
+                                metrics["Recherche de lieux"] = 0
+                            elif is_creation_contemporaine:
+                                logging.info("Création contemporaine détecté — contacts et recherches forcés à 0")
+                                metrics["Contact Meta"] = 0
+                                metrics["Recherche de lieux"] = 0
+                            elif is_roche_saint_bonnet:
+                                logging.info("Roche Bobois Saint-Bonnet détecté — contacts et recherches forcés à 0")
+                                metrics["Contact Meta"] = 0
+                                metrics["Recherche de lieux"] = 0
                         else:
                             logging.warning(f"⚠️ Aucune donnée de contacts via results trouvée")
                             metrics = {}
                     else:
                         # Utiliser l'ancienne méthode pour toutes les métriques
-                        insights = meta_reports.get_meta_insights(meta_account_id, start_date, end_date)
+                        if is_emma:
+                            logging.info("Emma détecté — filtrage campagnes Meta: ACTIVE uniquement (effective_status) + nom contient 'Emma' (insensible à la casse)")
+                        if meta_campaign_name_filter:
+                            logging.info(f"Filtre nom campagne Meta: contient '{meta_campaign_name_filter}' (insensible à la casse)")
+                        insights = meta_reports.get_meta_insights(
+                            meta_account_id,
+                            start_date,
+                            end_date,
+                            only_active=is_emma,
+                            name_contains_ci=meta_campaign_name_filter
+                        )
                         timeout_timer.cancel()  # Annuler le timeout
                         logging.info(f"Données Meta récupérées: {insights is not None}")
                         
@@ -526,13 +615,41 @@ def export_unified_report():
                             # Récupérer le CPL moyen des campagnes avec conversions > 0
                             cpl_average = meta_reports.get_meta_campaigns_cpl_average(meta_account_id, start_date, end_date)
                             
-                            # Calculer les métriques avec le nouveau CPL et scraping interface
-                            metrics = meta_reports.calculate_meta_metrics(insights, cpl_average, meta_account_id, start_date, end_date)
+                            # Calculer les métriques; ici pas de total contacts consolidé → fallback moyenne
+                            metrics = meta_reports.calculate_meta_metrics(insights, cpl_average, meta_account_id, start_date, end_date, contacts_total=None)
+                            if is_emma and isinstance(insights, dict) and 'campaign_count' in insights:
+                                logging.info(f"Emma Meta — campagnes insights (après filtre): {insights['campaign_count']}")
+                            
+                            # Cas spécial pour Roche Bobois Lyon Centre, Création contemporaine et Roche Saint-Bonnet (contacts et recherches forcés à 0)
+                            if is_roche_lyon:
+                                logging.info("Roche Bobois Lyon Centre détecté — contacts et recherches forcés à 0")
+                                metrics["Contact Meta"] = 0
+                                metrics["Recherche de lieux"] = 0
+                            elif is_creation_contemporaine:
+                                logging.info("Création contemporaine détecté — contacts et recherches forcés à 0")
+                                metrics["Contact Meta"] = 0
+                                metrics["Recherche de lieux"] = 0
+                            elif is_roche_saint_bonnet:
+                                logging.info("Roche Bobois Saint-Bonnet détecté — contacts et recherches forcés à 0")
+                                metrics["Contact Meta"] = 0
+                                metrics["Recherche de lieux"] = 0
                     
                     # Mettre à jour le Google Sheet si demandé (pour les deux méthodes)
                     if metrics and sheet_month:
                         meta_mappings = get_service('meta_mappings')
-                        sheet_name = meta_mappings.get_sheet_name_for_account(meta_account_id)
+                        google_mappings = get_service('google_mappings')
+                        
+                        # Essayer d'abord le mapping Google (plus précis)
+                        sheet_name = google_mappings.get_sheet_name_for_customer(google_customer_id) if google_customer_id else None
+                        
+                        # Si pas trouvé, essayer le mapping Meta
+                        if not sheet_name:
+                            sheet_name = meta_mappings.get_sheet_name_for_account(meta_account_id)
+                        
+                        # Si toujours pas trouvé, utiliser le nom du client comme fallback
+                        if not sheet_name:
+                            sheet_name = selected_client
+                            
                         meta_metrics_mapping = meta_mappings.get_meta_metrics_mapping()
                         
                         if sheet_name and sheet_name in available_sheets:

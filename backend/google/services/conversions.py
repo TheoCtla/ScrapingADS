@@ -174,6 +174,40 @@ class GoogleAdsConversionsService:
             "actions locales – itinéraire"
         ]
         
+        self.LASEREL_AUXERRE_CONTACT_NAMES = [
+            "whatsapp"
+        ]
+        
+        self.BEDROOM_CONTACT_NAMES = [
+            "call bouton",
+            "clicks to call"
+        ]
+        
+        self.BEDROOM_DIRECTIONS_NAMES = [
+            "itinéraires",
+            "local actions - directions"
+        ]
+        
+        self.CROZATIER_CONTACT_NAMES = [
+            "appels",
+            "clicks to call"
+        ]
+        
+        self.CROZATIER_DIRECTIONS_NAMES = [
+            "itinéraires",
+            "local actions - directions"
+        ]
+        
+        self.EMMA_MERIGNAC_CONTACT_NAMES = [
+            "clicks to call",
+            "call bouton"
+        ]
+        
+        self.EMMA_MERIGNAC_DIRECTIONS_NAMES = [
+            "actions locales – itinéraire",
+            "itinéraires"
+        ]
+        
         # Clients qui nécessitent une protection timeout
         self.TIMEOUT_PROTECTED_CLIENTS = [
             "5901565913",  # Laserel
@@ -234,15 +268,6 @@ class GoogleAdsConversionsService:
             "local actions - directions"
         ]
         
-        self.BEDROOM_CONTACT_NAMES = [
-            "call bouton",
-            "clicks to call"
-        ]
-        
-        self.BEDROOM_DIRECTIONS_NAMES = [
-            "itinéraires",
-            "local actions - directions"
-        ]
         
         self.CUISINE_PLUS_PERPIGNAN_CONTACT_NAMES = [
             # Pas de conversions contact pour Cuisine Plus Perpignan
@@ -1852,6 +1877,102 @@ class GoogleAdsConversionsService:
             logging.error(f" Erreur lors de la récupération des conversions Laserel Itinéraires pour {customer_id}: {e}")
             return directions_total, all_conversions
     
+    def get_laserel_auxerre_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère TOUTES les données de conversions Contact pour Laserel Auxerre
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🔬 Recherche de TOUTES les conversions LASEREL AUXERRE CONTACT pour le client {customer_id}")
+            
+            # Ajouter un timeout pour éviter les problèmes de mémoire
+            import threading
+            
+            timeout_occurred = threading.Event()
+            
+            def timeout_handler():
+                timeout_occurred.set()
+            
+            # Timeout de 30 secondes
+            timeout_timer = threading.Timer(30.0, timeout_handler)
+            timeout_timer.start()
+            
+            try:
+                response = self.auth_service.fetch_report_data(customer_id, query)
+                timeout_timer.cancel()  # Annuler le timeout
+            except Exception as e:
+                timeout_timer.cancel()  # Annuler le timeout
+                if timeout_occurred.is_set():
+                    logging.error(f"⏰ Timeout lors de la requête Laserel Auxerre Contact pour {customer_id}")
+                    return 0, []
+                else:
+                    raise e
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Log détaillé pour diagnostic
+                logging.info(f"🔍 Conversion trouvée: '{row.segments.conversion_action_name}'")
+                logging.info(f"🔍 - conversions: {row.metrics.conversions}")
+                logging.info(f"🔍 - all_conversions: {row.metrics.all_conversions}")
+                logging.info(f"🔍 - valeur utilisée: {conversions_value}")
+                
+                # Enregistrer toutes les conversions
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Whatsapp pour Laserel Auxerre
+                is_whatsapp_conversion = "whatsapp" in conversion_name
+                
+                if is_whatsapp_conversion:
+                    # Ajouter seulement les conversions Whatsapp au total
+                    contact_total += conversions_value
+                    logging.info(f"✅ Conversion Laserel Auxerre Contact ajoutée: {row.segments.conversion_action_name} = {conversions_value} (Total: {contact_total})")
+                else:
+                    logging.info(f"❌ Conversion Laserel Auxerre Contact ignorée (pas Whatsapp): {row.segments.conversion_action_name} = {conversions_value}")
+            
+            return contact_total, all_conversions
+            
+        except Exception as e:
+            logging.error(f" Erreur lors de la récupération des conversions Laserel Auxerre Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_laserel_auxerre_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour Laserel Auxerre
+        Retourne 0 car pas d'itinéraires pour Google
+        """
+        logging.info(f"🔬 LASEREL AUXERRE ITINÉRAIRES - Pas d'itinéraires pour Google : retourne 0")
+        
+        # Retourner 0 car pas d'itinéraires pour Google
+        return 0, []
+    
     def get_star_literie_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
         """
         Récupère les données de conversions Contact spécifiquement pour Star Literie
@@ -2362,6 +2483,134 @@ class GoogleAdsConversionsService:
             
         except Exception as e:
             logging.error(f" Erreur lors de la récupération des conversions Bedroom Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+    
+    def get_crozatier_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour Crozatier Dijon
+        Uniquement les conversions contenant "Appels" et "Clicks to call"
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🏪 Recherche des conversions CROZATIER CONTACT pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Contact pour Crozatier
+                is_crozatier_contact = any(target_name in conversion_name for target_name in self.CROZATIER_CONTACT_NAMES)
+                
+                if is_crozatier_contact:
+                    contact_total += conversions_value
+                    logging.info(f"🏪 CONVERSION CROZATIER CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"Conversion Crozatier Contact ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact Crozatier
+            contact_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.CROZATIER_CONTACT_NAMES)]
+            
+            logging.info(f"🏪 Total Contact Crozatier: {contact_total}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Crozatier Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_crozatier_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour Crozatier Dijon
+        Uniquement les conversions contenant "Itinéraires" et "Local actions - Directions"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🏪 Recherche des conversions CROZATIER ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour Crozatier
+                is_crozatier_directions = any(target_name in conversion_name for target_name in self.CROZATIER_DIRECTIONS_NAMES)
+                
+                if is_crozatier_directions:
+                    directions_total += conversions_value
+                    logging.info(f"🏪 CONVERSION CROZATIER ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"Conversion Crozatier Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires Crozatier
+            directions_conversions = [conv for conv in all_conversions 
+                                   if any(target_name in conv['name'].lower() for target_name in self.CROZATIER_DIRECTIONS_NAMES)]
+            
+            logging.info(f"🏪 Total Itinéraires Crozatier: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f"❌ Erreur lors de la récupération des conversions Crozatier Itinéraires pour {customer_id}: {e}")
             return directions_total, all_conversions
     
     def get_cuisine_plus_perpignan_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
@@ -3120,7 +3369,145 @@ class GoogleAdsConversionsService:
             logging.error(f" Erreur lors de la récupération des conversions FL Antibes Itinéraires pour {customer_id}: {e}")
             return directions_total, all_conversions
     
+    def get_emma_merignac_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour Emma Merignac
+        Uniquement les conversions contenant "Clicks to call" et "Call bouton"
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f" Recherche des conversions EMMA MERIGNAC CONTACT pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Contact pour Emma Merignac
+                is_emma_merignac_contact = any(target_name in conversion_name for target_name in self.EMMA_MERIGNAC_CONTACT_NAMES)
+                
+                if is_emma_merignac_contact:
+                    contact_total += conversions_value
+                    logging.info(f" CONVERSION EMMA MERIGNAC CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"Conversion Emma Merignac Contact ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact Emma Merignac
+            contact_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.EMMA_MERIGNAC_CONTACT_NAMES)]
+            
+            logging.info(f" Total Contact Emma Merignac: {contact_total}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f" Erreur lors de la récupération des conversions Emma Merignac Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
     
+    def get_emma_merignac_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour Emma Merignac
+        Uniquement les conversions contenant "Actions locales – Itinéraire" et "Itinéraires"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+            """
+            
+            logging.info(f" Recherche des conversions EMMA MERIGNAC ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            # Log de debug pour voir TOUTES les conversions disponibles
+            logging.info(f"🔍 DEBUG: Toutes les conversions disponibles pour Emma Merignac:")
+            for row in response:
+                logging.info(f"🔍 DEBUG: '{row.segments.conversion_action_name}' = {row.metrics.all_conversions if row.metrics.all_conversions else 0}")
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Log de debug pour voir toutes les conversions trouvées
+                logging.info(f"🔍 DEBUG: Conversion trouvée: '{row.segments.conversion_action_name}' = {row.metrics.all_conversions if row.metrics.all_conversions else 0}")
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour Emma Merignac
+                is_emma_merignac_directions = any(target_name in conversion_name for target_name in self.EMMA_MERIGNAC_DIRECTIONS_NAMES)
+                
+                # Test spécifique pour "Actions locales – Itinéraire"
+                if "actions locales" in conversion_name and "itinéraire" in conversion_name:
+                    is_emma_merignac_directions = True
+                    logging.info(f"🎯 FORCE MATCH: 'Actions locales – Itinéraire' détecté!")
+                
+                if is_emma_merignac_directions:
+                    directions_total += conversions_value
+                    logging.info(f"✅ CONVERSION EMMA MERIGNAC ITINÉRAIRES: '{row.segments.conversion_action_name}' = {conversions_value}")
+                else:
+                    logging.info(f"❌ Conversion Emma Merignac Itinéraires ignorée: '{row.segments.conversion_action_name}' = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires Emma Merignac
+            directions_conversions = [conv for conv in all_conversions 
+                                     if any(target_name in conv['name'].lower() for target_name in self.EMMA_MERIGNAC_DIRECTIONS_NAMES)]
+            
+            logging.info(f" Total Itinéraires Emma Merignac: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f" Erreur lors de la récupération des conversions Emma Merignac Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
     
     def get_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
         """
@@ -3390,6 +3777,12 @@ class GoogleAdsConversionsService:
                 total_conversions, found_conversions = self.get_laserel_contact_conversions_data(
                     customer_id, start_date, end_date
                 )
+            elif customer_id == "3345723560" or client_name == "Laserel Auxerre":
+                logging.info(f"🔬 Utilisation de la logique spécifique Laserel Auxerre pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique Laserel Auxerre
+                total_conversions, found_conversions = self.get_laserel_auxerre_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
             elif customer_id == "4865583978" or client_name == "Star Literie":
                 logging.info(f"⭐ Utilisation de la logique spécifique Star Literie pour {client_name}")
                 # Récupérer les données de conversions Contact avec la logique Star Literie
@@ -3448,6 +3841,12 @@ class GoogleAdsConversionsService:
                 logging.info(f"🏖️ Utilisation de la logique spécifique FL Antibes Vallauris pour {client_name}")
                 # Récupérer les données de conversions Contact avec la logique FL Antibes Vallauris
                 total_conversions, found_conversions = self.get_fl_antibes_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "6090621431" or client_name == "Emma Merignac":
+                logging.info(f" Utilisation de la logique spécifique Emma Merignac pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique Emma Merignac
+                total_conversions, found_conversions = self.get_emma_merignac_contact_conversions_data(
                     customer_id, start_date, end_date
                 )
             else:
@@ -3566,6 +3965,12 @@ class GoogleAdsConversionsService:
                 total_conversions, found_conversions = self.get_laserel_directions_conversions_data(
                     customer_id, start_date, end_date
                 )
+            elif customer_id == "3345723560" or client_name == "Laserel Auxerre":
+                logging.info(f"🔬 Utilisation de la logique spécifique Laserel Auxerre pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique Laserel Auxerre
+                total_conversions, found_conversions = self.get_laserel_auxerre_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
             elif customer_id == "4865583978" or client_name == "Star Literie":
                 logging.info(f"⭐ Utilisation de la logique spécifique Star Literie pour {client_name}")
                 # Récupérer les données de conversions Itinéraires avec la logique Star Literie
@@ -3588,6 +3993,12 @@ class GoogleAdsConversionsService:
                 logging.info(f"🛏️ Utilisation de la logique spécifique Bedroom pour {client_name}")
                 # Récupérer les données de conversions Itinéraires avec la logique Bedroom
                 total_conversions, found_conversions = self.get_bedroom_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "3259500758" or client_name == "Crozatier Dijon":
+                logging.info(f"🏪 Utilisation de la logique spécifique Crozatier pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique Crozatier
+                total_conversions, found_conversions = self.get_crozatier_directions_conversions_data(
                     customer_id, start_date, end_date
                 )
             elif customer_id == "9360801546" or client_name == "Cuisine Plus Perpignan":
@@ -3624,6 +4035,12 @@ class GoogleAdsConversionsService:
                 logging.info(f"🏖️ Utilisation de la logique spécifique FL Antibes Vallauris pour {client_name}")
                 # Récupérer les données de conversions Itinéraires avec la logique FL Antibes Vallauris
                 total_conversions, found_conversions = self.get_fl_antibes_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "6090621431" or client_name == "Emma Merignac":
+                logging.info(f" Utilisation de la logique spécifique Emma Merignac pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique Emma Merignac
+                total_conversions, found_conversions = self.get_emma_merignac_directions_conversions_data(
                     customer_id, start_date, end_date
                 )
             else:

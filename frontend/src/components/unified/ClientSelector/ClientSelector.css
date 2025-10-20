@@ -138,21 +138,6 @@
   color: white;
 }
 
-/* Style spécial pour les clients prioritaires (Orgeval et Melun) */
-.client-item.priority-client {
-  background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
-  border-left: 4px solid #ff6b6b;
-}
-
-.client-item.priority-client:hover {
-  background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-  color: white;
-}
-
-.client-item.priority-client.selected {
-  background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-  color: white;
-}
 
 .client-item:last-child {
   border-bottom: none;
@@ -167,24 +152,7 @@
 }
 
 /* Badge de priorité */
-.priority-badge {
-  background: #ff6b6b;
-  color: white;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 10px;
-  font-weight: 600;
-  animation: blink 1.5s infinite;
-}
 
-@keyframes blink {
-  0%, 50% {
-    opacity: 1;
-  }
-  51%, 100% {
-    opacity: 0.7;
-  }
-}
 
 .client-no-results {
   padding: 16px;

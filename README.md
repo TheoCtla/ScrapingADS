@@ -1,3 +1,12 @@
+## Emma — campagnes actives uniquement
+
+Pour le client `Emma Merignac`, la collecte limite désormais les campagnes aux statuts actifs uniquement:
+
+- Google Ads: GAQL ajoute `WHERE campaign.status = 'ENABLED'` dans le chemin Emma.
+- Meta Ads: appels `/insights` avec `effective_status=["ACTIVE"]` au niveau campagne.
+
+Impact: les métriques et exports pour Emma ne concernent plus que les campagnes actives. Les autres clients conservent leur comportement existant.
+
 # ScrappingRapport - Système de Reporting Unifié
 
 Application de scraping et reporting pour Google Ads et Meta Ads avec export vers Google Sheets.

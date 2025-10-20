@@ -73,7 +73,7 @@ class MetaAdsReportsService:
         
         return None
     
-    def get_meta_insights(self, ad_account_id: str, start_date: str, end_date: str) -> Optional[Dict[str, Any]]:
+    def get_meta_insights(self, ad_account_id: str, start_date: str, end_date: str, only_active: bool = False, name_contains_ci: str = None) -> Optional[Dict[str, Any]]:
         """
         Récupère les insights Meta Ads par campagne et les agrège manuellement
         
@@ -95,6 +95,8 @@ class MetaAdsReportsService:
                 "time_range": f'{{"since":"{start_date}","until":"{end_date}"}}',
                 "limit": 100  # Augmenter la limite pour récupérer toutes les campagnes
             }
+            if only_active:
+                params["effective_status"] = ["ACTIVE"]
             
             # Appel API Meta pour {ad_account_id}: {start_date} à {end_date} (niveau campagne)
             
@@ -107,6 +109,13 @@ class MetaAdsReportsService:
             
             response_data = response.json()
             data = response_data.get("data", [])
+
+            # Filtrer par nom de campagne si demandé (insensible à la casse)
+            if name_contains_ci:
+                needle = name_contains_ci.lower()
+                before_count = len(data)
+                data = [c for c in data if needle in str(c.get('campaign_name', '')).lower()]
+                logging.info(f"🔎 Filtre nom campagne contient '{needle}': {before_count} → {len(data)}")
             
             if not data:
                 logging.warning(f"⚠️ Aucune donnée trouvée pour {ad_account_id}")
@@ -513,7 +522,7 @@ class MetaAdsReportsService:
         logging.info(f"📊 Recherches de lieux extraites: {search_conversions}")
         return search_conversions
     
-    def getContactsResults(self, ad_account_id: str, since: str, until: str, level: str = 'campaign') -> list:
+    def getContactsResults(self, ad_account_id: str, since: str, until: str, level: str = 'campaign', only_active: bool = False, name_contains_ci: str = None) -> list:
         """
         Récupère les contacts Meta via l'endpoint /insights avec le champ results
         
@@ -536,6 +545,8 @@ class MetaAdsReportsService:
                 "time_range": f'{{"since":"{since}","until":"{until}"}}',
                 "limit": 5000
             }
+            if only_active:
+                params["effective_status"] = ["ACTIVE"]
             
             logging.info(f"🔍 Récupération contacts Meta via /insights pour {ad_account_id}: {since} à {until}")
             
@@ -563,6 +574,11 @@ class MetaAdsReportsService:
                 for campaign_data in data:
                     campaign_id = campaign_data.get('campaign_id', '')
                     campaign_name = campaign_data.get('campaign_name', 'Campagne inconnue')
+                    
+                    # Filtrer par nom si demandé (insensible à la casse)
+                    if name_contains_ci and name_contains_ci.lower() not in str(campaign_name).lower():
+                        continue
+                    
                     results = campaign_data.get('results', [])
                     
                     # Calculer le total des contacts depuis le champ results
@@ -610,7 +626,7 @@ class MetaAdsReportsService:
             logging.error(f"❌ Erreur lors de la récupération des contacts Meta: {e}")
             return []
 
-    def calculate_meta_metrics(self, insights_data: Optional[Dict[str, Any]], cpl_average: float = 0, ad_account_id: str = None, start_date: str = None, end_date: str = None) -> Dict[str, Any]:
+    def calculate_meta_metrics(self, insights_data: Optional[Dict[str, Any]], cpl_average: float = 0, ad_account_id: str = None, start_date: str = None, end_date: str = None, contacts_total: int = None) -> Dict[str, Any]:
         """
         Calcule les métriques Meta formatées pour le Google Sheet
         
@@ -635,6 +651,15 @@ class MetaAdsReportsService:
         cpc = float(insights_data.get('cpc', 0))  # Maintenant basé sur link_clicks
         spend = float(insights_data.get('spend', 0))
         spend_with_contacts = float(insights_data.get('spend_with_contacts', 0))
+
+        logging.info("META → COMPOSITION SOURCES (avant calcul métriques)")
+        logging.info(f"  clicks (total): {clicks}")
+        logging.info(f"  link_clicks (base cpc): {link_clicks}")
+        logging.info(f"  impressions: {impressions}")
+        logging.info(f"  ctr (% brut): {ctr}")
+        logging.info(f"  cpc (basé link_clicks): {cpc}")
+        logging.info(f"  spend (euros): {spend}")
+        logging.info(f"  spend_with_contacts (euros, campagnes avec contacts): {spend_with_contacts}")
         
         # Actions (conversions) - APPROCHE SIMPLIFIÉE
         logging.info("🔍 DÉBUT EXTRACTION MÉTRIQUES META")
@@ -643,8 +668,8 @@ class MetaAdsReportsService:
         # Les contacts sont maintenant récupérés via getContactsResults() avec le champ results
         api_contacts, api_searches = self.process_meta_actions(insights_data)
         logging.info(f"📊 DONNÉES API META:")
-        logging.info(f"  🎯 Contacts API: {api_contacts} (désactivé - utilise getContactsResults())")
-        logging.info(f"  📍 Recherches API: {api_searches}")
+        logging.info(f"  🎯 Contacts API (ancienne méthode): {api_contacts} (désactivé - utilise getContactsResults())")
+        logging.info(f"  📍 Recherches de lieux (extraites): {api_searches}")
         
         # Utiliser directement les données API (plus de scraping d'interface)
         contact_conversions = 0  # Désactivé - utilise getContactsResults()
@@ -654,8 +679,16 @@ class MetaAdsReportsService:
         logging.info(f"  🎯 Contact Meta: {contact_conversions} (désactivé - utilise getContactsResults())")
         logging.info(f"  📍 Recherche de lieux: {search_conversions}")
         
-        # CPL (Cost Per Lead) = Moyenne des CPL des campagnes avec conversions > 0
+        # CPL (Cost Per Lead)
+        # Si on a un total de contacts, utiliser un CPL pondéré basé sur les dépenses et le total contacts
         cpl = cpl_average
+        if contacts_total and contacts_total > 0:
+            spend_source = spend_with_contacts if spend_with_contacts > 0 else spend
+            if spend_source > 0:
+                cpl = round(spend_source / contacts_total, 2)
+                logging.info(f"  🧮 CPL recalculé (pondéré): {cpl} = {spend_source}€ / {contacts_total} contacts")
+            else:
+                logging.info("  🧮 CPL: aucune dépense disponible pour calcul pondéré, fallback cpl_average")
         
         # Métriques formatées selon le tableau demandé
         metrics = {
@@ -669,7 +702,15 @@ class MetaAdsReportsService:
             "Recherche de lieux": search_conversions
         }
         
-        logging.info(f"📈 Métriques Meta calculées: {metrics}")
-        logging.info(f"🔗 CPC basé sur {link_clicks} link_clicks (au lieu de {clicks} clics totaux)")
-        logging.info(f"💰 CPL basé sur {spend_with_contacts}€ dépenses campagnes avec contacts (au lieu de {spend}€ total)")
+        logging.info("META → MÉTRIQUES ENVOYÉES AU SHEET (avec composition)")
+        logging.info(f"  Clics Meta = clicks = {clicks}")
+        logging.info(f"  Impressions Meta = impressions = {impressions}")
+        logging.info(f"  CTR Meta = format({ctr}) depuis insights.ctr")
+        logging.info(f"  CPC Meta = round({cpc}, 2) basé sur link_clicks={link_clicks}")
+        logging.info(f"  Cout Facebook ADS = round({spend}, 2) depuis insights.spend")
+        logging.info(f"  CPL Meta = {cpl} (pondéré si contacts_total fourni, sinon moyenne cost_per_result)")
+        logging.info(f"  Contact Meta = {contact_conversions} (somme results.values.value via getContactsResults)")
+        logging.info(f"  Recherche de lieux = {search_conversions} (extraction conversions/actions)")
+        logging.info(f"🔗 CPC basé sur {link_clicks} link_clicks (vs {clicks} clics totaux)")
+        logging.info(f"💰 CPL basé sur {spend_with_contacts}€ (dépenses campagnes avec contacts) vs {spend}€ total")
         return metrics 
