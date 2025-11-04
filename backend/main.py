@@ -383,7 +383,7 @@ def export_unified_report():
     # Extraire les IDs résolus
     google_customer_id = resolved_accounts["googleAds"]["customerId"] if resolved_accounts["googleAds"] else None
     meta_account_id = resolved_accounts["metaAds"]["adAccountId"] if resolved_accounts["metaAds"] else None
-    meta_campaign_filter = resolved_accounts["metaAds"]["campaignFilter"] if resolved_accounts["metaAds"] else None
+    meta_campaign_filter = resolved_accounts["metaAds"].get("campaignFilter") if resolved_accounts["metaAds"] else None
 
     # Détection Emma (par nom et/ou par IDs connus)
     is_emma = selected_client == "Emma Merignac" or google_customer_id == "6090621431" or meta_account_id == "2569730083369971"

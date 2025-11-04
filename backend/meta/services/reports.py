@@ -61,7 +61,26 @@ class MetaAdsReportsService:
                 if response.status_code == 200:
                     return response
                 else:
-                    logging.error(f"❌ Erreur API Meta: {response.status_code} - {response.text}")
+                    # Vérifier si c'est une erreur de permissions (code 200)
+                    error_message = ""
+                    try:
+                        error_data = response.json().get("error", {})
+                        error_code = error_data.get("code")
+                        error_msg = error_data.get("message", "")
+                        
+                        if error_code == 200 and ("ads_management" in error_msg or "ads_read" in error_msg):
+                            error_message = (
+                                f"❌ PERMISSIONS MANQUANTES - Le propriétaire du compte publicitaire "
+                                f"n'a pas autorisé l'application Meta à accéder au compte.\n"
+                                f"   Solution: Le propriétaire du compte doit autoriser l'application "
+                                f"(App ID: 3610369945767313) via Meta Business Manager.\n"
+                                f"   Voir: backend/scripts/GUIDE_AUTORISATION_META.md"
+                            )
+                            logging.error(error_message)
+                        else:
+                            logging.error(f"❌ Erreur API Meta: {response.status_code} - {response.text}")
+                    except:
+                        logging.error(f"❌ Erreur API Meta: {response.status_code} - {response.text}")
                     return None
                     
             except Exception as e:
