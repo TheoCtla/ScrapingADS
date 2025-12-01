@@ -396,6 +396,9 @@ def export_unified_report():
     
     # Détection Roche Bobois Saint-Bonnet (contacts et recherches forcés à 0)
     is_roche_saint_bonnet = selected_client == "Roche bobois Saint-Bonnet" or google_customer_id == "6841136645"
+    
+    # Détection Riviera Grass (campagnes actives uniquement)
+    is_riviera_grass = selected_client == "Riviera Grass" or google_customer_id == "5184726119" or meta_account_id == "1284256950286793"
 
     # Filtre nom campagne Meta par convention de nommage du client
     meta_campaign_name_filter = None
@@ -433,11 +436,13 @@ def export_unified_report():
                 google_reports = get_service('google_reports')
                 if is_emma:
                     logging.info("Emma détecté — filtrage campagnes Google: ENABLED uniquement (GAQL)")
+                if is_riviera_grass:
+                    logging.info("Riviera Grass détecté — filtrage campagnes Google: ENABLED uniquement (GAQL)")
                 response_data = google_reports.get_campaign_data(
                     google_customer_id,
                     start_date,
                     end_date,
-                    only_enabled=is_emma
+                    only_enabled=is_emma or is_riviera_grass
                 )
                 if is_emma:
                     logging.info(f"Emma Google — campagnes (après filtre): {len(response_data) if response_data else 0}")
@@ -535,13 +540,15 @@ def export_unified_report():
                         # Utiliser la nouvelle méthode pour récupérer les contacts via /insights avec results
                         if is_emma:
                             logging.info("Emma détecté — filtrage campagnes Meta: ACTIVE uniquement (effective_status) + nom contient 'Emma' (insensible à la casse)")
+                        if is_riviera_grass:
+                            logging.info("Riviera Grass détecté — filtrage campagnes Meta: ACTIVE uniquement (effective_status)")
                         if meta_campaign_name_filter:
                             logging.info(f"Filtre nom campagne Meta: contient '{meta_campaign_name_filter}' (insensible à la casse)")
                         contacts_campaigns = meta_reports.getContactsResults(
                             meta_account_id,
                             start_date,
                             end_date,
-                            only_active=is_emma,
+                            only_active=is_emma or is_riviera_grass,
                             name_contains_ci=meta_campaign_name_filter
                         )
                         
@@ -565,7 +572,7 @@ def export_unified_report():
                                     meta_account_id,
                                     start_date,
                                     end_date,
-                                    only_active=is_emma,
+                                    only_active=is_emma or is_riviera_grass,
                                     name_contains_ci=meta_campaign_name_filter
                                 )
                                 if insights:
@@ -599,13 +606,15 @@ def export_unified_report():
                         # Utiliser l'ancienne méthode pour toutes les métriques
                         if is_emma:
                             logging.info("Emma détecté — filtrage campagnes Meta: ACTIVE uniquement (effective_status) + nom contient 'Emma' (insensible à la casse)")
+                        if is_riviera_grass:
+                            logging.info("Riviera Grass détecté — filtrage campagnes Meta: ACTIVE uniquement (effective_status)")
                         if meta_campaign_name_filter:
                             logging.info(f"Filtre nom campagne Meta: contient '{meta_campaign_name_filter}' (insensible à la casse)")
                         insights = meta_reports.get_meta_insights(
                             meta_account_id,
                             start_date,
                             end_date,
-                            only_active=is_emma,
+                            only_active=is_emma or is_riviera_grass,
                             name_contains_ci=meta_campaign_name_filter
                         )
                         timeout_timer.cancel()  # Annuler le timeout
@@ -644,7 +653,16 @@ def export_unified_report():
                         
                         # Si pas trouvé, essayer le mapping Meta
                         if not sheet_name:
-                            sheet_name = meta_mappings.get_sheet_name_for_account(meta_account_id)
+                            mapped_sheet_name = meta_mappings.get_sheet_name_for_account(meta_account_id)
+                            
+                            # Si un filtre de campagne est configuré, cela signifie que plusieurs clients
+                            # partagent le même compte Meta. Dans ce cas, utiliser le nom du client sélectionné
+                            # plutôt que le mapping Meta pour éviter les conflits (ex: AvivA Melun vs AvivA Orgeval)
+                            if meta_campaign_filter or meta_campaign_name_filter:
+                                logging.info(f"Filtre campagne détecté - Utilisation du nom du client '{selected_client}' plutôt que le mapping Meta '{mapped_sheet_name}'")
+                                sheet_name = selected_client
+                            else:
+                                sheet_name = mapped_sheet_name
                         
                         # Si toujours pas trouvé, utiliser le nom du client comme fallback
                         if not sheet_name:

@@ -208,36 +208,6 @@ class GoogleAdsConversionsService:
             "itinéraires"
         ]
         
-        # Clients qui nécessitent une protection timeout
-        self.TIMEOUT_PROTECTED_CLIENTS = [
-            "5901565913",  # Laserel
-            # Ajoutez d'autres client_ids ici si nécessaire
-        ]
-    
-    def _apply_timeout_protection(self, customer_id: str, timeout_seconds: int = 60):
-        """
-        Applique une protection timeout pour les clients qui en ont besoin
-        """
-        if customer_id in self.TIMEOUT_PROTECTED_CLIENTS:
-            import threading
-            
-            self.timeout_occurred = threading.Event()
-            
-            def timeout_handler():
-                self.timeout_occurred.set()
-            
-            self.timeout_timer = threading.Timer(timeout_seconds, timeout_handler)
-            self.timeout_timer.start()
-            return True
-        return False
-    
-    def _clear_timeout_protection(self):
-        """
-        Annule la protection timeout
-        """
-        if hasattr(self, 'timeout_timer'):
-            self.timeout_timer.cancel()
-        
         self.STAR_LITERIE_CONTACT_NAMES = [
             "appels",
             "clicks to call",
@@ -267,7 +237,6 @@ class GoogleAdsConversionsService:
             "itinéraire",
             "local actions - directions"
         ]
-        
         
         self.CUISINE_PLUS_PERPIGNAN_CONTACT_NAMES = [
             # Pas de conversions contact pour Cuisine Plus Perpignan
@@ -320,6 +289,40 @@ class GoogleAdsConversionsService:
             "local actions - directions"
         ]
         
+        self.MEUBLE_RIGAUD_CONTACT_NAMES = [
+            "appels",
+            "clicks to call"
+        ]
+        
+        # Clients qui nécessitent une protection timeout
+        self.TIMEOUT_PROTECTED_CLIENTS = [
+            "5901565913",  # Laserel
+            # Ajoutez d'autres client_ids ici si nécessaire
+        ]
+    
+    def _apply_timeout_protection(self, customer_id: str, timeout_seconds: int = 60):
+        """
+        Applique une protection timeout pour les clients qui en ont besoin
+        """
+        if customer_id in self.TIMEOUT_PROTECTED_CLIENTS:
+            import threading
+            
+            self.timeout_occurred = threading.Event()
+            
+            def timeout_handler():
+                self.timeout_occurred.set()
+            
+            self.timeout_timer = threading.Timer(timeout_seconds, timeout_handler)
+            self.timeout_timer.start()
+            return True
+        return False
+    
+    def _clear_timeout_protection(self):
+        """
+        Annule la protection timeout
+        """
+        if hasattr(self, 'timeout_timer'):
+            self.timeout_timer.cancel()
     
     def get_all_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, int, List[Dict]]:
         """
@@ -3433,6 +3436,70 @@ class GoogleAdsConversionsService:
             logging.error(f" Erreur lors de la récupération des conversions Emma Merignac Contact pour {customer_id}: {e}")
             return contact_total, all_conversions
     
+    def get_meuble_rigaud_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour Meuble Rigaud
+        Uniquement les conversions contenant "Appels" et "Clicks to call"
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🪑 Recherche des conversions MEUBLE RIGAUD CONTACT pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Contact pour Meuble Rigaud (uniquement "Appels" et "Clicks to call")
+                is_meuble_rigaud_contact = any(target_name in conversion_name for target_name in self.MEUBLE_RIGAUD_CONTACT_NAMES)
+                
+                if is_meuble_rigaud_contact:
+                    contact_total += conversions_value
+                    logging.info(f"🪑 CONVERSION MEUBLE RIGAUD CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"Conversion Meuble Rigaud ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact Meuble Rigaud
+            contact_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.MEUBLE_RIGAUD_CONTACT_NAMES)]
+            
+            logging.info(f" Total Contact Meuble Rigaud: {contact_total}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f" Erreur lors de la récupération des conversions Meuble Rigaud Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
     def get_emma_merignac_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
         """
         Récupère les données de conversions Itinéraires spécifiquement pour Emma Merignac
@@ -3847,6 +3914,12 @@ class GoogleAdsConversionsService:
                 logging.info(f" Utilisation de la logique spécifique Emma Merignac pour {client_name}")
                 # Récupérer les données de conversions Contact avec la logique Emma Merignac
                 total_conversions, found_conversions = self.get_emma_merignac_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "7836791446" or client_name == "Meuble Rigaud" or client_name == "Meubles Rigaud":
+                logging.info(f"🪑 Utilisation de la logique spécifique Meuble Rigaud pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique Meuble Rigaud
+                total_conversions, found_conversions = self.get_meuble_rigaud_contact_conversions_data(
                     customer_id, start_date, end_date
                 )
             else:

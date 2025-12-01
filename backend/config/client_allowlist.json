@@ -41,7 +41,8 @@
     "Cuisine Plus Perpignan",
     "Création contemporaine",
     "Roche bobois Lyon Centre",
-    "Roche bobois Saint-Bonnet"
+    "Roche bobois Saint-Bonnet",
+    "Riviera Grass"
   ],
   "mappings": {
     "A.G. Cryolipolyse": {
@@ -353,6 +354,14 @@
       "metaAds": {
         "adAccountId": "1646264850112150",
         "campaignFilter": "St Bonnet"
+      }
+    },
+    "Riviera Grass": {
+      "googleAds": {
+        "customerId": "5184726119"
+      },
+      "metaAds": {
+        "adAccountId": "1284256950286793"
       }
     }
   },
