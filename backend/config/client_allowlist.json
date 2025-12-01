@@ -42,7 +42,9 @@
     "Création contemporaine",
     "Roche bobois Lyon Centre",
     "Roche bobois Saint-Bonnet",
-    "Riviera Grass"
+    "Riviera Grass",
+    "Univers Construction",
+    "Emma Nantes"
   ],
   "mappings": {
     "A.G. Cryolipolyse": {
@@ -362,6 +364,22 @@
       },
       "metaAds": {
         "adAccountId": "1284256950286793"
+      }
+    },
+    "Univers Construction": {
+      "googleAds": {
+        "customerId": "5509129108"
+      },
+      "metaAds": {
+        "adAccountId": "1968946783916182"
+      }
+    },
+    "Emma Nantes": {
+      "googleAds": {
+        "customerId": "9686568792"
+      },
+      "metaAds": {
+        "adAccountId": "2281515502281464"
       }
     }
   },

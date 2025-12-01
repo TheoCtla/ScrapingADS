@@ -399,6 +399,12 @@ def export_unified_report():
     
     # Détection Riviera Grass (campagnes actives uniquement)
     is_riviera_grass = selected_client == "Riviera Grass" or google_customer_id == "5184726119" or meta_account_id == "1284256950286793"
+    
+    # Détection Univers Construction (campagnes actives uniquement)
+    is_univers_construction = selected_client == "Univers Construction" or google_customer_id == "5509129108" or meta_account_id == "1968946783916182"
+    
+    # Détection Emma Nantes (campagnes actives uniquement)
+    is_emma_nantes = selected_client == "Emma Nantes" or google_customer_id == "9686568792" or meta_account_id == "2281515502281464"
 
     # Filtre nom campagne Meta par convention de nommage du client
     meta_campaign_name_filter = None
@@ -438,11 +444,15 @@ def export_unified_report():
                     logging.info("Emma détecté — filtrage campagnes Google: ENABLED uniquement (GAQL)")
                 if is_riviera_grass:
                     logging.info("Riviera Grass détecté — filtrage campagnes Google: ENABLED uniquement (GAQL)")
+                if is_univers_construction:
+                    logging.info("Univers Construction détecté — filtrage campagnes Google: ENABLED uniquement (GAQL)")
+                if is_emma_nantes:
+                    logging.info("Emma Nantes détecté — filtrage campagnes Google: ENABLED uniquement (GAQL)")
                 response_data = google_reports.get_campaign_data(
                     google_customer_id,
                     start_date,
                     end_date,
-                    only_enabled=is_emma or is_riviera_grass
+                    only_enabled=is_emma or is_riviera_grass or is_univers_construction or is_emma_nantes
                 )
                 if is_emma:
                     logging.info(f"Emma Google — campagnes (après filtre): {len(response_data) if response_data else 0}")
@@ -542,13 +552,17 @@ def export_unified_report():
                             logging.info("Emma détecté — filtrage campagnes Meta: ACTIVE uniquement (effective_status) + nom contient 'Emma' (insensible à la casse)")
                         if is_riviera_grass:
                             logging.info("Riviera Grass détecté — filtrage campagnes Meta: ACTIVE uniquement (effective_status)")
+                        if is_univers_construction:
+                            logging.info("Univers Construction détecté — filtrage campagnes Meta: ACTIVE uniquement (effective_status)")
+                        if is_emma_nantes:
+                            logging.info("Emma Nantes détecté — filtrage campagnes Meta: ACTIVE uniquement (effective_status)")
                         if meta_campaign_name_filter:
                             logging.info(f"Filtre nom campagne Meta: contient '{meta_campaign_name_filter}' (insensible à la casse)")
                         contacts_campaigns = meta_reports.getContactsResults(
                             meta_account_id,
                             start_date,
                             end_date,
-                            only_active=is_emma or is_riviera_grass,
+                            only_active=is_emma or is_riviera_grass or is_univers_construction or is_emma_nantes,
                             name_contains_ci=meta_campaign_name_filter
                         )
                         
@@ -572,7 +586,7 @@ def export_unified_report():
                                     meta_account_id,
                                     start_date,
                                     end_date,
-                                    only_active=is_emma or is_riviera_grass,
+                                    only_active=is_emma or is_riviera_grass or is_univers_construction or is_emma_nantes,
                                     name_contains_ci=meta_campaign_name_filter
                                 )
                                 if insights:
@@ -608,13 +622,17 @@ def export_unified_report():
                             logging.info("Emma détecté — filtrage campagnes Meta: ACTIVE uniquement (effective_status) + nom contient 'Emma' (insensible à la casse)")
                         if is_riviera_grass:
                             logging.info("Riviera Grass détecté — filtrage campagnes Meta: ACTIVE uniquement (effective_status)")
+                        if is_univers_construction:
+                            logging.info("Univers Construction détecté — filtrage campagnes Meta: ACTIVE uniquement (effective_status)")
+                        if is_emma_nantes:
+                            logging.info("Emma Nantes détecté — filtrage campagnes Meta: ACTIVE uniquement (effective_status)")
                         if meta_campaign_name_filter:
                             logging.info(f"Filtre nom campagne Meta: contient '{meta_campaign_name_filter}' (insensible à la casse)")
                         insights = meta_reports.get_meta_insights(
                             meta_account_id,
                             start_date,
                             end_date,
-                            only_active=is_emma or is_riviera_grass,
+                            only_active=is_emma or is_riviera_grass or is_univers_construction or is_emma_nantes,
                             name_contains_ci=meta_campaign_name_filter
                         )
                         timeout_timer.cancel()  # Annuler le timeout
