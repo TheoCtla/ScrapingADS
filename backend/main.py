@@ -567,38 +567,30 @@ def export_unified_report():
                         )
                         
                         if contacts_campaigns:
-                            # Calculer le total des contacts
-                            total_contacts = sum(campaign['contacts_meta'] for campaign in contacts_campaigns)
+                            # Calculer le total des contacts via getContactsResults() (FALLBACK uniquement)
+                            # ⚠️ Cette valeur peut inclure les recherches de lieux, donc on l'utilise seulement si insights_data ne fournit pas de contacts
+                            total_contacts_fallback = sum(campaign['contacts_meta'] for campaign in contacts_campaigns)
                             if is_emma:
                                 logging.info(f"Emma Meta — campagnes contacts (après filtre): {len(contacts_campaigns)}")
-                            logging.info(f"📊 Total contacts Meta via results: {total_contacts}")
+                            logging.info(f"📊 Total contacts Meta via results (fallback): {total_contacts_fallback}")
                             
-                            # Créer les métriques avec les contacts via results
-                            metrics = {
-                                "Contact Meta": total_contacts
-                            }
+                            # Initialiser metrics vide - sera rempli par calculate_meta_metrics()
+                            metrics = {}
                             
-                            
-                            # Ajouter les autres métriques si elles sont sélectionnées
-                            if any(metric in meta_metrics for metric in ["meta.clicks", "meta.impressions", "meta.ctr", "meta.cpc", "meta.cpl", "meta.spend", "meta.recherche_lieux"]):
-                                # Récupérer les insights classiques pour les autres métriques
-                                insights = meta_reports.get_meta_insights(
-                                    meta_account_id,
-                                    start_date,
-                                    end_date,
-                                    only_active=is_emma or is_riviera_grass or is_univers_construction or is_emma_nantes,
-                                    name_contains_ci=meta_campaign_name_filter
-                                )
-                                if insights:
-                                    cpl_average = meta_reports.get_meta_campaigns_cpl_average(meta_account_id, start_date, end_date)
-                                    other_metrics = meta_reports.calculate_meta_metrics(insights, cpl_average, meta_account_id, start_date, end_date, contacts_total=total_contacts)
-                                    if is_emma and isinstance(insights, dict) and 'campaign_count' in insights:
-                                        logging.info(f"Emma Meta — campagnes insights (après filtre): {insights['campaign_count']}")
-                                    
-                                    # Fusionner les métriques (priorité aux contacts via results)
-                                    for key, value in other_metrics.items():
-                                        if key != "Contact Meta":  # Ne pas écraser les contacts via results
-                                            metrics[key] = value
+                            # Récupérer les insights classiques pour TOUTES les métriques (y compris Contact Meta)
+                            insights = meta_reports.get_meta_insights(
+                                meta_account_id,
+                                start_date,
+                                end_date,
+                                only_active=is_emma or is_riviera_grass or is_univers_construction or is_emma_nantes,
+                                name_contains_ci=meta_campaign_name_filter
+                            )
+                            if insights:
+                                cpl_average = meta_reports.get_meta_campaigns_cpl_average(meta_account_id, start_date, end_date)
+                                # Passer total_contacts_fallback - calculate_meta_metrics() l'utilisera SEULEMENT si insights_data.conversions n'a pas de contacts
+                                metrics = meta_reports.calculate_meta_metrics(insights, cpl_average, meta_account_id, start_date, end_date, contacts_total=total_contacts_fallback)
+                                if is_emma and isinstance(insights, dict) and 'campaign_count' in insights:
+                                    logging.info(f"Emma Meta — campagnes insights (après filtre): {insights['campaign_count']}")
                             
                             # Cas spécial pour Roche Bobois Lyon Centre, Création contemporaine et Roche Saint-Bonnet (contacts et recherches forcés à 0)
                             if is_roche_lyon:

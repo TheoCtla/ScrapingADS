@@ -294,6 +294,21 @@ class GoogleAdsConversionsService:
             "clicks to call"
         ]
         
+        self.MEUBLE_RIGAUD_DIRECTIONS_NAMES = [
+            "itinéraires",
+            "local actions - directions"
+        ]
+        
+        self.MY_SALON_AUBIERE_CONTACT_NAMES = [
+            "appels",
+            "clicks to call"
+        ]
+        
+        self.MY_SALON_AUBIERE_DIRECTIONS_NAMES = [
+            "itinéraires",
+            "local actions - directions"
+        ]
+        
         # Clients qui nécessitent une protection timeout
         self.TIMEOUT_PROTECTED_CLIENTS = [
             "5901565913",  # Laserel
@@ -3500,6 +3515,188 @@ class GoogleAdsConversionsService:
             logging.error(f" Erreur lors de la récupération des conversions Meuble Rigaud Contact pour {customer_id}: {e}")
             return contact_total, all_conversions
     
+    def get_meuble_rigaud_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour Meuble Rigaud
+        Uniquement les conversions contenant "Itinéraires"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🪑 Recherche des conversions MEUBLE RIGAUD ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Itinéraires pour Meuble Rigaud
+                is_meuble_rigaud_directions = any(target_name in conversion_name for target_name in self.MEUBLE_RIGAUD_DIRECTIONS_NAMES)
+                
+                if is_meuble_rigaud_directions:
+                    directions_total += conversions_value
+                    logging.info(f"🪑 CONVERSION MEUBLE RIGAUD ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"Conversion Meuble Rigaud Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Itinéraires Meuble Rigaud
+            directions_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.MEUBLE_RIGAUD_DIRECTIONS_NAMES)]
+            
+            logging.info(f"🪑 Total Itinéraires Meuble Rigaud: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f" Erreur lors de la récupération des conversions Meuble Rigaud Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+    
+    def get_my_salon_aubiere_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour My Salon Aubière
+        Uniquement les conversions contenant "Appels" et "Clicks to call"
+        """
+        contact_total = 0
+        all_conversions = []
+        
+        try:
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"💇 Recherche des conversions MY SALON AUBIÈRE CONTACT pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                is_my_salon_contact = any(target_name in conversion_name for target_name in self.MY_SALON_AUBIERE_CONTACT_NAMES)
+                
+                if is_my_salon_contact:
+                    contact_total += conversions_value
+                    logging.info(f"💇 CONVERSION MY SALON AUBIÈRE CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"Conversion My Salon Aubière ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            contact_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.MY_SALON_AUBIERE_CONTACT_NAMES)]
+            
+            logging.info(f"💇 Total Contact My Salon Aubière: {contact_total}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f" Erreur lors de la récupération des conversions My Salon Aubière Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+    
+    def get_my_salon_aubiere_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour My Salon Aubière
+        Uniquement les conversions contenant "Itinéraires" et "Local actions - Directions"
+        """
+        directions_total = 0
+        all_conversions = []
+        
+        try:
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"💇 Recherche des conversions MY SALON AUBIÈRE ITINÉRAIRES pour le client {customer_id}")
+            
+            response = self.auth_service.fetch_report_data(customer_id, query)
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                is_my_salon_directions = any(target_name in conversion_name for target_name in self.MY_SALON_AUBIERE_DIRECTIONS_NAMES)
+                
+                if is_my_salon_directions:
+                    directions_total += conversions_value
+                    logging.info(f"💇 CONVERSION MY SALON AUBIÈRE ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"Conversion My Salon Aubière Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            directions_conversions = [conv for conv in all_conversions 
+                                  if any(target_name in conv['name'].lower() for target_name in self.MY_SALON_AUBIERE_DIRECTIONS_NAMES)]
+            
+            logging.info(f"💇 Total Itinéraires My Salon Aubière: {directions_total}")
+            return directions_total, directions_conversions
+            
+        except Exception as e:
+            logging.error(f" Erreur lors de la récupération des conversions My Salon Aubière Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+    
     def get_emma_merignac_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
         """
         Récupère les données de conversions Itinéraires spécifiquement pour Emma Merignac
@@ -3922,6 +4119,12 @@ class GoogleAdsConversionsService:
                 total_conversions, found_conversions = self.get_meuble_rigaud_contact_conversions_data(
                     customer_id, start_date, end_date
                 )
+            elif customer_id == "2041308129" or client_name == "My Salon Aubière":
+                logging.info(f"💇 Utilisation de la logique spécifique My Salon Aubière pour {client_name}")
+                # Récupérer les données de conversions Contact avec la logique My Salon Aubière
+                total_conversions, found_conversions = self.get_my_salon_aubiere_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
             else:
                 # Récupérer les données de conversions Contact avec la logique standard
                 total_conversions, found_conversions = self.get_contact_conversions_data(
@@ -4114,6 +4317,18 @@ class GoogleAdsConversionsService:
                 logging.info(f" Utilisation de la logique spécifique Emma Merignac pour {client_name}")
                 # Récupérer les données de conversions Itinéraires avec la logique Emma Merignac
                 total_conversions, found_conversions = self.get_emma_merignac_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "7836791446" or client_name == "Meuble Rigaud" or client_name == "Meubles Rigaud":
+                logging.info(f"🪑 Utilisation de la logique spécifique Meuble Rigaud pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique Meuble Rigaud
+                total_conversions, found_conversions = self.get_meuble_rigaud_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "2041308129" or client_name == "My Salon Aubière":
+                logging.info(f"💇 Utilisation de la logique spécifique My Salon Aubière pour {client_name}")
+                # Récupérer les données de conversions Itinéraires avec la logique My Salon Aubière
+                total_conversions, found_conversions = self.get_my_salon_aubiere_directions_conversions_data(
                     customer_id, start_date, end_date
                 )
             else:

@@ -690,12 +690,49 @@ class MetaAdsReportsService:
         logging.info(f"  🎯 Contacts API (ancienne méthode): {api_contacts} (désactivé - utilise getContactsResults())")
         logging.info(f"  📍 Recherches de lieux (extraites): {api_searches}")
         
+        # Extraire les contacts depuis insights_data si disponibles (calculés dans get_meta_insights)
+        contact_conversions = 0
+        contacts_extracted_from_insights = False
+        
+        # D'abord, essayer d'extraire depuis insights_data (calculés dans get_meta_insights)
+        # Cette méthode est plus fiable car elle filtre correctement contacts vs recherches
+        if 'conversions' in insights_data and insights_data['conversions']:
+            conversions_list = insights_data['conversions']
+            logging.info(f"  🔍 DEBUG: conversions_list trouvé, type: {type(conversions_list)}, longueur: {len(conversions_list) if isinstance(conversions_list, list) else 'N/A'}")
+            if isinstance(conversions_list, list):
+                for conv in conversions_list:
+                    logging.info(f"  🔍 DEBUG: conversion item: {conv}")
+                    if isinstance(conv, dict):
+                        action_type = conv.get('action_type', '')
+                        value = conv.get('value', 0)
+                        logging.info(f"  🔍 DEBUG: action_type='{action_type}', value='{value}' (type: {type(value)})")
+                        if action_type == 'contact_total':
+                            try:
+                                contact_conversions = int(value)
+                                contacts_extracted_from_insights = True
+                                logging.info(f"  🎯 Contacts extraits depuis insights_data.conversions: {contact_conversions}")
+                                break
+                            except (ValueError, TypeError) as e:
+                                logging.warning(f"  ⚠️ Erreur conversion valeur contact '{value}': {e}")
+            else:
+                logging.warning(f"  ⚠️ conversions_list n'est pas une liste: {type(conversions_list)}")
+        else:
+            logging.info(f"  🔍 DEBUG: Pas de 'conversions' dans insights_data ou vide. Clés disponibles: {list(insights_data.keys()) if insights_data else 'insights_data est None'}")
+        
+        # Si contacts_total est fourni ET qu'on n'a pas pu extraire depuis insights_data, l'utiliser
+        # Note: getContactsResults() peut être moins fiable car il additionne toutes les valeurs de results
+        # (y compris les recherches de lieux), donc on préfère les données de insights_data si disponibles
+        if contacts_total and contacts_total > 0 and not contacts_extracted_from_insights:
+            contact_conversions = contacts_total
+            logging.info(f"  🎯 Contacts utilisés depuis contacts_total (getContactsResults): {contact_conversions}")
+        elif contacts_total and contacts_total > 0 and contacts_extracted_from_insights:
+            logging.info(f"  ⚠️ contacts_total ({contacts_total}) ignoré car contacts déjà extraits depuis insights_data ({contact_conversions}) - insights_data est plus fiable")
+        
         # Utiliser directement les données API (plus de scraping d'interface)
-        contact_conversions = 0  # Désactivé - utilise getContactsResults()
         search_conversions = api_searches
         
         logging.info(f"🎯 MÉTRIQUES FINALES SÉLECTIONNÉES:")
-        logging.info(f"  🎯 Contact Meta: {contact_conversions} (désactivé - utilise getContactsResults())")
+        logging.info(f"  🎯 Contact Meta: {contact_conversions}")
         logging.info(f"  📍 Recherche de lieux: {search_conversions}")
         
         # CPL (Cost Per Lead)
@@ -721,6 +758,11 @@ class MetaAdsReportsService:
             "Recherche de lieux": search_conversions
         }
         
+        # Log de vérification finale
+        logging.info(f"🔍 DEBUG FINAL - Valeurs dans metrics dict:")
+        logging.info(f"  Contact Meta = {metrics.get('Contact Meta')}")
+        logging.info(f"  Recherche de lieux = {metrics.get('Recherche de lieux')}")
+        
         logging.info("META → MÉTRIQUES ENVOYÉES AU SHEET (avec composition)")
         logging.info(f"  Clics Meta = clicks = {clicks}")
         logging.info(f"  Impressions Meta = impressions = {impressions}")
@@ -728,7 +770,7 @@ class MetaAdsReportsService:
         logging.info(f"  CPC Meta = round({cpc}, 2) basé sur link_clicks={link_clicks}")
         logging.info(f"  Cout Facebook ADS = round({spend}, 2) depuis insights.spend")
         logging.info(f"  CPL Meta = {cpl} (pondéré si contacts_total fourni, sinon moyenne cost_per_result)")
-        logging.info(f"  Contact Meta = {contact_conversions} (somme results.values.value via getContactsResults)")
+        logging.info(f"  Contact Meta = {contact_conversions} (depuis contacts_total ou insights_data.conversions)")
         logging.info(f"  Recherche de lieux = {search_conversions} (extraction conversions/actions)")
         logging.info(f"🔗 CPC basé sur {link_clicks} link_clicks (vs {clicks} clics totaux)")
         logging.info(f"💰 CPL basé sur {spend_with_contacts}€ (dépenses campagnes avec contacts) vs {spend}€ total")
