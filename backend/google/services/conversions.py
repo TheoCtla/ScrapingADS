@@ -44,6 +44,12 @@ class GoogleAdsConversionsService:
             "cta"
         ]
         
+        # Addario: uniquement "appels" et "cta" pour les contacts
+        self.ADDARIO_CONTACT_NAMES = [
+            "appels",
+            "cta"
+        ]
+        
         self.ADDARIO_DIRECTIONS_NAMES = [
             "itinéraires",
             "local actions - directions"
@@ -309,6 +315,48 @@ class GoogleAdsConversionsService:
             "local actions - directions"
         ]
         
+        # Riviera Grass: uniquement Click Whatsapp, Click Tel, Click Email pour les contacts
+        self.RIVIERA_GRASS_CONTACT_NAMES = [
+            "click whatsapp",
+            "click tel",
+            "click email"
+        ]
+        
+        # Emma Nantes: Clicks to call, Appels à partir des annonces (Calls from ads), Call bouton
+        self.EMMA_NANTES_CONTACT_NAMES = [
+            "clicks to call",
+            "calls from ads",
+            "call bouton"
+        ]
+        
+        self.EMMA_NANTES_DIRECTIONS_NAMES = [
+            "itinéraires",
+            "local actions - directions"
+        ]
+        
+        # Tairmic: Appels pour contacts, Itinéraires Magasin pour itinéraires
+        self.TAIRMIC_CONTACT_NAMES = [
+            "appels"
+        ]
+        
+        self.TAIRMIC_DIRECTIONS_NAMES = [
+            "itinéraires magasin"
+        ]
+        
+        # Univers Construction: Appels Directs, Click Email, Click Tel / Actions locales – Itinéraire, Click Adresse
+        self.UNIVERS_CONSTRUCTION_CONTACT_NAMES = [
+            "appels directs",
+            "click email",
+            "click tel"
+        ]
+        
+        self.UNIVERS_CONSTRUCTION_DIRECTIONS_NAMES = [
+            "actions locales – itinéraire",
+            "actions locales - itinéraire",
+            "actions locales - itineraire",
+            "click adresse"
+        ]
+        
         # Clients qui nécessitent une protection timeout
         self.TIMEOUT_PROTECTED_CLIENTS = [
             "5901565913",  # Laserel
@@ -410,7 +458,21 @@ class GoogleAdsConversionsService:
                 is_france_literie_annemasse = customer_id == "2744128994"
                 # Vérifier si c'est FL Antibes Vallauris (customer_id: 2485486745)
                 is_fl_antibes = customer_id == "2485486745"
+                # Vérifier si c'est Cuisine Plus Perpignan (customer_id: 9360801546)
+                is_cuisine_plus_perpignan = customer_id == "9360801546"
+                # Vérifier si c'est Riviera Grass (customer_id: 5184726119)
+                is_riviera_grass = customer_id == "5184726119"
+                # Vérifier si c'est Emma Nantes (customer_id: 9686568792)
+                is_emma_nantes = customer_id == "9686568792"
+                # Vérifier si c'est Tairmic (customer_id: 2206388196)
+                is_tairmic = customer_id == "2206388196"
+                # Vérifier si c'est Univers Construction (customer_id: 5509129108)
+                is_univers_construction = customer_id == "5509129108"
                 
+                # Normalisation spécifique pour gérer les espaces insécables
+                # Normalisation spécifique pour gérer les espaces insécables et différents tirets
+                normalized_conversion_name = conversion_name.replace('\xa0', ' ').replace('–', '-').replace('—', '-')
+                                
                 # Classifier par section basée sur le nom
                 if is_cryolipolyse:
                     is_contact = any(target_name in conversion_name for target_name in self.CRYOLIPOLYSE_CONTACT_NAMES)
@@ -420,12 +482,18 @@ class GoogleAdsConversionsService:
                     if is_directions:
                         directions_total += conversions_value
                 elif is_addario:
-                    is_contact = any(target_name in conversion_name for target_name in self.TARGET_CONTACT_NAMES)
+                    # Logique spécifique Addario: seulement "appels" et "cta"
+                    is_contact = any(target_name in conversion_name for target_name in self.ADDARIO_CONTACT_NAMES)
                     is_directions = any(target_name in conversion_name for target_name in self.ADDARIO_DIRECTIONS_NAMES)
                     if is_contact:
                         contact_total += conversions_value
-                    if is_directions:
+                        logging.info(f"✅ Conversion Contact: {row.segments.conversion_action_name} = {conversions_value}")
+                    elif is_directions:
                         directions_total += conversions_value
+                        logging.info(f"✅ Conversion Itinéraires: {row.segments.conversion_action_name} = {conversions_value}")
+                    else:
+                        logging.info(f"Conversion non classifiée: {row.segments.conversion_action_name} = {conversions_value}")
+                    continue  # Éviter le double comptage
                 elif is_crozatier:
                     is_contact = any(target_name in conversion_name for target_name in self.CROZATIER_CONTACT_NAMES)
                     is_directions = any(target_name in conversion_name for target_name in self.TARGET_DIRECTIONS_NAMES)
@@ -468,6 +536,69 @@ class GoogleAdsConversionsService:
                         logging.info(f"🏖️ CONVERSION FL ANTIBES CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
                     if is_directions:
                         logging.info(f"🏖️ CONVERSION FL ANTIBES ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                elif is_cuisine_plus_perpignan:
+                    # Logique spécifique Cuisine Plus Perpignan: rien en contact, seulement "itinéraires"
+                    is_contact = any(target_name in conversion_name for target_name in self.CUISINE_PLUS_PERPIGNAN_CONTACT_NAMES)
+                    is_directions = any(target_name in conversion_name for target_name in self.CUISINE_PLUS_PERPIGNAN_DIRECTIONS_NAMES)
+                    if is_contact:
+                        contact_total += conversions_value
+                        logging.info(f"🍽️ Conversion Contact: {row.segments.conversion_action_name} = {conversions_value}")
+                    elif is_directions:
+                        directions_total += conversions_value
+                        logging.info(f"🍽️ Conversion Itinéraires: {row.segments.conversion_action_name} = {conversions_value}")
+                    else:
+                        logging.info(f"Conversion non classifiée: {row.segments.conversion_action_name} = {conversions_value}")
+                    continue  # Éviter le double comptage
+                elif is_riviera_grass:
+                    # Logique spécifique Riviera Grass: Click Whatsapp, Click Tel, Click Email avec correspondance exacte
+                    is_contact = any(conversion_name == target_name for target_name in self.RIVIERA_GRASS_CONTACT_NAMES)
+                    is_directions = False  # Pas d'itinéraires pour Riviera Grass
+                    if is_contact:
+                        contact_total += conversions_value
+                        logging.info(f"🌱 CONVERSION RIVIERA GRASS CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                    else:
+                        logging.info(f"Conversion non classifiée: {row.segments.conversion_action_name} = {conversions_value}")
+                    continue  # Éviter le double comptage
+                elif is_emma_nantes:
+                    # Logique spécifique Emma Nantes: Clicks to call, Calls from ads, Call bouton / Itinéraires, Local actions - Directions
+                    is_contact = any(conversion_name == target_name for target_name in self.EMMA_NANTES_CONTACT_NAMES)
+                    is_directions = any(conversion_name == target_name for target_name in self.EMMA_NANTES_DIRECTIONS_NAMES)
+                    if is_contact:
+                        contact_total += conversions_value
+                        logging.info(f"🛋️ CONVERSION EMMA NANTES CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                    elif is_directions:
+                        directions_total += conversions_value
+                        logging.info(f"🛋️ CONVERSION EMMA NANTES ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                    else:
+                        logging.info(f"Conversion non classifiée: {row.segments.conversion_action_name} = {conversions_value}")
+                    continue  # Éviter le double comptage
+                elif is_tairmic:
+                    # Logique spécifique Tairmic: Appels / Itinéraires Magasin
+                    is_contact = any(conversion_name == target_name for target_name in self.TAIRMIC_CONTACT_NAMES)
+                    is_directions = any(conversion_name == target_name for target_name in self.TAIRMIC_DIRECTIONS_NAMES)
+                    if is_contact:
+                        contact_total += conversions_value
+                        logging.info(f"🏪 CONVERSION TAIRMIC CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                    elif is_directions:
+                        directions_total += conversions_value
+                        logging.info(f"🏪 CONVERSION TAIRMIC ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                    else:
+                        logging.info(f"Conversion non classifiée: {row.segments.conversion_action_name} = {conversions_value}")
+                    continue  # Éviter le double comptage
+                elif is_univers_construction:
+                    # Logique spécifique Univers Construction avec nom normalisé
+                    # Utilisation de 'in' au lieu de '==' pour être plus permissif sur les noms normailsés
+                    is_contact = any(target_name in normalized_conversion_name for target_name in self.UNIVERS_CONSTRUCTION_CONTACT_NAMES)
+                    is_directions = any(target_name in normalized_conversion_name for target_name in self.UNIVERS_CONSTRUCTION_DIRECTIONS_NAMES)
+                    if is_contact:
+                        contact_total += conversions_value
+                        logging.info(f"🏗️ CONVERSION UNIVERS CONSTRUCTION CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                    elif is_directions:
+                        directions_total += conversions_value
+                        logging.info(f"🏗️ CONVERSION UNIVERS CONSTRUCTION ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                    else:
+                        logging.info(f"Conversion non classifiée: {row.segments.conversion_action_name} = {conversions_value}")
+                    continue  # Éviter le double comptage
                 else:
                     # Logique standard pour tous les autres clients
                     is_contact = any(target_name in conversion_name for target_name in self.TARGET_CONTACT_NAMES)
@@ -1805,12 +1936,88 @@ class GoogleAdsConversionsService:
     def get_laserel_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
         """
         Récupère les données de conversions Contact spécifiquement pour Laserel
-        Retourne "Faire à la main" au lieu de scraper les données
+        Uniquement les conversions contenant "Appels", "Clicks to call", "Appel (CTA)", "CTA"
         """
-        logging.info(f"🔬 LASEREL CONTACT - Mode manuel activé : 'Faire à la main'")
+        contact_total = 0
+        all_conversions = []
         
-        # Retourner "Faire à la main" au lieu de scraper
-        return "Faire à la main", []
+        try:
+            # Requête pour récupérer TOUTES les conversion actions
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+            
+            logging.info(f"🔬 Recherche des conversions LASEREL CONTACT pour le client {customer_id}")
+            
+            # Ajouter un timeout pour éviter les problèmes de mémoire
+            import threading
+            
+            timeout_occurred = threading.Event()
+            
+            def timeout_handler():
+                timeout_occurred.set()
+            
+            # Timeout de 30 secondes
+            timeout_timer = threading.Timer(30.0, timeout_handler)
+            timeout_timer.start()
+            
+            try:
+                response = self.auth_service.fetch_report_data(customer_id, query)
+                timeout_timer.cancel()  # Annuler le timeout
+            except Exception as e:
+                timeout_timer.cancel()  # Annuler le timeout
+                if timeout_occurred.is_set():
+                    logging.error(f"⏰ Timeout lors de la requête Laserel Contact pour {customer_id}")
+                    return 0, []
+                else:
+                    raise e
+            
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+                
+                # Logique pour gérer la différence entre les métriques
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+                
+                # Enregistrer toutes les conversions pour debug
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+                
+                # Vérifier si c'est une conversion Contact pour Laserel
+                # Utiliser une correspondance EXACTE pour éviter de matcher [TARMAAC] Click CTA
+                is_laserel_contact = any(conversion_name == target_name for target_name in self.LASEREL_CONTACT_NAMES)
+                
+                if is_laserel_contact:
+                    contact_total += conversions_value
+                    logging.info(f"🔬 CONVERSION LASEREL CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"Conversion Laserel Contact ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+            
+            # Filtrer seulement les conversions Contact Laserel
+            contact_conversions = [conv for conv in all_conversions 
+                                   if any(conv['name'].lower() == target_name for target_name in self.LASEREL_CONTACT_NAMES)]
+            
+            logging.info(f"🔬 Total Contact Laserel: {contact_total}")
+            return contact_total, contact_conversions
+            
+        except Exception as e:
+            logging.error(f" Erreur lors de la récupération des conversions Laserel Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
     
     def get_laserel_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
         """

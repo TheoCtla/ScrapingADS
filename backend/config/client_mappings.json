@@ -2,7 +2,6 @@
     "_comment": "Configuration des mappings personnalisés entre clients Google Ads et onglets Google Sheet",
     "_usage": "Ajoutez ici SEULEMENT les cas où le nom Google Ads ≠ nom d'onglet souhaité",
     "_format": "customer_id: nom_onglet_souhaité",
-    
     "mappings": {
         "9321943301": "A.G. Cryolipolyse",
         "1513412386": "Addario",
@@ -59,7 +58,7 @@
         "3245028529": "Tousalon Perpignan",
         "8364219717": "Sagne Cuisines - L'instant Cuisine",
         "4865583978": "Star Literie",
-        "2206388196": "TAIRMIC",
+        "2206388196": "Tairmic",
         "3477628754": "TB DIGITAL ADMIN",
         "4913925892": "Tousalon Toulouse",
         "9525962803": "UNI-K CONCEPT",
@@ -125,22 +124,25 @@
         "3938194507": "Roche Bobois Lyon Centre",
         "6841136645": "Roche Bobois Saint-Bonnet",
         "5184726119": "Riviera Grass",
-        "5509129108": "CRU- Univers Gazons",
+        "5509129108": "Univers Construction",
         "9686568792": "Emma Nantes - RITEILE SAS"
     },
-    
     "rules": {
         "_comment": "Règles de nettoyage automatique des noms",
-        "remove_suffixes": [" SAS", " SARL", " - ", "OLD"],
+        "remove_suffixes": [
+            " SAS",
+            " SARL",
+            " - ",
+            "OLD"
+        ],
         "replace_patterns": {
             "\\ue83a": "",
             "  ": " "
         }
     },
-    
     "examples": {
         "_comment": "Exemples de mappings possibles",
         "_1234567890": "Nom Raccourci",
         "_9876543210": "Alias Client Spécial"
     }
-} 
+}
