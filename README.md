@@ -1,20 +1,29 @@
-## Emma — campagnes actives uniquement
-
-Pour le client `Emma Merignac`, la collecte limite désormais les campagnes aux statuts actifs uniquement:
-
-- Google Ads: GAQL ajoute `WHERE campaign.status = 'ENABLED'` dans le chemin Emma.
-- Meta Ads: appels `/insights` avec `effective_status=["ACTIVE"]` au niveau campagne.
-
-Impact: les métriques et exports pour Emma ne concernent plus que les campagnes actives. Les autres clients conservent leur comportement existant.
-
 # ScrappingRapport - Système de Reporting Unifié
 
 Application de scraping et reporting pour Google Ads et Meta Ads avec export vers Google Sheets.
 
-## 🚀 Démarrage Rapide
+# Installation
+### Backend
+```bash
+python3 -m venv backend/venv
+source backend/venv/bin/activate
+pip install -r backend/requirements.txt
+```
+
+### Frontend
+```bash
+cd frontend
+npm install
+```
+# .env
+```bash
+cd ..
+cp .env.exemple .env
+```
+
+## Démarrage Rapide
 
 ```bash
-# Installation et démarrage
 ./start_project.sh
 
 # Accès
@@ -22,7 +31,7 @@ Frontend: http://localhost:3000
 Backend: http://localhost:5050
 ```
 
-## 📋 Fonctionnalités
+## Fonctionnalités
 
 - **Sélection unifiée de clients** : Une seule barre de recherche avec liste blanche de 28 clients autorisés
 - **Scraping ciblé** : Récupération des données uniquement pour le client sélectionné
@@ -30,7 +39,7 @@ Backend: http://localhost:5050
 - **Meta Ads** : Insights et métriques formatées
 - **Export Google Sheets** : Mise à jour automatique des feuilles sur le Sheet
 
-## 🔧 Configuration
+## Configuration
 
 ### Ajouter un client
 
@@ -55,7 +64,7 @@ GOOGLE_SHEETS_CREDENTIALS_FILE=path/to/credentials.json
 GOOGLE_SHEETS_SPREADSHEET_ID=your_spreadsheet_id
 ```
 
-## 📁 Structure
+## Structure
 
 ```
 scrappingRapport/
@@ -74,23 +83,13 @@ scrappingRapport/
 └── start_project.sh                 # Script de démarrage
 ```
 
-## 🛠️ API Endpoints
+## API Endpoints
 
 - `GET /list-authorized-clients` - Liste des clients autorisés
 - `POST /resolve-client` - Résolution des IDs client
 - `POST /export-unified-report` - Export vers Google Sheets
 
-## 🧪 Tests
-
-```bash
-# Tests unitaires
-cd backend && python -m pytest tests/
-
-# Test du client resolver
-python -m pytest tests/test_client_resolver.py -v
-```
-
-## 📝 Logs
+## Logs
 
 ```bash
 # Backend
@@ -98,10 +97,4 @@ tail -f backend.log
 
 # Frontend
 tail -f frontend.log
-```
-
-## 🛑 Arrêt
-
-```bash
-./stop_project.sh
 ```
