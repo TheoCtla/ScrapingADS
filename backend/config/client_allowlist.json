@@ -3,48 +3,45 @@
   "description": "Liste blanche des clients autorisés avec mapping vers les IDs Google Ads et Meta Ads",
   "last_updated": "2025-01-30",
   "allowlist": [
-    "A.G. Cryolipolyse",
-    "Addario",
     "Alexander Sachs",
-    "AvivA Chartres",
+    "Addario",
     "AvivA Melun",
     "AvivA Montigny",
     "AvivA Orgeval",
+    "Bedroom Perpignan",
+    "Création contemporaine",
     "Crozatier Dijon",
+    "Cuisine Plus Perpignan",
     "Denteva",
     "Emma Merignac",
+    "Emma Nantes",
     "EvoPro Informatique",
+    "Flamme&Creation",
     "France Literie Aix",
     "France Literie Annemasse",
     "France Literie Antibes Vallauris",
+    "France Literie Champagne",
     "France Literie Dijon",
     "France Literie Narbonne",
     "France Literie Perpignan",
-    "Kaltea Aubagne",
+    "France Literie Saint-Priest & Givors",
     "Kaltea Chalon sur Saône",
-    "Kaltea Lyon Sud",
     "Laserel",
     "Laserel Auxerre",
+    "Laserel Nantes",
     "LyleOO",
     "Meuble Rigaud",
     "My Salon Aubière",
     "Place de la literie Toulouse",
-    "Sagne Cuisines",
+    "Riviera Grass",
+    "Roche bobois Lyon Centre",
+    "Roche bobois Saint-Bonnet",
     "Star Literie",
+    "SUD GAZON SYNTHETIQUE",
     "Tairmic",
     "Tousalon Perpignan",
     "Tousalon Toulouse",
-    "Flamme&Creation",
-    "France Literie Saint-Priest & Givors",
-    "France Literie Champagne",
-    "Bedroom Perpignan",
-    "Cuisine Plus Perpignan",
-    "Création contemporaine",
-    "Roche bobois Lyon Centre",
-    "Roche bobois Saint-Bonnet",
-    "Riviera Grass",
-    "Univers Construction",
-    "Emma Nantes"
+    "Univers Construction"
   ],
   "mappings": {
     "A.G. Cryolipolyse": {
@@ -221,6 +218,14 @@
         "adAccountId": "24091205780561835"
       }
     },
+    "Laserel Nantes": {
+      "googleAds": {
+        "customerId": "5117186070"
+      },
+      "metaAds": {
+        "adAccountId": "32268238606152931"
+      }
+    },
     "LyleOO": {
       "googleAds": null,
       "metaAds": {
@@ -266,6 +271,12 @@
       "metaAds": {
         "adAccountId": "1160911785310714"
       }
+    },
+    "SUD GAZON SYNTHETIQUE": {
+      "googleAds": {
+        "customerId": "2037270229"
+      },
+      "metaAds": null
     },
     "Tairmic": {
       "googleAds": {

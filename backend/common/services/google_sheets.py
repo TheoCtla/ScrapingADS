@@ -14,12 +14,12 @@ class GoogleSheetsService:
     
     def _initialize_service(self):
         try:
-            credentials = Credentials.from_service_account_file(
-                Config.API.GOOGLE_CREDENTIALS_FILE, 
-                scopes=Config.API.GOOGLE_SCOPES
-            )
+            from backend.common.auth_utils import get_user_credentials
+            
+            credentials = get_user_credentials(Config.API.GOOGLE_SCOPES)
+            
             self.service = build('sheets', 'v4', credentials=credentials)
-            logging.info("✅ Service Google Sheets initialisé avec succès")
+            logging.info("✅ Service Google Sheets initialisé avec succès (OAuth2)")
         except Exception as e:
             logging.error(f"❌ Erreur lors de l'initialisation du service Google Sheets: {e}")
             raise

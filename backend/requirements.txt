@@ -15,7 +15,7 @@ python-dotenv==1.0.0
 # ========================================
 
 # Google Ads API Client
-google-ads==27.0.0
+google-ads==28.4.1
 google-api-core>=2.18.0
 
 # ========================================

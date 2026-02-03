@@ -46,6 +46,12 @@ class APIConfig:
     GOOGLE_SHEET_ID = os.getenv("GOOGLE_SHEET_ID")
     GOOGLE_CREDENTIALS_FILE = get_config_path("GOOGLE_CREDENTIALS_FILE", str(CONFIG_DIR / "credentials.json"))
     GOOGLE_SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+    
+    # Google Drive API
+    GOOGLE_DRIVE_FOLDER_ID = os.getenv("GOOGLE_DRIVE_FOLDER_ID")
+    
+    # Auth Token Path (for OAuth2)
+    GOOGLE_TOKEN_PATH = str(CONFIG_DIR / "token.json")
 
 class FlaskConfig:
     """Configuration Flask"""

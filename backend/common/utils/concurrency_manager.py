@@ -75,19 +75,19 @@ def with_concurrency_limit(operation_name: str = "scraping_operation", timeout: 
                     raise Exception(f"Timeout: Impossible d'acquérir un slot pour '{operation_name}' après {timeout}s")
             
             try:
-                logging.info(f"🚀 Début de l'opération '{operation_name}'")
+                logging.info(f"Début de l'opération '{operation_name}'")
                 start_time = time.time()
                 
                 # Exécuter la fonction
                 result = func(*args, **kwargs)
                 
                 execution_time = time.time() - start_time
-                logging.info(f"✅ Opération '{operation_name}' terminée en {execution_time:.2f}s")
+                logging.info(f"Opération '{operation_name}' terminée en {execution_time:.2f}s")
                 
                 return result
                 
             except Exception as e:
-                logging.error(f"❌ Erreur dans l'opération '{operation_name}': {e}")
+                logging.error(f"Erreur dans l'opération '{operation_name}': {e}")
                 raise
             finally:
                 # Toujours libérer le slot

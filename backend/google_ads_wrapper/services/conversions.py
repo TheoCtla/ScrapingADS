@@ -7,7 +7,7 @@ import logging
 from typing import Tuple, List, Dict, Any
 from google.ads.googleads.errors import GoogleAdsException
 
-from backend.google.services.authentication import GoogleAdsAuthService
+from backend.google_ads_wrapper.services.authentication import GoogleAdsAuthService
 from backend.common.services.google_sheets import GoogleSheetsService
 
 class GoogleAdsConversionsService:

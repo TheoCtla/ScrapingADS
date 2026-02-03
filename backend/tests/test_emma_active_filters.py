@@ -1,6 +1,6 @@
 import types
 
-from backend.google.services.reports import GoogleAdsReportsService
+from backend.google_ads_wrapper.services.reports import GoogleAdsReportsService
 from backend.meta.services.reports import MetaAdsReportsService
 
 

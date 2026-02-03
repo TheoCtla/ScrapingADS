@@ -1,9 +1,15 @@
 """
-Point d'entrée principal de l'application de reporting publicitaire
+Backend Flask pour le scraping de rapports publicitaires
 """
 
-import logging
+import sys
 import os
+
+# Ajouter le répertoire parent au sys.path pour permettre les imports backend.*
+# Utiliser append() au lieu de insert(0) pour éviter les conflits avec les packages du venv
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import logging
 import gc
 from datetime import datetime
 from flask import Flask, request, send_file, jsonify
@@ -23,10 +29,10 @@ from backend.common.services.light_scraper import LightScraperService
 from backend.common.utils.concurrency_manager import with_concurrency_limit, get_concurrency_status
 
 # Services Google Ads
-from backend.google.services.authentication import GoogleAdsAuthService
-from backend.google.services.reports import GoogleAdsReportsService
-from backend.google.services.conversions import GoogleAdsConversionsService
-from backend.google.utils.mappings import GoogleAdsMappingService
+from backend.google_ads_wrapper.services.authentication import GoogleAdsAuthService
+from backend.google_ads_wrapper.services.reports import GoogleAdsReportsService
+from backend.google_ads_wrapper.services.conversions import GoogleAdsConversionsService
+from backend.google_ads_wrapper.utils.mappings import GoogleAdsMappingService
 
 # Services Meta Ads
 from backend.meta.services.authentication import MetaAdsAuthService
@@ -90,6 +96,9 @@ def get_service(service_name):
             _services[service_name] = ClientResolverService()
         elif service_name == 'light_scraper':
             _services[service_name] = LightScraperService()
+        elif service_name == 'google_drive':
+            from backend.common.services.google_drive import GoogleDriveService
+            _services[service_name] = GoogleDriveService()
     return _services[service_name]
 
 # ================================
@@ -1009,8 +1018,277 @@ def scrape_website_light():
         return jsonify({"error": str(e)}), 500
 
 # ================================
+# ROUTES EXPORT GOOGLE DRIVE
+# ================================
+
+@app.route("/export-to-drive", methods=["POST"])
+@with_concurrency_limit("drive_export", timeout=600)  # Timeout plus long pour les téléchargements
+def export_to_drive():
+    """Export du contenu créatif des campagnes Google Ads et Meta Ads vers Google Drive"""
+    try:
+        data = request.json
+        client_name = data.get("client_name")
+        
+        if not client_name:
+            return jsonify({"error": "Paramètre manquant: client_name"}), 400
+        
+        logging.info(f"🚀 Début export créatif Drive pour '{client_name}'")
+        
+        # Résoudre le client
+        client_resolver = get_service('client_resolver')
+        is_valid, error_message = client_resolver.validate_client_selection(client_name)
+        if not is_valid:
+            return jsonify({"error": error_message}), 400
+        
+        resolved_accounts = client_resolver.resolve_client_accounts(client_name)
+        google_customer_id = resolved_accounts["googleAds"]["customerId"] if resolved_accounts["googleAds"] else None
+        meta_account_id = resolved_accounts["metaAds"]["adAccountId"] if resolved_accounts["metaAds"] else None
+        
+        if not google_customer_id and not meta_account_id:
+            return jsonify({"error": f"Aucune plateforme configurée pour le client '{client_name}'"}), 400
+        
+        # Initialiser les services
+        drive_service = get_service('google_drive')
+        
+        # Créer ou trouver le dossier client
+        client_folder_id = drive_service.find_or_create_folder(
+            client_name,
+            Config.API.GOOGLE_DRIVE_FOLDER_ID
+        )
+        
+        # Créer le dossier de date sous le client
+        today = datetime.now().strftime("%d-%m-%Y")  # Format français: JJ-MM-AAAA
+        date_folder_id = drive_service.find_or_create_folder(today, client_folder_id)
+        
+        # Créer les dossiers de plateforme sous la date
+        google_folder_id = drive_service.find_or_create_folder("Google", date_folder_id)
+        meta_folder_id = drive_service.find_or_create_folder("Meta", date_folder_id)
+        
+        exported_files = []
+        
+        # ===== EXPORT GOOGLE ADS =====
+        if google_customer_id:
+            try:
+                logging.info(f"📊 Export Google Ads créatif pour {client_name} (ID: {google_customer_id})")
+                
+                # Importer le service créatif Google Ads
+                from backend.google_ads_wrapper.services.google_ads_creative import GoogleAdsCreativeService
+                google_creative = GoogleAdsCreativeService()
+                
+                # Récupérer les campagnes actives
+                campaigns = google_creative.get_active_campaigns(google_customer_id)
+                
+                if campaigns:
+                    logging.info(f"✅ {len(campaigns)} campagnes Google actives trouvées")
+                    
+                    # Pour chaque campagne
+                    for campaign in campaigns:
+                        campaign_id = campaign['id']
+                        campaign_name = campaign['name']
+                        safe_campaign_name = campaign_name.replace('/', '-').replace('\\', '-').replace("'", "")
+                        
+                        logging.info(f"📝 Traitement campagne Google: {campaign_name}")
+                        
+                        # Récupérer toutes les annonces de la campagne avec le type
+                        campaign_type = campaign.get('type')
+                        ads = google_creative.get_campaign_ads(google_customer_id, campaign_id, campaign_type)
+                        
+                        if ads:
+                            logging.info(f"  📄 {len(ads)} annonces trouvées")
+                            
+                            # Créer le CSV avec toutes les annonces
+                            # En-têtes CSV (avec YouTube Videos URLs)
+                            csv_content = "Groupe d'annonces,Nom annonce,Type,URL finale,Headlines,Descriptions,YouTube Videos URLs\n"
+                            
+                            for ad in ads:
+                                # Préparer les champs pour le CSV (échapper les guillemets)
+                                ad_group = ad.get("ad_group_name", "").replace('"', '""')
+                                ad_name = ad.get("ad_name", "").replace('"', '""')
+                                ad_type = ad.get("ad_type", "")
+                                
+                                headlines = " | ".join(ad.get('headlines', [])).replace('"', '""')
+                                descriptions = " | ".join(ad.get('descriptions', [])).replace('"', '""')
+                                
+                                final_urls = " | ".join(ad.get('final_urls', [])).replace('"', '""')
+                                
+                                # Extraire les URLs YouTube
+                                youtube_urls = " | ".join([yt['url'] for yt in ad.get('youtube_videos', [])]).replace('"', '""')
+                                
+                                # Ajouter la ligne au CSV
+                                csv_content += f'"{ad_group}","{ad_name}","{ad_type}","{final_urls}","{headlines}","{descriptions}","{youtube_urls}"\n'
+                            
+                            
+                            # Créer un dossier pour cette campagne
+                            campaign_folder_id = drive_service.find_or_create_folder(safe_campaign_name, google_folder_id)
+                            
+                            # Télécharger et uploader les médias dans le dossier de la campagne
+                            # Télécharger uniquement les images (pas les vidéos YouTube)
+                            media_count = 0
+                            for ad in ads:
+                                # Télécharger les images
+                                for img_url in ad.get('images', []):
+                                    try:
+                                        media_data, media_ext = google_creative.download_media_file(img_url)
+                                        if media_data and media_ext:
+                                            filename = f"image_{media_count}{media_ext}"
+                                            # Construire le mime_type (media_ext contient le point, ex: '.jpg')
+                                            mime_type = f"image/{media_ext[1:]}" if media_ext[1:] != 'jpg' else "image/jpeg"
+                                            drive_service.upload_media_file(media_data, filename, campaign_folder_id, mime_type)
+                                            media_count += 1
+                                    except Exception as e:
+                                        logging.warning(f"⚠️ Erreur téléchargement image: {e}")
+                            
+                            logging.info(f"📥 {media_count} images téléchargées")
+                            
+                            # Uploader le CSV dans le dossier de la campagne
+                            csv_filename = f"{safe_campaign_name}_{today}.csv"
+                            csv_info = drive_service.upload_csv_to_drive(
+                                csv_content,
+                                csv_filename,
+                                campaign_folder_id
+                            )
+                            
+                            exported_files.append({
+                                "platform": "Google Ads",
+                                "campaign": campaign_name,
+                                "type": "csv",
+                                **csv_info
+                            })
+                            
+                            logging.info(f"✅ CSV Google exporté: {csv_filename}")
+                        else:
+                            logging.warning(f"⚠️ Aucune annonce trouvée pour {campaign_name}")
+                else:
+                    logging.warning(f"⚠️ Aucune campagne Google active trouvée pour {client_name}")
+                    
+            except Exception as e:
+                logging.error(f"❌ Erreur export Google Ads: {e}")
+                import traceback
+                logging.error(traceback.format_exc())
+        
+        # ===== EXPORT META ADS =====
+        if meta_account_id:
+            try:
+                logging.info(f"📊 Export Meta Ads créatif pour {client_name} (ID: {meta_account_id})")
+                
+                # Importer le service créatif Meta Ads
+                from backend.meta.services.meta_ads_creative import MetaAdsCreativeService
+                meta_creative = MetaAdsCreativeService()
+                
+                # Récupérer les campagnes actives
+                campaigns = meta_creative.get_active_campaigns(meta_account_id)
+                
+                if campaigns:
+                    logging.info(f"✅ {len(campaigns)} campagnes Meta actives trouvées")
+                    
+                    # Pour chaque campagne
+                    for campaign in campaigns:
+                        campaign_id = campaign['id']
+                        campaign_name = campaign['name']
+                        safe_campaign_name = campaign_name.replace('/', '-').replace('\\', '-').replace("'", "")
+                        
+                        logging.info(f"📝 Traitement campagne Meta: {campaign_name}")
+                        
+                        # Récupérer toutes les créations de la campagne
+                        creatives = meta_creative.get_campaign_creatives(meta_account_id, campaign_id)
+                        
+                        if creatives:
+                            logging.info(f"  🎨 {len(creatives)} créations trouvées")
+                            
+                            # Créer le CSV avec toutes les créations (sans URLs de médias)
+                            csv_content = "Nom annonce,Titre,Texte,Call to Action,Lien\n"
+                            
+                            for creative in creatives:
+                                name = creative.get("ad_name", "").replace('"', '""')
+                                title = creative.get("title", "").replace('"', '""')
+                                body = creative.get("body", "").replace('"', '""')
+                                cta = creative.get("call_to_action", "").replace('"', '""')
+                                link = creative.get("link_url", "").replace('"', '""')
+                                
+                                csv_content += f'"{name}","{title}","{body}","{cta}","{link}"\n'
+                            
+                            
+                            # Créer un dossier pour cette campagne
+                            campaign_folder_id = drive_service.find_or_create_folder(safe_campaign_name, meta_folder_id)
+                            
+                            # Télécharger et uploader les médias dans le dossier de la campagne
+                            media_count = 0
+                            for creative in creatives:
+                                # Télécharger les images
+                                for img_url in creative.get('images', []):
+                                    try:
+                                        media_data, media_ext = meta_creative.download_media_file(img_url)
+                                        if media_data and media_ext:
+                                            filename = f"image_{media_count}{media_ext}"
+                                            # Construire le mime_type (media_ext contient le point, ex: '.jpg')
+                                            mime_type = f"image/{media_ext[1:]}" if media_ext[1:] != 'jpg' else "image/jpeg"
+                                            drive_service.upload_media_file(media_data, filename, campaign_folder_id, mime_type)
+                                            media_count += 1
+                                    except Exception as e:
+                                        logging.warning(f"⚠️ Erreur téléchargement image Meta: {e}")
+                                
+                                # Télécharger les vidéos
+                                for vid_url in creative.get('videos', []):
+                                    try:
+                                        media_data, media_ext = meta_creative.download_media_file(vid_url)
+                                        if media_data and media_ext:
+                                            filename = f"video_{media_count}{media_ext}"
+                                            # Construire le mime_type (media_ext contient le point, ex: '.mp4')
+                                            mime_type = f"video/{media_ext[1:]}"
+                                            drive_service.upload_media_file(media_data, filename, campaign_folder_id, mime_type)
+                                            media_count += 1
+                                    except Exception as e:
+                                        logging.warning(f"⚠️ Erreur téléchargement vidéo Meta: {e}")
+                            
+                            logging.info(f"📥 {media_count} fichiers média Meta téléchargés")
+                            
+                            # Uploader le CSV dans le dossier de la campagne
+                            csv_filename = f"{safe_campaign_name}_{today}.csv"
+                            csv_info = drive_service.upload_csv_to_drive(
+                                csv_content,
+                                csv_filename,
+                                campaign_folder_id
+                            )
+                            
+                            exported_files.append({
+                                "platform": "Meta Ads",
+                                "campaign": campaign_name,
+                                "type": "csv",
+                                **csv_info
+                            })
+                            
+                            logging.info(f"✅ CSV Meta exporté: {csv_filename}")
+                        else:
+                            logging.warning(f"⚠️ Aucune création trouvée pour {campaign_name}")
+                else:
+                    logging.warning(f"⚠️ Aucune campagne Meta active trouvée pour {client_name}")
+                    
+            except Exception as e:
+                logging.error(f"❌ Erreur export Meta Ads: {e}")
+                import traceback
+                logging.error(traceback.format_exc())
+        
+        logging.info(f"🎉 Export terminé: {len(exported_files)} fichiers créés")
+        
+        return jsonify({
+            "success": True,
+            "message": f"Export terminé: {len(exported_files)} fichiers CSV créés dans les dossiers Google/Meta",
+            "files": exported_files,
+            "client_folder_id": client_folder_id
+        }), 200
+        
+    except Exception as e:
+        logging.error(f"❌ Erreur lors de l'export Drive: {e}")
+        import traceback
+        logging.error(traceback.format_exc())
+        return jsonify({"error": str(e)}), 500
+
+
+# ================================
 # POINT D'ENTRÉE PRINCIPAL
 # ================================
+
+
 
 if __name__ == "__main__":
     logging.info("🚀 Démarrage de l'application de scraping ads")

@@ -8,7 +8,7 @@ from collections import defaultdict
 from io import StringIO
 import csv
 
-from backend.google.services.authentication import GoogleAdsAuthService
+from backend.google_ads_wrapper.services.authentication import GoogleAdsAuthService
 
 class GoogleAdsReportsService:
     """Service pour gérer les rapports et métriques Google Ads"""
