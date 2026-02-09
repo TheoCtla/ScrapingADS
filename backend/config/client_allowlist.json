@@ -18,6 +18,7 @@
     "EvoPro Informatique",
     "Flamme&Creation",
     "France Literie Aix",
+    "France Literie Alès",
     "France Literie Annemasse",
     "France Literie Antibes Vallauris",
     "France Literie Champagne",
@@ -136,6 +137,14 @@
       },
       "metaAds": {
         "adAccountId": "1050678126137875"
+      }
+    },
+    "France Literie Alès": {
+      "googleAds": {
+        "customerId": null
+      },
+      "metaAds": {
+        "adAccountId": "1322037179086630"
       }
     },
     "France Literie Annemasse": {

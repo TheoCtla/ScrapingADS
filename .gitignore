@@ -81,4 +81,7 @@ backend/config/credentials.json
 backend/config/google-ads.yaml
 
 # Scripts d'automatisation (contiennent des données sensibles et logs)
-backend/scripts/ backend/config/token.json
+backend/scripts/
+
+# OAuth tokens (sensibles)
+backend/config/token.json
