@@ -41,9 +41,18 @@
     "Tairmic",
     "Tousalon Perpignan",
     "Tousalon Toulouse",
-    "Univers Construction"
+    "Univers Construction",
+    "Nouveau Client"
   ],
   "mappings": {
+    "Nouveau Client": {
+      "googleAds": {
+        "customerId": "1234567890"
+      },
+      "metaAds": {
+        "adAccountId": "987654321098765"
+      }
+    },
     "A.G. Cryolipolyse": {
       "googleAds": {
         "customerId": "9321943301"

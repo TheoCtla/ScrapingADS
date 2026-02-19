@@ -127,7 +127,8 @@
         "6841136645": "Roche Bobois Saint-Bonnet",
         "5184726119": "Riviera Grass",
         "5509129108": "Univers Construction",
-        "9686568792": "Emma Nantes - RITEILE SAS"
+        "9686568792": "Emma Nantes - RITEILE SAS",
+        "1234567890": "Nouveau Client"
     },
     "rules": {
         "_comment": "Règles de nettoyage automatique des noms",
