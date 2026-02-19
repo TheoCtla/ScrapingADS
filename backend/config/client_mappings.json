@@ -1,7 +1,7 @@
 {
     "_comment": "Configuration des mappings personnalisés entre clients Google Ads et onglets Google Sheet",
     "_usage": "Ajoutez ici SEULEMENT les cas où le nom Google Ads ≠ nom d'onglet souhaité",
-    "_format": "customer_id: nom_onglet_souhaité",
+    "_format": "customer_id: nom_onglet_souhaite",
     "mappings": {
         "9321943301": "A.G. Cryolipolyse",
         "1513412386": "Addario",
