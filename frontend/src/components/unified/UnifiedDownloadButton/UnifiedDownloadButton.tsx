@@ -51,8 +51,7 @@ const UnifiedDownloadButton: React.FC<UnifiedDownloadButtonProps> = ({
         >
           {getButtonText()}
         </button>
-        
-        {hasAuthorizedClients && (
+        {/* hasAuthorizedClients && (
           <button
             className="bulk-scraping-button"
             onClick={onBulkScraping}
@@ -60,7 +59,7 @@ const UnifiedDownloadButton: React.FC<UnifiedDownloadButtonProps> = ({
           >
             {bulkScrapingLoading ? 'Scraping en cours...' : 'Scraper tous les clients'}
           </button>
-        )}
+        ) */}
       </div>
       
       {!hasSelection && (
