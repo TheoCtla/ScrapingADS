@@ -9,14 +9,13 @@
     "AvivA Montigny",
     "AvivA Orgeval",
     "Bedroom Perpignan",
-    "Création contemporaine",
     "Crozatier Dijon",
     "Cuisine Plus Perpignan",
     "Denteva",
     "Emma Merignac",
     "Emma Nantes",
+    "Emma Perpignan",
     "EvoPro Informatique",
-    "Flamme&Creation",
     "France Literie Aix",
     "France Literie Alès",
     "France Literie Annemasse",
@@ -27,8 +26,8 @@
     "France Literie Perpignan",
     "France Literie Saint-Priest & Givors",
     "Kaltea Chalon sur Saône",
-    "Laserel",
     "Laserel Auxerre",
+    "Laserel",
     "Laserel Nantes",
     "LyleOO",
     "Meuble Rigaud",
@@ -37,9 +36,7 @@
     "Riviera Grass",
     "Roche bobois Lyon Centre",
     "Roche bobois Saint-Bonnet",
-    "Star Literie",
     "SUD GAZON SYNTHETIQUE",
-    "Tairmic",
     "Tousalon Perpignan",
     "Tousalon Toulouse",
     "Univers Construction"
@@ -195,7 +192,7 @@
         "adAccountId": "3553367521625842"
       }
     },
-    "Kaltea Chalon sur Saône": {
+    "Kozeo": {
       "googleAds": {
         "customerId": "1189918252"
       },
@@ -400,6 +397,14 @@
       },
       "metaAds": {
         "adAccountId": "2281515502281464"
+      }
+    },
+    "Emma Perpignan": {
+      "googleAds": {
+        "customerId": "2288773609"
+      },
+      "metaAds": {
+        "adAccountId": "2745829635771139"
       }
     }
   },

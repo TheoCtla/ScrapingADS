@@ -43,6 +43,7 @@ class GoogleAdsReportsService:
             start_date: Date de début (YYYY-MM-DD)
             end_date: Date de fin (YYYY-MM-DD)
             channel_filter: Liste des canaux à inclure
+            only_enabled: Si True, filtre les campagnes ayant eu de l'activité sur la période
             
         Returns:
             Liste des batches de résultats
@@ -76,8 +77,9 @@ class GoogleAdsReportsService:
         """
 
         if only_enabled:
-            # Appliquer le filtre statut actif uniquement pour les clients ciblés (ex: Emma)
-            query += "\n            AND campaign.status = 'ENABLED'"
+            # Filtre par activité réelle sur la période demandée (impressions > 0)
+            # Cela exclut les campagnes inactives pendant la période, qu'elles soient ENABLED ou PAUSED actuellement
+            query += "\n            AND metrics.impressions > 0"
 
         logging.info(f"🔍 Récupération des données de campagne pour {customer_id}")
         logging.info(f"📅 Période: {start_date} à {end_date}")

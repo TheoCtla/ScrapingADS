@@ -450,13 +450,13 @@ def export_unified_report():
                 # Récupérer les données de campagne
                 google_reports = get_service('google_reports')
                 if is_emma:
-                    logging.info("Emma détecté — filtrage campagnes Google: ENABLED uniquement (GAQL)")
+                    logging.info("Emma détecté — filtrage campagnes Google: actives sur la période uniquement (impressions > 0)")
                 if is_riviera_grass:
-                    logging.info("Riviera Grass détecté — filtrage campagnes Google: ENABLED uniquement (GAQL)")
+                    logging.info("Riviera Grass détecté — filtrage campagnes Google: actives sur la période uniquement (impressions > 0)")
                 if is_univers_construction:
-                    logging.info("Univers Construction détecté — filtrage campagnes Google: ENABLED uniquement (GAQL)")
+                    logging.info("Univers Construction détecté — filtrage campagnes Google: actives sur la période uniquement (impressions > 0)")
                 if is_emma_nantes:
-                    logging.info("Emma Nantes détecté — filtrage campagnes Google: ENABLED uniquement (GAQL)")
+                    logging.info("Emma Nantes détecté — filtrage campagnes Google: actives sur la période uniquement (impressions > 0)")
                 response_data = google_reports.get_campaign_data(
                     google_customer_id,
                     start_date,

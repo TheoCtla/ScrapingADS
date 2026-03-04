@@ -22,6 +22,7 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const clientListRef = useRef<HTMLDivElement>(null);
 
   // Charger la liste des clients autorisés au montage du composant
   useEffect(() => {
@@ -113,6 +114,20 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Scroller vers le dernier client sélectionné quand le dropdown s'ouvre
+  useEffect(() => {
+    if (isOpen && selectedClient && clientListRef.current) {
+      // Petit délai pour laisser le DOM se rendre
+      const timeoutId = setTimeout(() => {
+        const selectedElement = clientListRef.current?.querySelector('.client-item.selected');
+        if (selectedElement) {
+          selectedElement.scrollIntoView({ block: 'start', behavior: 'smooth' });
+        }
+      }, 50);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isOpen, selectedClient]);
+
   const handleSelectClient = (clientName: string) => {
     onSelectClient(clientName);
     setIsOpen(false);
@@ -168,7 +183,7 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
             />
 
             {/* Liste des clients filtrés */}
-            <div className="client-list">
+            <div className="client-list" ref={clientListRef}>
               {filteredClients.length > 0 ? (
                 filteredClients.map((client) => (
                   <div

@@ -599,7 +599,7 @@ const ScrapingRapports: React.FC = () => {
         onSheetMonthChange={setSheetMonth}
       />
       
-      <div className="templates-section">
+     {/* <div className="templates-section">
         <span className="templates-label">Templates :</span>
         <button 
           className={`template-button ${cuisinistesSelected ? 'selected' : ''}`}
@@ -613,7 +613,7 @@ const ScrapingRapports: React.FC = () => {
         >
           Litiers
         </button>
-      </div>
+      </div> */}
       
       {/* NOUVEAU: Sélecteur de client unifié */}
       <div style={{ margin: '20px 0' }}>
