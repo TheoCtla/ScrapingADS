@@ -768,7 +768,7 @@ def export_unified_report():
         return jsonify({"error": str(e)}), 500
 
 # ================================
-# ROUTES UTILITAIRES
+# ROUTES
 # ================================
 
 @app.route("/healthz", methods=["GET"])
