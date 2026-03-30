@@ -186,16 +186,18 @@ def hex_to_rgb(hex_str: str) -> RGBColor:
     )
 
 
-def format_currency(value) -> str:
-    """Formate en devise : 1 234,56 €"""
+def format_currency(value, currency: str = "€", decimals: bool = True) -> str:
+    """Formate en devise : 1 234,56 € (ou 1 235 € sans centimes)."""
     try:
         value = float(value)
     except (TypeError, ValueError):
-        return "0,00 €"
-    formatted = f"{value:,.2f}"
-    # Remplacer les séparateurs anglais par les français
-    formatted = formatted.replace(",", " ").replace(".", ",")
-    return f"{formatted} €"
+        return f"0 {currency}" if not decimals else f"0,00 {currency}"
+    if decimals:
+        formatted = f"{value:,.2f}"
+        formatted = formatted.replace(",", " ").replace(".", ",")
+    else:
+        formatted = f"{round(value):,}".replace(",", " ")
+    return f"{formatted} {currency}"
 
 
 def format_number(value) -> str:

@@ -81,6 +81,7 @@ FALLBACK_TEMPLATE = "template_autres"
 
 _IMPLEMENTED_TEMPLATES = {
     "template_litiers",
+    "template_sachs",
 }
 
 
@@ -99,6 +100,10 @@ def _load_template_class(template_name: str) -> Type[BaseTemplate]:
     if template_name == "template_litiers":
         from backend.reports.templates.template_litiers import TemplateModern
         return TemplateModern
+
+    if template_name == "template_sachs":
+        from backend.reports.templates.template_sachs import TemplateSachs
+        return TemplateSachs
 
     raise NotImplementedError(
         f"Le template '{template_name}' n'est pas encore implémenté. "

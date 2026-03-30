@@ -220,8 +220,10 @@ class TemplateModern(BaseTemplate):
         # Variation
         if current is not None and previous is not None:
             try:
-                curr_f = float(current)
-                prev_f = float(previous)
+                curr_str = str(current).replace("%", "").replace(",", ".").strip()
+                prev_str = str(previous).replace("%", "").replace(",", ".").strip()
+                curr_f = float(curr_str)
+                prev_f = float(prev_str)
             except (TypeError, ValueError):
                 curr_f, prev_f = 0, 0
 
