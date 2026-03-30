@@ -57,6 +57,19 @@ colorlog==6.8.0
 marshmallow==3.20.1
 
 # ========================================
+# RAPPORTS PPTX
+# ========================================
+
+# Génération de présentations PowerPoint
+python-pptx>=0.6.21
+
+# Graphiques pour les rapports
+matplotlib>=3.8.0
+
+# Calcul de dates relatives (M-1, M-2)
+python-dateutil>=2.8.0
+
+# ========================================
 # SÉCURITÉ
 # ========================================
 

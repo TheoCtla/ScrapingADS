@@ -1285,6 +1285,34 @@ def export_to_drive():
 
 
 # ================================
+# RAPPORTS PPTX
+# ================================
+
+@app.route("/generate-report", methods=["POST"])
+def generate_report():
+    """
+    Génère les rapports PPTX pour tous les clients (onglets visibles du Sheet)
+    et les uploade sur Google Drive dans le dossier du mois.
+    """
+    try:
+        from backend.reports.generator import generate_all_reports
+
+        data = request.get_json(silent=True) or {}
+        filter_name = data.get("filter")
+
+        result = generate_all_reports(filter_name=filter_name)
+
+        summary = result["summary"]
+        status_code = 200 if summary["errors"] == 0 else 207
+
+        return jsonify(result), status_code
+
+    except Exception as e:
+        logging.error(f"Erreur génération rapports: {e}", exc_info=True)
+        return jsonify({"error": str(e)}), 500
+
+
+# ================================
 # POINT D'ENTRÉE PRINCIPAL
 # ================================
 

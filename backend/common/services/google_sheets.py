@@ -28,10 +28,25 @@ class GoogleSheetsService:
         try:
             spreadsheet = self.service.spreadsheets().get(spreadsheetId=self.sheet_id).execute()
             sheet_names = [sheet['properties']['title'] for sheet in spreadsheet['sheets']]
-            logging.info(f"📋 Onglets trouvés: {sheet_names}")
+            logging.info(f"Onglets trouvés: {sheet_names}")
             return sheet_names
         except Exception as e:
-            logging.error(f"❌ Erreur lors de la récupération des onglets: {e}")
+            logging.error(f"Erreur lors de la récupération des onglets: {e}")
+            raise
+
+    def get_visible_worksheet_names(self) -> List[str]:
+        """Retourne uniquement les onglets non masqués du spreadsheet."""
+        try:
+            spreadsheet = self.service.spreadsheets().get(spreadsheetId=self.sheet_id).execute()
+            visible = [
+                sheet['properties']['title']
+                for sheet in spreadsheet['sheets']
+                if not sheet['properties'].get('hidden', False)
+            ]
+            logging.info(f"Onglets visibles: {visible}")
+            return visible
+        except Exception as e:
+            logging.error(f"Erreur lors de la récupération des onglets visibles: {e}")
             raise
     
     def get_row_for_month(self, worksheet_name: str, month: str) -> Optional[int]:

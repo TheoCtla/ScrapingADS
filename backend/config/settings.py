@@ -45,7 +45,10 @@ class APIConfig:
     # Google Sheets API
     GOOGLE_SHEET_ID = os.getenv("GOOGLE_SHEET_ID")
     GOOGLE_CREDENTIALS_FILE = get_config_path("GOOGLE_CREDENTIALS_FILE", str(CONFIG_DIR / "credentials.json"))
-    GOOGLE_SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+    GOOGLE_SCOPES = [
+        'https://www.googleapis.com/auth/spreadsheets',
+        'https://www.googleapis.com/auth/drive',
+    ]
     
     # Google Drive API
     GOOGLE_DRIVE_FOLDER_ID = os.getenv("GOOGLE_DRIVE_FOLDER_ID")

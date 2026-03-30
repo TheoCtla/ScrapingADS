@@ -85,3 +85,6 @@ backend/scripts/
 
 # OAuth tokens (sensibles)
 backend/config/token.json
+
+.claude
+prompts.md
