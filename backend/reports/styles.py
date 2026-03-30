@@ -154,8 +154,8 @@ META_METRICS = {
 }
 
 CONVERSION_METRICS = {
-    "Appels Téléphoniques", "Demandes d'itinéraires", "Formulaires",
-    "Contact Meta", "Recherche de lieux",
+    "Appels Téléphoniques", "Demandes d'itinéraires", "Demande d'itineraires",
+    "Formulaires", "Contact Meta", "Recherche de lieux",
 }
 
 GENERAL_METRICS = {

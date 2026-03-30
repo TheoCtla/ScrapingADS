@@ -65,6 +65,8 @@ python-pptx>=0.6.21
 
 # Graphiques pour les rapports
 matplotlib>=3.8.0
+plotly>=6.0.0
+kaleido>=1.0.0
 
 # Calcul de dates relatives (M-1, M-2)
 python-dateutil>=2.8.0

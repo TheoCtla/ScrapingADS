@@ -58,7 +58,7 @@ TEMPLATE_ROUTES = [
     {
         "name": "crozatier",
         "keywords": ["crozatier"],
-        "template": "template_crozatier",
+        "template": "template_cuisinistes",
     },
     {
         "name": "bedroom",
@@ -82,6 +82,9 @@ FALLBACK_TEMPLATE = "template_autres"
 _IMPLEMENTED_TEMPLATES = {
     "template_litiers",
     "template_sachs",
+    "template_lyleoo",
+    "template_evopro",
+    "template_cuisinistes",
 }
 
 
@@ -104,6 +107,18 @@ def _load_template_class(template_name: str) -> Type[BaseTemplate]:
     if template_name == "template_sachs":
         from backend.reports.templates.template_sachs import TemplateSachs
         return TemplateSachs
+
+    if template_name == "template_lyleoo":
+        from backend.reports.templates.template_lyleoo import TemplateLyleoo
+        return TemplateLyleoo
+
+    if template_name == "template_evopro":
+        from backend.reports.templates.template_evopro import TemplateEvopro
+        return TemplateEvopro
+
+    if template_name == "template_cuisinistes":
+        from backend.reports.templates.template_cuisinistes import TemplateCuisinistes
+        return TemplateCuisinistes
 
     raise NotImplementedError(
         f"Le template '{template_name}' n'est pas encore implémenté. "

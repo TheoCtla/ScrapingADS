@@ -424,3 +424,81 @@ def create_evolution_line_chart(
     plt.tight_layout()
     plt.savefig(output_path, dpi=150, bbox_inches="tight")
     plt.close()
+
+
+# ──────────────────────────────────────────────
+# 6. Plotly — Line chart évolution (dark theme)
+# ──────────────────────────────────────────────
+
+def create_plotly_evolution_chart(
+    history: List[Dict[str, Any]],
+    metric_key: str,
+    chart_title: str,
+    output_path: str,
+    line_color: str = None,
+) -> None:
+    """
+    Line chart Plotly montrant l'évolution d'une métrique sur les derniers mois.
+    Rendu plus moderne que matplotlib, avec remplissage sous la courbe.
+    """
+    import plotly.graph_objects as go
+
+    if not history:
+        create_evolution_line_chart(history, metric_key, chart_title, output_path, line_color)
+        return
+
+    months = [entry.get("month_fr", "") for entry in history]
+    values = [_safe_float(entry.get(metric_key, 0)) for entry in history]
+
+    c = f"#{line_color}" if line_color and not line_color.startswith("#") else (line_color or "#FFC107")
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(
+        x=months,
+        y=values,
+        mode="lines+markers+text",
+        line=dict(color=c, width=3, shape="spline"),
+        marker=dict(color=c, size=10, line=dict(color="white", width=2)),
+        fill="tozeroy",
+        fillcolor=f"rgba({int(c[1:3], 16)}, {int(c[3:5], 16)}, {int(c[5:7], 16)}, 0.1)",
+        text=[_format_bar_value(v) for v in values],
+        textposition="top center",
+        textfont=dict(color="white", size=14, family="Calibri"),
+        hoverinfo="skip",
+    ))
+
+    fig.update_layout(
+        title=dict(
+            text=chart_title,
+            font=dict(color="white", size=16, family="Calibri"),
+            x=0.5,
+        ),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#B0B0B0", family="Calibri"),
+        xaxis=dict(
+            showgrid=False,
+            tickfont=dict(color="#B0B0B0", size=12),
+            linecolor="#3D3D3D",
+            range=[-0.4, len(months) - 0.6],
+        ),
+        yaxis=dict(
+            showgrid=True,
+            gridcolor="rgba(61, 61, 61, 0.5)",
+            gridwidth=1,
+            zeroline=False,
+            tickfont=dict(color="#B0B0B0", size=11),
+            linecolor="#3D3D3D",
+            rangemode="tozero",
+        ),
+        margin=dict(l=60, r=60, t=50, b=40),
+        showlegend=False,
+        width=750,
+        height=420,
+    )
+
+    if values and max(values) > 0:
+        fig.update_yaxes(range=[0, max(values) * 1.25])
+
+    fig.write_image(output_path, format="png", scale=2)
