@@ -85,6 +85,8 @@ _IMPLEMENTED_TEMPLATES = {
     "template_lyleoo",
     "template_evopro",
     "template_cuisinistes",
+    "template_emma",
+    "template_laserel",
 }
 
 
@@ -119,6 +121,14 @@ def _load_template_class(template_name: str) -> Type[BaseTemplate]:
     if template_name == "template_cuisinistes":
         from backend.reports.templates.template_cuisinistes import TemplateCuisinistes
         return TemplateCuisinistes
+
+    if template_name == "template_emma":
+        from backend.reports.templates.template_emma import TemplateEmma
+        return TemplateEmma
+
+    if template_name == "template_laserel":
+        from backend.reports.templates.template_laserel import TemplateLaserel
+        return TemplateLaserel
 
     raise NotImplementedError(
         f"Le template '{template_name}' n'est pas encore implémenté. "
