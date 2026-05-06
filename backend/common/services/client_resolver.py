@@ -51,32 +51,22 @@ class ClientResolverService:
     
     def resolve_client_accounts(self, client_name: str) -> Dict[str, Optional[Dict[str, str]]]:
         """
-        Résout un nom de client vers ses IDs Google Ads et Meta Ads
-        
-        Args:
-            client_name: Nom du client à résoudre
-            
+        Résout un nom de client vers ses IDs Google Ads, Meta Ads et Google Analytics.
+
         Returns:
-            Dict avec les clés 'googleAds' et 'metaAds', chacune contenant les IDs ou None
+            Dict avec les clés 'googleAds', 'metaAds' et 'googleAnalytics'.
         """
         if not self.is_client_authorized(client_name):
             logging.warning(f"⚠️ Client non autorisé: {client_name}")
-            return {"googleAds": None, "metaAds": None}
-        
+            return {"googleAds": None, "metaAds": None, "googleAnalytics": None}
+
         client_mapping = self.mappings.get(client_name, {})
-        
-        resolved_accounts = {
+
+        return {
             "googleAds": client_mapping.get("googleAds"),
-            "metaAds": client_mapping.get("metaAds")
+            "metaAds": client_mapping.get("metaAds"),
+            "googleAnalytics": client_mapping.get("googleAnalytics"),
         }
-        
-        # Log de la résolution
-        google_id = resolved_accounts["googleAds"].get("customerId") if resolved_accounts["googleAds"] else "Non configuré"
-        meta_id = resolved_accounts["metaAds"].get("adAccountId") if resolved_accounts["metaAds"] else "Non configuré"
-        
-        # Résolution client '{client_name}': Google={google_id}, Meta={meta_id}
-        
-        return resolved_accounts
     
     def get_available_platforms(self, client_name: str) -> List[str]:
         """
@@ -96,10 +86,13 @@ class ClientResolverService:
         
         if client_mapping.get("googleAds"):
             available_platforms.append("googleAds")
-        
+
         if client_mapping.get("metaAds"):
             available_platforms.append("metaAds")
-        
+
+        if client_mapping.get("googleAnalytics"):
+            available_platforms.append("googleAnalytics")
+
         return available_platforms
     
     def validate_client_selection(self, client_name: str) -> Tuple[bool, str]:
@@ -152,5 +145,10 @@ class ClientResolverService:
                 "configured": bool(client_mapping.get("metaAds")),
                 "ad_account_id": client_mapping.get("metaAds", {}).get("adAccountId") if client_mapping.get("metaAds") else None,
                 "campaign_filter": client_mapping.get("metaAds", {}).get("campaignFilter") if client_mapping.get("metaAds") else None
+            },
+            "google_analytics": {
+                "configured": bool(client_mapping.get("googleAnalytics")),
+                "property_id": client_mapping.get("googleAnalytics", {}).get("propertyId") if client_mapping.get("googleAnalytics") else None,
+                "pages_count": len(client_mapping.get("googleAnalytics", {}).get("pages", [])) if client_mapping.get("googleAnalytics") else 0
             }
         }

@@ -39,9 +39,20 @@ ECOMMERCE_METRICS = [
     "Nouveaux clients",
 ]
 
-CAMPAIGN_METRICS = [
+CAMPAIGN_SPONSO_METRICS = [
     "Montant dépensé",
     "Ajout au panier",
+    "CTR",
+]
+
+CAMPAIGN_RECHERCHE_METRICS = [
+    "Montant dépensé",
+    "Recherche de lieu sur le site web",
+    "CTR",
+]
+
+CAMPAIGN_FOLLOWERS_METRICS = [
+    "Montant dépensé",
     "CTR",
 ]
 
@@ -87,8 +98,8 @@ class TemplateSachs(BaseTemplate):
         month_fr = data.get("month_fr", "")
         prev_month_fr = data.get("previous_month_fr", "")
 
-        has_google = self._has_data(g_curr)
-        has_meta = self._has_data(m_curr)
+        has_google = self._safe_get(g_curr, "Cout Google ADS") > 0
+        has_meta = self._safe_get(m_curr, "Cout Facebook ADS") > 0
         has_history = history and len(history) >= 2
 
         # Slide 1 — Titre
@@ -102,18 +113,7 @@ class TemplateSachs(BaseTemplate):
         # Slide 2 — Récap
         self._slide_recap(gen_curr, gen_prev, g_curr, g_prev, m_curr, m_prev, month_fr)
 
-        # Slide 3 — Google Ads
-        if has_google:
-            self._slide_google(g_curr, g_prev, month_fr)
-            if has_history:
-                self._slide_evo_quad(history, [
-                    ("Cout Google ADS", "Coût"),
-                    ("Total Impressions", "Impressions"),
-                    ("Total Clic", "Clics totaux"),
-                    ("Total CPC moyen", "CPC Moyen"),
-                ], "Google Ads")
-
-        # Slide 4 — Meta Ads
+        # Slide 3 — Meta Ads (pas de slide Google pour Sachs)
         if has_meta:
             self._slide_meta(m_curr, m_prev, month_fr)
             if has_history:
@@ -122,16 +122,21 @@ class TemplateSachs(BaseTemplate):
                     ("Impressions Meta", "Impressions"),
                     ("Clics Meta", "Clics"),
                     ("CPC Meta", "CPC"),
-                ], "Meta Ads")
+                ], "Meta Ads - Facebook et Instagram")
 
         # Slide 5 — E-commerce Meta (placeholders)
         self._slide_ecommerce(month_fr, prev_month_fr)
 
-        # Slide 6 — Campagne Meta (placeholders)
-        self._slide_campaign(month_fr, prev_month_fr)
+        # Slides 6-8 — Campagnes Meta avec données sur 3 mois
+        self._slide_campaign_data(history, month_fr, prev_month_fr, "Campagne Followers",
+            [("Montant", "currency"), ("Ajout au panier", "number"), ("CTR", "percent")])
+        self._slide_campaign_data(history, month_fr, prev_month_fr, "Campagne Drive to Store",
+            [("Montant DTS", "currency"), ("Itinéraires", "number"), ("CTR DTS", "percent")])
+        self._slide_campaign_data(history, month_fr, prev_month_fr, "Campagne Sponso Posts",
+            [("Montant SP", "currency"), ("CTR SP", "percent")])
 
-        # Slide 7 — Synthèse
-        self._slide_synthese(gen_curr, gen_prev, month_fr, has_google, has_meta)
+        # Slide 8 — Synthèse (Meta uniquement pour Sachs)
+        self._slide_synthese(m_curr, m_prev, month_fr, has_google, has_meta)
 
         # Slide 8 — Fin
         self._end_slide()
@@ -249,6 +254,37 @@ class TemplateSachs(BaseTemplate):
             slide.shapes.add_picture(
                 str(LOGO_PATH), Inches(11.3), Inches(0.3), height=Inches(0.22))
 
+    def _data_row_2col_large(self, slide, x, y, row_w, row_h, label, val_m, val_m1, bar_color):
+        bg = slide.shapes.add_shape(
+            MSO_SHAPE.ROUNDED_RECTANGLE, x, y, row_w, row_h)
+        bg.fill.solid()
+        bg.fill.fore_color.rgb = hex_to_rgb("111111")
+        bg.line.fill.background()
+        bg.adjustments[0] = 0.08
+
+        bar = slide.shapes.add_shape(
+            MSO_SHAPE.RECTANGLE,
+            x + Inches(0.02), y + Inches(0.1), Inches(0.04), row_h - Inches(0.2))
+        bar.fill.solid()
+        bar.fill.fore_color.rgb = hex_to_rgb(bar_color)
+        bar.line.fill.background()
+
+        label_y = y + (row_h - Inches(0.35)) / 2
+        self._add_textbox(slide, x + Inches(0.2), label_y,
+            Inches(4.5), Inches(0.35),
+            label, Pt(14), PALETTE["white"],
+            bold=True, font_name="Calibri Light", alignment=PP_ALIGN.LEFT)
+
+        col_w = Inches(2)
+        self._add_textbox(slide, x + row_w * 0.55, label_y,
+            col_w, Inches(0.35),
+            val_m1, Pt(16), PALETTE["text_secondary"],
+            font_name="Calibri Light", alignment=PP_ALIGN.CENTER)
+        self._add_textbox(slide, x + row_w * 0.78, label_y,
+            col_w, Inches(0.35),
+            val_m, Pt(16), PALETTE["white"],
+            bold=True, font_name="Calibri Light", alignment=PP_ALIGN.CENTER)
+
     def _data_row_2col(self, slide, x, y, row_w, label, val_m, val_m1, bar_color):
         row_h = Inches(0.55)
 
@@ -341,25 +377,20 @@ class TemplateSachs(BaseTemplate):
         slide = self.prs.slides.add_slide(self.blank_layout)
         self._modern_header(slide, "État Récapitulatif", month_fr)
 
-        diff = self._safe_get(gen_curr, "Diffusion All")
-        diff_p = self._safe_get(gen_prev, "Diffusion All")
-        cout_g = self._safe_get(g_curr, "Cout Google ADS")
-        cout_g_p = self._safe_get(g_prev, "Cout Google ADS")
+        impr_m = self._safe_get(m_curr, "Impressions Meta")
+        impr_m_p = self._safe_get(m_prev, "Impressions Meta")
         cout_m = self._safe_get(m_curr, "Cout Facebook ADS")
         cout_m_p = self._safe_get(m_prev, "Cout Facebook ADS")
 
         row1 = [
-            {"label": "Diffusion totale", "value": format_number(diff),
-             "current": diff, "previous": diff_p, "tooltip": "Diffusion All",
+            {"label": "Diffusion totale des publicités", "value": format_number(impr_m),
+             "current": impr_m, "previous": impr_m_p, "tooltip": "Impressions Meta",
              "accent": PALETTE["gold"]},
-            {"label": "Coût Google Ads", "value": _fmt(cout_g, "currency"),
-             "current": cout_g, "previous": cout_g_p, "tooltip": "Cout Google ADS",
-             "accent": PALETTE["green"]},
             {"label": "Coût Meta Ads", "value": _fmt(cout_m, "currency"),
              "current": cout_m, "previous": cout_m_p, "tooltip": "Cout Facebook ADS",
              "accent": FUNCTIONAL_COLORS["meta_color"]},
         ]
-        self._hero_row(slide, row1, y=1.3, n_cols=3)
+        self._hero_row(slide, row1, y=2.5, n_cols=2)
 
     # ──────────────────────────────────────────
     # Slide 3 — Google Ads
@@ -441,7 +472,7 @@ class TemplateSachs(BaseTemplate):
 
     def _slide_meta(self, m_curr, m_prev, month_fr):
         slide = self.prs.slides.add_slide(self.blank_layout)
-        self._modern_header(slide, "Détails Meta Ads", month_fr, accent_color=FUNCTIONAL_COLORS["meta_color"])
+        self._modern_header(slide, "Détails Meta Ads - Facebook et Instagram", month_fr, accent_color=FUNCTIONAL_COLORS["meta_color"])
 
         blue = FUNCTIONAL_COLORS["meta_color"]
 
@@ -482,73 +513,191 @@ class TemplateSachs(BaseTemplate):
 
     def _slide_ecommerce(self, month_fr, prev_month_fr):
         slide = self.prs.slides.add_slide(self.blank_layout)
-        self._modern_header(slide, "Détails Meta Ads — E-commerce", month_fr,
+        self._modern_header(slide, "Détails Meta Ads - Facebook et Instagram — E-commerce", month_fr,
                             accent_color=FUNCTIONAL_COLORS["meta_color"])
 
         row_w = Inches(12)
         start_x = (SLIDE_WIDTH - row_w) / 2
-        start_y = Inches(1.4)
+        n = len(ECOMMERCE_METRICS)
+        row_h = Inches(0.8)
+        spacing = Inches(0.35)
+        header_h = Inches(0.35)
+        total_h = header_h + n * row_h + (n - 1) * spacing
+        start_y = Inches(1.2) + (SLIDE_HEIGHT - Inches(1.2) - total_h) / 2
 
         col_w = Inches(2)
-        self._add_textbox(slide, start_x + row_w * 0.55, start_y, col_w, Inches(0.3),
+        self._add_textbox(slide, start_x + row_w * 0.55, start_y, col_w, header_h,
             prev_month_fr, Pt(10), PALETTE["text_secondary"],
             bold=True, font_name="Calibri Light", alignment=PP_ALIGN.CENTER)
-        self._add_textbox(slide, start_x + row_w * 0.78, start_y, col_w, Inches(0.3),
+        self._add_textbox(slide, start_x + row_w * 0.78, start_y, col_w, header_h,
             month_fr, Pt(10), PALETTE["white"],
             bold=True, font_name="Calibri Light", alignment=PP_ALIGN.CENTER)
 
         blue = FUNCTIONAL_COLORS["meta_color"]
         for i, label in enumerate(ECOMMERCE_METRICS):
-            y = start_y + Inches(0.4) + i * Inches(0.72)
-            self._data_row_2col(slide, start_x, y, row_w,
+            y = start_y + header_h + i * (row_h + spacing)
+            self._data_row_2col_large(slide, start_x, y, row_w, row_h,
                 label=label, val_m="—", val_m1="—", bar_color=blue)
 
     # ──────────────────────────────────────────
     # Slide 6 — Campagne Meta (placeholders)
     # ──────────────────────────────────────────
 
-    def _slide_campaign(self, month_fr, prev_month_fr):
+    def _data_row_3col_large(self, slide, x, y, row_w, row_h, label, val_m, val_m1, val_m2, bar_color):
+        """Ligne de données avec 3 colonnes (M-2, M-1, M)."""
+        bg = slide.shapes.add_shape(
+            MSO_SHAPE.ROUNDED_RECTANGLE, x, y, row_w, row_h)
+        bg.fill.solid()
+        bg.fill.fore_color.rgb = hex_to_rgb("111111")
+        bg.line.fill.background()
+        bg.adjustments[0] = 0.08
+
+        bar = slide.shapes.add_shape(
+            MSO_SHAPE.RECTANGLE,
+            x + Inches(0.02), y + Inches(0.1), Inches(0.04), row_h - Inches(0.2))
+        bar.fill.solid()
+        bar.fill.fore_color.rgb = hex_to_rgb(bar_color)
+        bar.line.fill.background()
+
+        label_y = y + (row_h - Inches(0.35)) / 2
+        self._add_textbox(slide, x + Inches(0.2), label_y,
+            Inches(4), Inches(0.35),
+            label, Pt(14), PALETTE["white"],
+            bold=True, font_name="Calibri Light", alignment=PP_ALIGN.LEFT)
+
+        col_w = Inches(2)
+        self._add_textbox(slide, x + row_w * 0.40, label_y,
+            col_w, Inches(0.35),
+            val_m2, Pt(16), PALETTE["text_secondary"],
+            font_name="Calibri Light", alignment=PP_ALIGN.CENTER)
+        self._add_textbox(slide, x + row_w * 0.60, label_y,
+            col_w, Inches(0.35),
+            val_m1, Pt(16), PALETTE["text_secondary"],
+            font_name="Calibri Light", alignment=PP_ALIGN.CENTER)
+        self._add_textbox(slide, x + row_w * 0.80, label_y,
+            col_w, Inches(0.35),
+            val_m, Pt(16), PALETTE["white"],
+            bold=True, font_name="Calibri Light", alignment=PP_ALIGN.CENTER)
+
+    def _slide_campaign_data(self, history, month_fr, prev_month_fr, campaign_name, metrics_config):
+        """Slide campagne Meta avec données sur 3 mois depuis le sheet.
+
+        Args:
+            history: Liste de dicts (3 derniers mois).
+            month_fr: Mois courant en français.
+            prev_month_fr: Mois précédent en français.
+            campaign_name: Titre de la slide.
+            metrics_config: Liste de tuples (col_name, format_type).
+                format_type: "currency", "number", "percent".
+        """
         slide = self.prs.slides.add_slide(self.blank_layout)
-        self._modern_header(slide, "Détails Meta Ads — Campagne", month_fr,
+        self._modern_header(slide, f"Détails Meta Ads - Facebook et Instagram — {campaign_name}", month_fr,
+                            accent_color=FUNCTIONAL_COLORS["meta_color"])
+
+        # Déterminer les labels des 3 mois
+        m2_label = history[0].get("month_fr", "") if len(history) >= 3 else ""
+        m1_label = history[-2].get("month_fr", prev_month_fr) if len(history) >= 2 else prev_month_fr
+        m_label = month_fr
+
+        row_w = Inches(12)
+        start_x = (SLIDE_WIDTH - row_w) / 2
+        n = len(metrics_config)
+        row_h = Inches(0.8)
+        spacing = Inches(0.35)
+        header_h = Inches(0.35)
+        n_ref = max(n, 3)
+        total_h = header_h + n_ref * row_h + (n_ref - 1) * spacing
+        start_y = Inches(1.2) + (SLIDE_HEIGHT - Inches(1.2) - total_h) / 2
+
+        col_w = Inches(2)
+        self._add_textbox(slide, start_x + row_w * 0.40, start_y, col_w, header_h,
+            m2_label, Pt(10), PALETTE["text_secondary"],
+            bold=True, font_name="Calibri Light", alignment=PP_ALIGN.CENTER)
+        self._add_textbox(slide, start_x + row_w * 0.60, start_y, col_w, header_h,
+            m1_label, Pt(10), PALETTE["text_secondary"],
+            bold=True, font_name="Calibri Light", alignment=PP_ALIGN.CENTER)
+        self._add_textbox(slide, start_x + row_w * 0.80, start_y, col_w, header_h,
+            m_label, Pt(10), PALETTE["white"],
+            bold=True, font_name="Calibri Light", alignment=PP_ALIGN.CENTER)
+
+        blue = FUNCTIONAL_COLORS["meta_color"]
+        for i, (col_name, fmt_type) in enumerate(metrics_config):
+            y = start_y + header_h + i * (row_h + spacing)
+
+            # Récupérer les valeurs des 3 mois
+            val_m2 = self._safe_get(history[0], col_name) if len(history) >= 3 else 0
+            val_m1 = self._safe_get(history[-2], col_name) if len(history) >= 2 else 0
+            val_m = self._safe_get(history[-1], col_name) if history else 0
+
+            # Formater selon le type
+            if fmt_type == "currency":
+                s_m2 = _fmt(val_m2, "currency") if val_m2 else "—"
+                s_m1 = _fmt(val_m1, "currency") if val_m1 else "—"
+                s_m = _fmt(val_m, "currency") if val_m else "—"
+            elif fmt_type == "percent":
+                s_m2 = str(val_m2) if val_m2 else "—"
+                s_m1 = str(val_m1) if val_m1 else "—"
+                s_m = str(val_m) if val_m else "—"
+            else:
+                s_m2 = format_number(val_m2) if val_m2 else "—"
+                s_m1 = format_number(val_m1) if val_m1 else "—"
+                s_m = format_number(val_m) if val_m else "—"
+
+            # Label affiché (sans suffixe DTS/SP)
+            display_label = col_name.replace(" DTS", "").replace(" SP", "")
+
+            self._data_row_3col_large(slide, start_x, y, row_w, row_h,
+                label=display_label, val_m=s_m, val_m1=s_m1, val_m2=s_m2, bar_color=blue)
+
+    def _slide_campaign(self, month_fr, prev_month_fr, campaign_name, metrics):
+        slide = self.prs.slides.add_slide(self.blank_layout)
+        self._modern_header(slide, f"Détails Meta Ads - Facebook et Instagram — {campaign_name}", month_fr,
                             accent_color=FUNCTIONAL_COLORS["meta_color"])
 
         row_w = Inches(12)
         start_x = (SLIDE_WIDTH - row_w) / 2
-        start_y = Inches(1.4)
+        row_h = Inches(0.8)
+        spacing = Inches(0.35)
+        header_h = Inches(0.35)
+        # Aligner sur la slide ecommerce (4 lignes)
+        n_ref = len(ECOMMERCE_METRICS)
+        total_h_ref = header_h + n_ref * row_h + (n_ref - 1) * spacing
+        start_y = Inches(1.2) + (SLIDE_HEIGHT - Inches(1.2) - total_h_ref) / 2
 
         col_w = Inches(2)
-        self._add_textbox(slide, start_x + row_w * 0.55, start_y, col_w, Inches(0.3),
+        self._add_textbox(slide, start_x + row_w * 0.55, start_y, col_w, header_h,
             prev_month_fr, Pt(10), PALETTE["text_secondary"],
             bold=True, font_name="Calibri Light", alignment=PP_ALIGN.CENTER)
-        self._add_textbox(slide, start_x + row_w * 0.78, start_y, col_w, Inches(0.3),
+        self._add_textbox(slide, start_x + row_w * 0.78, start_y, col_w, header_h,
             month_fr, Pt(10), PALETTE["white"],
             bold=True, font_name="Calibri Light", alignment=PP_ALIGN.CENTER)
 
         blue = FUNCTIONAL_COLORS["meta_color"]
-        for i, label in enumerate(CAMPAIGN_METRICS):
-            y = start_y + Inches(0.4) + i * Inches(0.72)
-            self._data_row_2col(slide, start_x, y, row_w,
+        for i, label in enumerate(metrics):
+            y = start_y + header_h + i * (row_h + spacing)
+            self._data_row_2col_large(slide, start_x, y, row_w, row_h,
                 label=label, val_m="—", val_m1="—", bar_color=blue)
 
     # ──────────────────────────────────────────
     # Slide 7 — Synthèse
     # ──────────────────────────────────────────
 
-    def _slide_synthese(self, gen_curr, gen_prev, month_fr, has_google, has_meta):
+    def _slide_synthese(self, m_curr, m_prev, month_fr, has_google, has_meta):
         slide = self.prs.slides.add_slide(self.blank_layout)
         self._modern_header(slide, "Synthèse", month_fr)
 
-        cout_all = self._safe_get(gen_curr, "COUT ALL")
-        cout_all_p = self._safe_get(gen_prev, "COUT ALL")
+        # Sachs : on n'agrège QUE Meta (pas de Google dans le rapport)
+        cout_meta = self._safe_get(m_curr, "Cout Facebook ADS")
+        cout_meta_p = self._safe_get(m_prev, "Cout Facebook ADS")
 
         row1 = [
-            {"label": "Achat Média Total", "value": _fmt(cout_all, "currency"),
-             "current": cout_all, "previous": cout_all_p, "tooltip": "COUT ALL",
+            {"label": "Achat Média Total", "value": _fmt(cout_meta, "currency"),
+             "current": cout_meta, "previous": cout_meta_p, "tooltip": "Cout Facebook ADS",
              "accent": PALETTE["gold"]},
             {"label": "Commandes ONLINE", "value": "—", "accent": PALETTE["gold"]},
             {"label": "Nouveaux clients", "value": "—", "accent": PALETTE["gold"]},
         ]
-        self._hero_row(slide, row1, y=2.5, n_cols=3)
+        self._hero_row(slide, row1, y=3.05, n_cols=3)
 
     # ──────────────────────────────────────────
     # Slide 8 — Fin

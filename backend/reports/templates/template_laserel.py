@@ -64,8 +64,8 @@ class TemplateLaserel(BaseTemplate):
         client = data.get("client", "")
         month_fr = data.get("month_fr", "")
 
-        has_google = self._has_data(g_curr)
-        has_meta = self._has_data(m_curr)
+        has_google = self._safe_get(g_curr, "Cout Google ADS") > 0
+        has_meta = self._safe_get(m_curr, "Cout Facebook ADS") > 0
         has_history = history and len(history) >= 2
         has_appels = self._safe_get(c_curr, "Appels Téléphoniques") > 0
 
@@ -83,10 +83,11 @@ class TemplateLaserel(BaseTemplate):
 
         # Slide 3 — Visuel Meta Ads (placeholder)
         if has_meta:
-            self._slide_visuel("Meta Ads", FUNCTIONAL_COLORS["meta_color"])
+            self._slide_visuel("Meta Ads - Facebook et Instagram", FUNCTIONAL_COLORS["meta_color"])
 
         # Slide 4 — Récap
-        self._slide_recap(gen_curr, gen_prev, g_curr, g_prev, m_curr, m_prev, month_fr)
+        is_laserel_main = "nantes" not in client.lower() and "auxerre" not in client.lower()
+        self._slide_recap(gen_curr, gen_prev, g_curr, g_prev, m_curr, m_prev, month_fr, has_formulaires=is_laserel_main)
 
         # Slide 5 — Meta Ads détails
         if has_meta:
@@ -97,7 +98,7 @@ class TemplateLaserel(BaseTemplate):
                     ("Impressions Meta", "Impressions"),
                     ("Clics Meta", "Clics"),
                     ("CPC Meta", "CPC"),
-                ], "Meta Ads")
+                ], "Meta Ads - Facebook et Instagram")
 
         # Slide 6 — Google Ads détails
         if has_google:
@@ -111,7 +112,7 @@ class TemplateLaserel(BaseTemplate):
                 ], "Google Ads")
 
         # Slide 7 — Synthèse
-        self._slide_synthese(gen_curr, gen_prev, c_curr, c_prev, month_fr, has_appels)
+        self._slide_synthese(gen_curr, gen_prev, c_curr, c_prev, month_fr, has_appels, is_laserel_main)
 
         # Slide 8 — Fin
         self._end_slide()
@@ -179,7 +180,12 @@ class TemplateLaserel(BaseTemplate):
                     "Stable vs mois précédent", Pt(14), accent,
                     bold=True, font_name="Calibri Light", alignment=PP_ALIGN.LEFT)
 
-        if tooltip_key and tooltip_key in METRIC_TOOLTIPS:
+        if sub_label:
+            self._add_textbox(
+                slide, x + Inches(0.25), y + Inches(1.85), w - Inches(0.5), Inches(0.3),
+                sub_label, Pt(10), PALETTE["text_secondary"],
+                italic=True, font_name="Calibri Light", alignment=PP_ALIGN.LEFT)
+        elif tooltip_key and tooltip_key in METRIC_TOOLTIPS:
             self._add_textbox(
                 slide, x + Inches(0.25), y + Inches(1.85), w - Inches(0.5), Inches(0.6),
                 METRIC_TOOLTIPS[tooltip_key], Pt(10), PALETTE["text_secondary"],
@@ -196,6 +202,7 @@ class TemplateLaserel(BaseTemplate):
                 slide, x, Inches(y), card_w,
                 label=m.get("label", ""),
                 value_str=m.get("value", "0"),
+                sub_label=m.get("sub_label"),
                 accent_color=m.get("accent"),
                 current=m.get("current"),
                 previous=m.get("previous"),
@@ -295,7 +302,7 @@ class TemplateLaserel(BaseTemplate):
     # Slide 4 — Récap
     # ──────────────────────────────────────────
 
-    def _slide_recap(self, gen_curr, gen_prev, g_curr, g_prev, m_curr, m_prev, month_fr):
+    def _slide_recap(self, gen_curr, gen_prev, g_curr, g_prev, m_curr, m_prev, month_fr, has_formulaires=True):
         slide = self.prs.slides.add_slide(self.blank_layout)
         self._modern_header(slide, "État Récapitulatif", month_fr)
 
@@ -306,23 +313,38 @@ class TemplateLaserel(BaseTemplate):
         cout_m = self._safe_get(m_curr, "Cout Facebook ADS")
         cout_m_p = self._safe_get(m_prev, "Cout Facebook ADS")
 
-        row1 = [
-            {"label": "Diffusion totale", "value": format_number(diff),
-             "current": diff, "previous": diff_p, "tooltip": "Diffusion All",
-             "accent": PALETTE["gold"]},
-            {"label": "Coût Google Ads", "value": format_currency(cout_g),
-             "current": cout_g, "previous": cout_g_p, "tooltip": "Cout Google ADS",
-             "accent": PALETTE["green"]},
-        ]
-        row2 = [
-            {"label": "Coût Meta Ads", "value": format_currency(cout_m),
-             "current": cout_m, "previous": cout_m_p, "tooltip": "Cout Facebook ADS",
-             "accent": FUNCTIONAL_COLORS["meta_color"]},
-            {"label": "Formulaires", "value": "—",
-             "accent": PALETTE["gold"]},
-        ]
-        self._hero_row(slide, row1, y=1.3, n_cols=2)
-        self._hero_row(slide, row2, y=4.2, n_cols=2)
+        if has_formulaires:
+            row1 = [
+                {"label": "Diffusion totale", "value": format_number(diff),
+                 "current": diff, "previous": diff_p, "tooltip": "Diffusion All",
+                 "accent": PALETTE["gold"]},
+                {"label": "Coût Google Ads", "value": format_currency(cout_g),
+                 "current": cout_g, "previous": cout_g_p, "tooltip": "Cout Google ADS",
+                 "accent": PALETTE["green"]},
+            ]
+            row2 = [
+                {"label": "Coût Meta Ads", "value": format_currency(cout_m),
+                 "current": cout_m, "previous": cout_m_p, "tooltip": "Cout Facebook ADS",
+                 "accent": FUNCTIONAL_COLORS["meta_color"]},
+                {"label": "Formulaires", "value": "—",
+                 "sub_label": "Nombre de formulaires remplis",
+                 "accent": PALETTE["gold"]},
+            ]
+            self._hero_row(slide, row1, y=1.3, n_cols=2)
+            self._hero_row(slide, row2, y=4.2, n_cols=2)
+        else:
+            row1 = [
+                {"label": "Diffusion totale", "value": format_number(diff),
+                 "current": diff, "previous": diff_p, "tooltip": "Diffusion All",
+                 "accent": PALETTE["gold"]},
+                {"label": "Coût Google Ads", "value": format_currency(cout_g),
+                 "current": cout_g, "previous": cout_g_p, "tooltip": "Cout Google ADS",
+                 "accent": PALETTE["green"]},
+                {"label": "Coût Meta Ads", "value": format_currency(cout_m),
+                 "current": cout_m, "previous": cout_m_p, "tooltip": "Cout Facebook ADS",
+                 "accent": FUNCTIONAL_COLORS["meta_color"]},
+            ]
+            self._hero_row(slide, row1, y=2.5, n_cols=3)
 
     # ──────────────────────────────────────────
     # Slide 5 — Meta Ads
@@ -330,7 +352,7 @@ class TemplateLaserel(BaseTemplate):
 
     def _slide_meta(self, m_curr, m_prev, month_fr):
         slide = self.prs.slides.add_slide(self.blank_layout)
-        self._modern_header(slide, "Détails Meta Ads", month_fr,
+        self._modern_header(slide, "Détails Meta Ads - Facebook et Instagram", month_fr,
                             accent_color=FUNCTIONAL_COLORS["meta_color"])
 
         blue = FUNCTIONAL_COLORS["meta_color"]
@@ -382,11 +404,13 @@ class TemplateLaserel(BaseTemplate):
         row1 = [
             {"label": "Impressions", "value": format_number(impr),
              "current": impr, "previous": impr_p, "tooltip": "Total Impressions", "accent": green},
-            {"label": "Clics Search", "value": format_number(search),
-             "current": search, "previous": search_p, "tooltip": "Clics search", "accent": green},
-            {"label": "Clics PerfMax", "value": format_number(pmax),
-             "current": pmax, "previous": pmax_p, "tooltip": "Clics Perf Max", "accent": green},
         ]
+        if search or search_p:
+            row1.append({"label": "Clics Search", "value": format_number(search),
+                         "current": search, "previous": search_p, "tooltip": "Clics search", "accent": green})
+        if pmax or pmax_p:
+            row1.append({"label": "Clics PerfMax", "value": format_number(pmax),
+                         "current": pmax, "previous": pmax_p, "tooltip": "Clics Perf Max", "accent": green})
 
         cout = self._safe_get(g_curr, "Cout Google ADS")
         cout_p = self._safe_get(g_prev, "Cout Google ADS")
@@ -400,7 +424,7 @@ class TemplateLaserel(BaseTemplate):
              "current": cpc, "previous": cpc_p, "tooltip": "Total CPC moyen", "accent": green},
         ]
 
-        self._hero_row(slide, row1, y=1.3, n_cols=3)
+        self._hero_row(slide, row1, y=1.3, n_cols=len(row1))
         self._hero_row(slide, row2, y=4.2, n_cols=2)
 
     # ──────────────────────────────────────────
@@ -440,7 +464,7 @@ class TemplateLaserel(BaseTemplate):
     # Slide 7 — Synthèse
     # ──────────────────────────────────────────
 
-    def _slide_synthese(self, gen_curr, gen_prev, c_curr, c_prev, month_fr, has_appels):
+    def _slide_synthese(self, gen_curr, gen_prev, c_curr, c_prev, month_fr, has_appels, is_laserel_main=True):
         slide = self.prs.slides.add_slide(self.blank_layout)
         self._modern_header(slide, "Synthèse", month_fr)
 
@@ -448,6 +472,8 @@ class TemplateLaserel(BaseTemplate):
         cout_all_p = self._safe_get(gen_prev, "COUT ALL")
         conv = self._safe_get(gen_curr, "Cout par conversion majeure")
         conv_p = self._safe_get(gen_prev, "Cout par conversion majeure")
+
+        conv_tooltip = "Coût total divisé par le nombre total de conversions (formulaires + appels)" if is_laserel_main else "Coût total divisé par le nombre total de conversions (appels)"
 
         # Ligne 1 : métriques générales
         row1 = [
@@ -458,7 +484,7 @@ class TemplateLaserel(BaseTemplate):
         if conv:
             row1.append({"label": "Coût / conversion", "value": format_currency(conv),
                          "current": conv, "previous": conv_p,
-                         "tooltip": "Cout par conversion majeure", "accent": PALETTE["gold"]})
+                         "sub_label": conv_tooltip, "accent": PALETTE["gold"]})
         self._hero_row(slide, row1, y=1.3, n_cols=len(row1))
 
         # Ligne 2 : appels
@@ -468,6 +494,7 @@ class TemplateLaserel(BaseTemplate):
             appels_p = self._safe_get(c_prev, "Appels Téléphoniques")
             row2.append({"label": "Appels téléphoniques", "value": format_number(appels),
                          "current": appels, "previous": appels_p,
+                         "sub_label": "Nombre de clics trackés sur les boutons contacts",
                          "accent": PALETTE["gold"]})
 
         if row2:

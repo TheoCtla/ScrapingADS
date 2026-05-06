@@ -93,7 +93,7 @@ def _parse_value(value: str) -> Any:
 
     # Gérer les séparateurs de milliers et décimales
     # Le Sheet peut avoir des formats variés : "1,234.56" ou "1234.56" ou "1 234,56"
-    cleaned = cleaned.replace("\u00a0", "").replace(" ", "")
+    cleaned = cleaned.replace("\u00a0", "").replace("\u202f", "").replace(" ", "")
 
     # Si contient virgule et point, la virgule est séparateur de milliers
     if "," in cleaned and "." in cleaned:
@@ -151,6 +151,31 @@ def _categorize_metrics(flat_dict: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
         "conversions": conversions,
         "general": general,
     }
+
+
+def _find_ga_config_for_worksheet(worksheet_name: str, available_sheets: List[str]) -> Optional[Dict[str, Any]]:
+    """
+    Trouve la config googleAnalytics du client correspondant à un onglet Sheet.
+    Fait un reverse lookup via les mappings client.
+
+    Returns:
+        Le bloc googleAnalytics du client (avec propertyId + pages), ou None.
+    """
+    try:
+        from backend.common.services.client_resolver import ClientResolverService
+
+        resolver = ClientResolverService()
+        for client_name, mapping in resolver.mappings.items():
+            ga_config = mapping.get("googleAnalytics")
+            if not ga_config:
+                continue
+            client_sheet = _resolve_worksheet_name(client_name, available_sheets)
+            if client_sheet == worksheet_name:
+                return ga_config
+        return None
+    except Exception as e:
+        logging.error(f"❌ Erreur recherche config GA pour '{worksheet_name}': {e}")
+        return None
 
 
 def _resolve_worksheet_name(
@@ -242,18 +267,36 @@ def _read_sheet_data(
     Lecture brute d'un onglet Sheet : headers, lignes, catégorisation.
     Factorise la logique commune entre read_report_data et read_report_data_by_worksheet.
     """
-    headers_range = f"'{worksheet_name}'!2:2"
+    headers_range = f"'{worksheet_name}'!2:3"
     headers_result = sheets_service.service.spreadsheets().values().get(
         spreadsheetId=sheets_service.sheet_id,
         range=headers_range,
     ).execute()
-    headers_raw = headers_result.get("values", [[]])
-    headers = [h.strip() if h else "" for h in headers_raw[0]] if headers_raw else []
+    headers_rows = headers_result.get("values", [])
+    row2 = [h.strip() if h else "" for h in headers_rows[0]] if headers_rows else []
+    row3 = [h.strip() if h else "" for h in headers_rows[1]] if len(headers_rows) > 1 else []
+
+    # Noms de groupes en ligne 2 (pas des vrais headers, les vrais sont en ligne 3)
+    GROUP_HEADERS = {"FOLLOWERS", "DRIVE TO STORE", "SPONSO POSTS", "CAMPAGNES META",
+                     "SPONSO POST", "LEADS", "GÉNÉRAL", "GENERAL", "GOOGLE", "META",
+                     "MICROSOFT"}
+
+    # Merger les headers : si la ligne 2 est vide ou est un nom de groupe,
+    # et que la ligne 3 a un vrai header, on prend la ligne 3
+    max_cols = max(len(row2), len(row3))
+    headers = []
+    for i in range(max_cols):
+        h2 = row2[i] if i < len(row2) else ""
+        h3 = row3[i] if i < len(row3) else ""
+        if h3 and (not h2 or h2.upper() in GROUP_HEADERS):
+            headers.append(h3)
+        else:
+            headers.append(h2)
 
     if not headers:
         raise ValueError(f"Aucun header trouvé dans l'onglet '{worksheet_name}'")
 
-    data_range = f"'{worksheet_name}'!A3:AK"
+    data_range = f"'{worksheet_name}'!A3:AZ"
     data_result = sheets_service.service.spreadsheets().values().get(
         spreadsheetId=sheets_service.sheet_id,
         range=data_range,
@@ -299,6 +342,24 @@ def _read_sheet_data(
     month_fr = _month_to_fr(month_en)
     prev_month_fr = _month_to_fr(prev_month_en)
 
+    # Section Analytics : reverse lookup du client matchant ce worksheet,
+    # puis extraction des valeurs GA pour M / M-1 / M-2.
+    available_sheets = sheets_service.get_worksheet_names()
+    ga_config = _find_ga_config_for_worksheet(worksheet_name, available_sheets)
+    analytics_pages = []
+    if ga_config:
+        history_prev_prev = history[-3] if len(history) >= 3 else {}
+        for page in ga_config.get("pages", []):
+            col = page.get("sheetColumn")
+            if not col:
+                continue
+            analytics_pages.append({
+                "label": col,
+                "current": current_data.get(col, 0) or 0,
+                "previous": previous_data.get(col, 0) or 0,
+                "previous_previous": history_prev_prev.get(col, 0) or 0,
+            })
+
     return {
         "client": worksheet_name,
         "month": month_en,
@@ -324,6 +385,9 @@ def _read_sheet_data(
         "general": {
             "current": current_cats["general"],
             "previous": previous_cats["general"],
+        },
+        "analytics": {
+            "pages": analytics_pages,
         },
         "history": history,
     }

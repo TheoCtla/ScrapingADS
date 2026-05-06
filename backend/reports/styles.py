@@ -92,21 +92,21 @@ METRIC_TOOLTIPS = {
     "CPL Meta": "Coût par lead sur les publicités Meta",
     "CTR Google": "Taux de clic sur les campagnes Google Ads",
     "CTR Meta": "Taux de clic sur les publicités Meta",
-    "Total CPC moyen": "CPC moyen toutes campagnes Google confondues",
-    "Appels Téléphoniques": "Nombre total d'appels générés par les campagnes Google + Meta",
-    "Demandes d'itinéraires": "Nombre total de demandes d'itinéraire vers le point de vente Google + Meta",
+    "Total CPC moyen": "Coût par clic moyen toutes campagnes Google confondues",
+    "Appels Téléphoniques": "Nombre de clics trackés sur les boutons contacts",
+    "Demandes d'itinéraires": "Nombre de clics trackés sur les boutons itinéraires",
     "Formulaires": "Nombre de formulaires remplis par les prospects",
-    "Contact Meta": "Nombre de contacts générés via les publicités Meta",
+    "Contact Meta": "Nombre de clics trackés sur les boutons contacts",
     "Recherche de lieux": "Nombre de recherches d'itinéraire via Meta",
-    "Cout par RDV/Form": "Coût total des campagnes divisé par le nombre de formulaires",
-    "Cout par conversion majeure": "Coût total divisé par le nombre total de conversions (formulaires + appels + itinéraires)",
+    "Cout par RDV / Form": "Coût total des campagnes divisé par le nombre de formulaires",
+    "Cout par conversion majeure": "Coût total divisé par le nombre total de conversions (formulaires + contacts + itinéraires)",
     "Cout Google ADS": "Budget total dépensé sur Google Ads",
     "Cout Facebook ADS": "Budget total dépensé sur Meta Ads",
     "Cout Search": "Budget dépensé sur les campagnes Search Google",
     "Cout PM": "Budget dépensé sur les campagnes Performance Max",
     "Cout Display": "Budget dépensé sur les campagnes Display Google",
-    "Clics search": "Nombre de clics sur les campagnes Search Google",
-    "Clics Perf Max": "Nombre de clics sur les campagnes Performance Max",
+    "Clics search": "Nombre de clics sur les campagnes Search Google. Ces campagnes affichent vos annonces textuelles lorsqu'un utilisateur recherche vos mots-clés sur Google.",
+    "Clics Perf Max": "Nombre de clics sur les campagnes Performance Max. Ces campagnes diffusent automatiquement vos annonces sur tous les canaux Google (YouTube, Maps..).",
     "Clics Display": "Nombre de clics sur les campagnes Display Google",
     "Clics Meta": "Nombre de clics sur les publicités Meta",
     "Impressions Search": "Nombre d'impressions sur les campagnes Search Google",
@@ -132,7 +132,7 @@ INVERSE_METRICS = {
     "CPC Perf Max",
     "CPC Display",
     "Total CPC moyen",
-    "Cout par RDV/Form",
+    "Cout par RDV / Form",
     "Cout par conversion majeure",
 }
 
@@ -159,8 +159,13 @@ CONVERSION_METRICS = {
 }
 
 GENERAL_METRICS = {
-    "Cout par RDV/Form", "Cout par conversion majeure",
+    "Cout par RDV / Form", "Cout par conversion majeure",
     "COUT ALL", "Diffusion All", "Clics All",
+    "Leads Google", "Leads Meta", "Leads Générés", "Leads Qualifiés",
+    "Coût par Leads",
+    "Montant", "Ajout au panier", "CTR",
+    "Montant DTS", "Itinéraires", "CTR DTS",
+    "Montant SP", "CTR SP",
 }
 
 MICROSOFT_METRICS = {

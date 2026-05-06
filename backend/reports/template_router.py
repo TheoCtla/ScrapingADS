@@ -36,9 +36,9 @@ TEMPLATE_ROUTES = [
         "template": "template_litiers",
     },
     {
-        "name": "clim",
-        "keywords": ["kaltea", "grass", "univers"],
-        "template": "template_clim",
+        "name": "leadgen",
+        "keywords": ["kaltea", "kozeo", "tairmic"],
+        "template": "template_leadgen",
     },
     {
         "name": "denteva",
@@ -72,7 +72,7 @@ TEMPLATE_ROUTES = [
     },
 ]
 
-FALLBACK_TEMPLATE = "template_autres"
+FALLBACK_TEMPLATE = "template_leadgen"
 
 
 # ──────────────────────────────────────────────
@@ -87,6 +87,9 @@ _IMPLEMENTED_TEMPLATES = {
     "template_cuisinistes",
     "template_emma",
     "template_laserel",
+    "template_denteva",
+    "template_leadgen",
+    "template_bedroom",
 }
 
 
@@ -130,6 +133,18 @@ def _load_template_class(template_name: str) -> Type[BaseTemplate]:
         from backend.reports.templates.template_laserel import TemplateLaserel
         return TemplateLaserel
 
+    if template_name == "template_denteva":
+        from backend.reports.templates.template_denteva import TemplateDenteva
+        return TemplateDenteva
+
+    if template_name == "template_bedroom":
+        from backend.reports.templates.template_bedroom import TemplateBedroom
+        return TemplateBedroom
+
+    if template_name == "template_leadgen":
+        from backend.reports.templates.template_leadgen import TemplateLeadGen
+        return TemplateLeadGen
+
     raise NotImplementedError(
         f"Le template '{template_name}' n'est pas encore implémenté. "
         f"Templates disponibles : {_IMPLEMENTED_TEMPLATES}"
@@ -161,7 +176,7 @@ def get_route_name(sheet_name: str) -> str:
         for keyword in route["keywords"]:
             if keyword in lower_name:
                 return route["name"]
-    return "autres"
+    return "leadgen"
 
 
 def is_template_implemented(sheet_name: str) -> bool:

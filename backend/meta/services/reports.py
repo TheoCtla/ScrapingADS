@@ -541,6 +541,171 @@ class MetaAdsReportsService:
         logging.info(f"📊 Recherches de lieux extraites: {search_conversions}")
         return search_conversions
     
+    def get_lyleoo_interest_retarget_data(self, ad_account_id: str, start_date: str, end_date: str) -> Dict[str, Any]:
+        """
+        Pour LyleOO uniquement : récupère les "Résultats" (objectif de campagne) par adset
+        pour les campagnes 'Interaction Interest' et 'Interaction CM Retarget',
+        regroupés par 'facebook' / 'insta' dans le nom de l'adset.
+
+        Le budget retourné est le spend TOTAL de chaque campagne (somme de tous les adsets,
+        peu importe leur nom).
+
+        Returns:
+            Dict avec 6 clés : interest_facebook, interest_insta, interest_budget,
+            retarget_facebook, retarget_insta, retarget_budget.
+        """
+        result = {
+            "interest_facebook": 0,
+            "interest_insta": 0,
+            "interest_budget": 0.0,
+            "retarget_facebook": 0,
+            "retarget_insta": 0,
+            "retarget_budget": 0.0,
+        }
+
+        try:
+            url = f"{self.base_url}/act_{ad_account_id}/insights"
+            params = {
+                "access_token": self.access_token,
+                "fields": "campaign_name,adset_name,spend,results,actions",
+                "level": "adset",
+                "time_range": f'{{"since":"{start_date}","until":"{end_date}"}}',
+                "limit": 500,
+            }
+            logging.info(f"🦄 LyleOO — récupération adsets Interest/Retarget pour {ad_account_id} ({start_date} → {end_date})")
+            response = self._make_meta_request_with_retry(url, params)
+            if response is None:
+                logging.warning("⚠️ LyleOO — pas de réponse Meta pour les adsets")
+                return result
+
+            data = response.json().get("data", [])
+            logging.info(f"🦄 LyleOO — {len(data)} adsets retournés")
+
+            for adset in data:
+                campaign_name = (adset.get("campaign_name") or "").lower()
+                adset_name = (adset.get("adset_name") or "").lower()
+                try:
+                    spend = float(adset.get("spend") or 0)
+                except (TypeError, ValueError):
+                    spend = 0.0
+
+                # Le vrai nom contient "INTÉRACTION CM (Interest)" / "INTÉRACTION CM (Retarget)"
+                # On matche sur "cm (interest)" / "cm (retarget)" pour gérer la casse + accent
+                # et exclure les autres campagnes type "Campagne Opticiens (Retarget)"
+                is_interest = "cm (interest)" in campaign_name
+                is_retarget = "cm (retarget)" in campaign_name
+                if not (is_interest or is_retarget):
+                    continue
+
+                # Somme des "Résultats" (objectif de campagne) pour cet adset
+                total_results = 0
+                for r in adset.get("results", []) or []:
+                    for v in r.get("values", []) or []:
+                        try:
+                            total_results += int(float(v.get("value") or 0))
+                        except (TypeError, ValueError):
+                            pass
+
+                if is_interest:
+                    result["interest_budget"] += spend
+                    if "facebook" in adset_name:
+                        result["interest_facebook"] += total_results
+                        logging.info(f"  ✅ Interest Facebook | adset='{adset.get('adset_name')}' | results=+{total_results} | spend=+{spend}€")
+                    elif "insta" in adset_name:
+                        result["interest_insta"] += total_results
+                        logging.info(f"  ✅ Interest Insta | adset='{adset.get('adset_name')}' | results=+{total_results} | spend=+{spend}€")
+                    else:
+                        logging.info(f"  ⏭️  Interest skip (ni facebook ni insta) | adset='{adset.get('adset_name')}' | spend=+{spend}€")
+                elif is_retarget:
+                    result["retarget_budget"] += spend
+                    if "facebook" in adset_name:
+                        result["retarget_facebook"] += total_results
+                        logging.info(f"  ✅ Retarget Facebook | adset='{adset.get('adset_name')}' | results=+{total_results} | spend=+{spend}€")
+                    elif "insta" in adset_name:
+                        result["retarget_insta"] += total_results
+                        logging.info(f"  ✅ Retarget Insta | adset='{adset.get('adset_name')}' | results=+{total_results} | spend=+{spend}€")
+                    else:
+                        logging.info(f"  ⏭️  Retarget skip (ni facebook ni insta) | adset='{adset.get('adset_name')}' | spend=+{spend}€")
+
+            # Arrondir les budgets
+            result["interest_budget"] = round(result["interest_budget"], 2)
+            result["retarget_budget"] = round(result["retarget_budget"], 2)
+
+            logging.info(f"🦄 LyleOO TOTAUX — {result}")
+            return result
+
+        except Exception as e:
+            logging.error(f"❌ Erreur get_lyleoo_interest_retarget_data: {e}")
+            return result
+
+    def get_action_total_for_account(self, ad_account_id: str, start_date: str, end_date: str, action_type_name: str) -> int:
+        """
+        Récupère le total d'une action_type spécifique (ex: 'auxerre_engaged_10s')
+        sur toutes les campagnes du compte Meta sur la période.
+
+        Le matching est tolérant : Meta peut retourner l'action_type sous plusieurs formes
+        - exact: 'auxerre_engaged_10s'
+        - préfixé pixel custom: 'offsite_conversion.fb_pixel_custom.auxerre_engaged_10s'
+        - autre préfixe: 'offsite_conversion.custom.auxerre_engaged_10s', etc.
+        On accepte tout suffixe `.auxerre_engaged_10s` ou égalité directe.
+
+        Args:
+            ad_account_id: ID du compte publicitaire Meta
+            start_date: Date de début (YYYY-MM-DD)
+            end_date: Date de fin (YYYY-MM-DD)
+            action_type_name: Nom de l'event Meta (ex: 'auxerre_engaged_10s')
+
+        Returns:
+            Total des résultats (entier), 0 si non trouvé ou erreur
+        """
+        def _matches(at: str) -> bool:
+            if not at:
+                return False
+            return at == action_type_name or at.endswith("." + action_type_name)
+
+        try:
+            url = f"{self.base_url}/act_{ad_account_id}/insights"
+            params = {
+                "access_token": self.access_token,
+                "fields": "actions,conversions,campaign_name",
+                "level": "campaign",
+                "time_range": f'{{"since":"{start_date}","until":"{end_date}"}}',
+                "limit": 100,
+            }
+            logging.info(f"🔍 Récupération action_type '{action_type_name}' Meta pour {ad_account_id} ({start_date} → {end_date})")
+            response = self._make_meta_request_with_retry(url, params)
+            if response is None:
+                logging.warning(f"⚠️ Pas de réponse Meta pour action_type '{action_type_name}'")
+                return 0
+
+            data = response.json().get("data", [])
+            total = 0
+            for campaign in data:
+                campaign_name = campaign.get("campaign_name", "?")
+                # On regarde d'abord 'conversions', puis 'actions' en fallback
+                # (les events custom apparaissent souvent dans 'conversions')
+                for field in ("conversions", "actions"):
+                    items = campaign.get(field, []) or []
+                    if not isinstance(items, list):
+                        continue
+                    for item in items:
+                        if not isinstance(item, dict):
+                            continue
+                        at = item.get("action_type", "")
+                        if _matches(at):
+                            try:
+                                v = float(item.get("value", 0))
+                                total += int(v)
+                                logging.info(f"  ✅ Match {field}.{at} sur '{campaign_name}': +{int(v)}")
+                            except (TypeError, ValueError):
+                                pass
+
+            logging.info(f"📊 Total '{action_type_name}': {total} (sur {len(data)} campagnes)")
+            return total
+        except Exception as e:
+            logging.error(f"❌ Erreur get_action_total_for_account ('{action_type_name}'): {e}")
+            return 0
+
     def getContactsResults(self, ad_account_id: str, since: str, until: str, level: str = 'campaign', only_active: bool = False, name_contains_ci: str = None) -> list:
         """
         Récupère les contacts Meta via l'endpoint /insights avec le champ results
@@ -644,6 +809,108 @@ class MetaAdsReportsService:
         except Exception as e:
             logging.error(f"❌ Erreur lors de la récupération des contacts Meta: {e}")
             return []
+
+    def get_campaign_specific_metrics(
+        self, ad_account_id: str, start_date: str, end_date: str, name_contains: str
+    ) -> Dict[str, Any]:
+        """
+        Récupère spend, add_to_cart et CTR pour une campagne filtrée par nom.
+
+        Args:
+            ad_account_id: ID du compte publicitaire Meta.
+            start_date: Date de début (YYYY-MM-DD).
+            end_date: Date de fin (YYYY-MM-DD).
+            name_contains: Filtre insensible à la casse sur le nom de campagne.
+
+        Returns:
+            {"spend": float, "add_to_cart": int, "ctr": float}
+        """
+        try:
+            url = f"{self.base_url}/act_{ad_account_id}/insights"
+            params = {
+                "access_token": self.access_token,
+                "fields": "campaign_name,spend,ctr,actions",
+                "level": "campaign",
+                "time_range": f'{{"since":"{start_date}","until":"{end_date}"}}',
+                "limit": 100,
+            }
+
+            response = self._make_meta_request_with_retry(url, params)
+            if response is None:
+                return {"spend": 0, "add_to_cart": 0, "ctr": 0}
+
+            data = response.json().get("data", [])
+            needle = name_contains.lower()
+            data = [c for c in data if needle in str(c.get("campaign_name", "")).lower()]
+
+            if not data:
+                logging.warning(f"⚠️ Aucune campagne '{name_contains}' trouvée pour {ad_account_id}")
+                return {"spend": 0, "add_to_cart": 0, "ctr": 0}
+
+            total_spend = 0
+            total_add_to_cart = 0
+            total_search = 0
+            total_impressions = 0
+            total_clicks = 0
+
+            for camp in data:
+                total_spend += float(camp.get("spend", 0))
+
+                actions = camp.get("actions", [])
+                # Extraire add_to_cart (prendre le max pour éviter les doublons)
+                camp_add_to_cart = 0
+                # Extraire recherches de lieu (prendre le max)
+                camp_search = 0
+                if isinstance(actions, list):
+                    for action in actions:
+                        if not isinstance(action, dict):
+                            continue
+                        atype = action.get("action_type", "")
+                        value = int(action.get("value", 0))
+                        if atype in ("add_to_cart", "offsite_conversion.fb_pixel_add_to_cart"):
+                            if value > camp_add_to_cart:
+                                camp_add_to_cart = value
+                        if atype in ("find_location", "find_location_total", "find_location_website",
+                                     "onsite_web_location_search", "location_search",
+                                     "offsite_conversion.fb_pixel_custom"):
+                            if value > camp_search:
+                                camp_search = value
+                total_add_to_cart += camp_add_to_cart
+                total_search += camp_search
+
+            # Refaire un appel avec impressions/clicks pour calculer le CTR agrégé
+            params2 = {
+                "access_token": self.access_token,
+                "fields": "campaign_name,impressions,clicks",
+                "level": "campaign",
+                "time_range": f'{{"since":"{start_date}","until":"{end_date}"}}',
+                "limit": 100,
+            }
+            response2 = self._make_meta_request_with_retry(url, params2)
+            if response2:
+                data2 = response2.json().get("data", [])
+                data2 = [c for c in data2 if needle in str(c.get("campaign_name", "")).lower()]
+                for camp in data2:
+                    total_impressions += int(camp.get("impressions", 0))
+                    total_clicks += int(camp.get("clicks", 0))
+
+            ctr = round((total_clicks / total_impressions * 100), 2) if total_impressions > 0 else 0
+
+            logging.info(
+                f"📊 Campagne '{name_contains}': spend={total_spend}, "
+                f"add_to_cart={total_add_to_cart}, search={total_search}, CTR={ctr}%"
+            )
+
+            return {
+                "spend": round(total_spend, 2),
+                "add_to_cart": total_add_to_cart,
+                "search": total_search,
+                "ctr": ctr,
+            }
+
+        except Exception as e:
+            logging.error(f"❌ Erreur get_campaign_specific_metrics: {e}")
+            return {"spend": 0, "add_to_cart": 0, "search": 0, "ctr": 0}
 
     def calculate_meta_metrics(self, insights_data: Optional[Dict[str, Any]], cpl_average: float = 0, ad_account_id: str = None, start_date: str = None, end_date: str = None, contacts_total: int = None) -> Dict[str, Any]:
         """

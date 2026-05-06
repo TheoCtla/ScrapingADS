@@ -117,7 +117,7 @@ class GoogleAdsReportsService:
             'DISPLAY': {'clicks': 0, 'impressions': 0, 'cost_micros': 0, 'cpc_sum': 0, 'cpc_count': 0, 'conversions': 0, 'phone_calls': 0}
         }
         
-        total_data = {'clicks': 0, 'impressions': 0, 'ctr_sum': 0, 'ctr_count': 0, 'cpc_sum': 0, 'cpc_count': 0}
+        total_data = {'clicks': 0, 'impressions': 0, 'cost_micros': 0, 'ctr_sum': 0, 'ctr_count': 0, 'cpc_sum': 0, 'cpc_count': 0}
         
         # Debug : compter le nombre de lignes traitées
         total_rows = 0
@@ -147,14 +147,15 @@ class GoogleAdsReportsService:
             else:
                 logging.warning(f"⚠️ Canal non reconnu: {channel}")
             
-            # Totaux globaux
+            # Totaux globaux (incluent TOUS les canaux, même VIDEO/DEMAND_GEN)
             total_data['clicks'] += row.metrics.clicks or 0
             total_data['impressions'] += row.metrics.impressions or 0
-            
+            total_data['cost_micros'] += row.metrics.cost_micros or 0
+
             if row.metrics.ctr is not None:
                 total_data['ctr_sum'] += row.metrics.ctr
                 total_data['ctr_count'] += 1
-                
+
             if row.metrics.average_cpc is not None:
                 total_data['cpc_sum'] += row.metrics.average_cpc
                 total_data['cpc_count'] += 1
@@ -193,12 +194,18 @@ class GoogleAdsReportsService:
         # Métriques globales
         virtual_metrics['metrics.total_clicks'] = total_data['clicks']
         virtual_metrics['metrics.impressions'] = total_data['impressions']
-        virtual_metrics['metrics.ctr'] = f"{(total_data['ctr_sum'] / total_data['ctr_count']):.2%}" if total_data['ctr_count'] > 0 else "0.00%"
-        
+        # CTR pondéré = Total Clics / Total Impressions (et non moyenne des CTR par campagne)
+        if total_data['impressions'] > 0:
+            virtual_metrics['metrics.ctr'] = f"{(total_data['clicks'] / total_data['impressions']):.2%}"
+        else:
+            virtual_metrics['metrics.ctr'] = "0.00%"
+
+        # Coût total = somme du cost_micros de TOUS les canaux scrapés (incluant VIDEO/DEMAND_GEN)
+        total_cost = total_data['cost_micros']
+
         # CPC global = coût total / clics totaux
-        total_cost = sum(channel_data[ch]['cost_micros'] for ch in channel_data)
         virtual_metrics['metrics.average_cpc'] = round(total_cost / 1e6 / total_data['clicks'], 2) if total_data['clicks'] > 0 else 0
-        
+
         # Coût total en euros
         virtual_metrics['metrics.cost_micros'] = round(total_cost / 1e6, 2)
         

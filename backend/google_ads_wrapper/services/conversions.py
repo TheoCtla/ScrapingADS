@@ -188,7 +188,28 @@ class GoogleAdsConversionsService:
             "call bouton",
             "clicks to call"
         ]
-        
+
+        self.EMMA_PERPIGNAN_CONTACT_NAMES = [
+            "call bouton",
+            "clicks to call",
+            "email"
+        ]
+
+        self.EMMA_PERPIGNAN_DIRECTIONS_NAMES = [
+            "itinéraires",
+            "local actions - directions"
+        ]
+
+        self.EMMA_VENDENHEIM_CONTACT_NAMES = [
+            "call bouton",
+            "clicks to call"
+        ]
+
+        self.EMMA_VENDENHEIM_DIRECTIONS_NAMES = [
+            "itinéraires",
+            "local actions - directions"
+        ]
+
         self.BEDROOM_DIRECTIONS_NAMES = [
             "itinéraires",
             "local actions - directions"
@@ -212,6 +233,11 @@ class GoogleAdsConversionsService:
         self.EMMA_MERIGNAC_DIRECTIONS_NAMES = [
             "actions locales – itinéraire",
             "itinéraires"
+        ]
+
+        self.EMMA_VENDENHEIM_DIRECTIONS_NAMES = [
+            "itinéraires",
+            "local actions - directions"
         ]
         
         self.STAR_LITERIE_CONTACT_NAMES = [
@@ -2709,7 +2735,231 @@ class GoogleAdsConversionsService:
         except Exception as e:
             logging.error(f" Erreur lors de la récupération des conversions Bedroom Itinéraires pour {customer_id}: {e}")
             return directions_total, all_conversions
-    
+
+    def get_emma_perpignan_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour Emma Perpignan.
+        Uniquement: 'Call bouton', 'Clicks to call', 'email' (substring match).
+        """
+        contact_total = 0
+        all_conversions = []
+
+        try:
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+
+            logging.info(f"🌸 Recherche des conversions EMMA PERPIGNAN CONTACT pour {customer_id}")
+            response = self.auth_service.fetch_report_data(customer_id, query)
+
+            for row in response:
+                conversion_name = (row.segments.conversion_action_name or "").lower().strip()
+
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+
+                is_match = any(target_name in conversion_name for target_name in self.EMMA_PERPIGNAN_CONTACT_NAMES)
+                if is_match:
+                    contact_total += conversions_value
+                    logging.info(f"🌸 CONVERSION EMMA PERPIGNAN CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"Conversion Emma Perpignan Contact ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+
+            contact_conversions = [conv for conv in all_conversions
+                                   if any(target_name in conv['name'].lower() for target_name in self.EMMA_PERPIGNAN_CONTACT_NAMES)]
+            logging.info(f"🌸 Total Contact Emma Perpignan: {contact_total}")
+            return contact_total, contact_conversions
+
+        except Exception as e:
+            logging.error(f"Erreur Emma Perpignan Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+
+    def get_emma_perpignan_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour Emma Perpignan.
+        Uniquement: 'Itinéraires', 'Local actions - Directions'.
+        """
+        directions_total = 0
+        all_conversions = []
+
+        try:
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+
+            logging.info(f"🌸 Recherche des conversions EMMA PERPIGNAN ITINÉRAIRES pour {customer_id}")
+            response = self.auth_service.fetch_report_data(customer_id, query)
+
+            for row in response:
+                conversion_name = (row.segments.conversion_action_name or "").lower().strip()
+
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+
+                is_match = any(target_name in conversion_name for target_name in self.EMMA_PERPIGNAN_DIRECTIONS_NAMES)
+                if is_match:
+                    directions_total += conversions_value
+                    logging.info(f"🌸 CONVERSION EMMA PERPIGNAN ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"Conversion Emma Perpignan Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+
+            directions_conversions = [conv for conv in all_conversions
+                                      if any(target_name in conv['name'].lower() for target_name in self.EMMA_PERPIGNAN_DIRECTIONS_NAMES)]
+            logging.info(f"🌸 Total Itinéraires Emma Perpignan: {directions_total}")
+            return directions_total, directions_conversions
+
+        except Exception as e:
+            logging.error(f"Erreur Emma Perpignan Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+
+    def get_emma_vendenheim_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Contact spécifiquement pour Emma Vendenheim.
+        Uniquement: 'Call bouton', 'Clicks to call' (substring match).
+        """
+        contact_total = 0
+        all_conversions = []
+
+        try:
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+
+            logging.info(f"🌷 Recherche des conversions EMMA VENDENHEIM CONTACT pour {customer_id}")
+            response = self.auth_service.fetch_report_data(customer_id, query)
+
+            for row in response:
+                conversion_name = (row.segments.conversion_action_name or "").lower().strip()
+
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+
+                is_match = any(target_name in conversion_name for target_name in self.EMMA_VENDENHEIM_CONTACT_NAMES)
+                if is_match:
+                    contact_total += conversions_value
+                    logging.info(f"🌷 CONVERSION EMMA VENDENHEIM CONTACT: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"Conversion Emma Vendenheim Contact ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+
+            contact_conversions = [conv for conv in all_conversions
+                                   if any(target_name in conv['name'].lower() for target_name in self.EMMA_VENDENHEIM_CONTACT_NAMES)]
+            logging.info(f"🌷 Total Contact Emma Vendenheim: {contact_total}")
+            return contact_total, contact_conversions
+
+        except Exception as e:
+            logging.error(f"Erreur Emma Vendenheim Contact pour {customer_id}: {e}")
+            return contact_total, all_conversions
+
+    def get_emma_vendenheim_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires spécifiquement pour Emma Vendenheim.
+        Uniquement: 'Itinéraires', 'Local actions - Directions'.
+        """
+        directions_total = 0
+        all_conversions = []
+
+        try:
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+
+            logging.info(f"🌷 Recherche des conversions EMMA VENDENHEIM ITINÉRAIRES pour {customer_id}")
+            response = self.auth_service.fetch_report_data(customer_id, query)
+
+            for row in response:
+                conversion_name = (row.segments.conversion_action_name or "").lower().strip()
+
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+
+                is_match = any(target_name in conversion_name for target_name in self.EMMA_VENDENHEIM_DIRECTIONS_NAMES)
+                if is_match:
+                    directions_total += conversions_value
+                    logging.info(f"🌷 CONVERSION EMMA VENDENHEIM ITINÉRAIRES: {row.segments.conversion_action_name} = {conversions_value}")
+                else:
+                    logging.info(f"Conversion Emma Vendenheim Itinéraires ignorée: {row.segments.conversion_action_name} = {conversions_value}")
+
+            directions_conversions = [conv for conv in all_conversions
+                                      if any(target_name in conv['name'].lower() for target_name in self.EMMA_VENDENHEIM_DIRECTIONS_NAMES)]
+            logging.info(f"🌷 Total Itinéraires Emma Vendenheim: {directions_total}")
+            return directions_total, directions_conversions
+
+        except Exception as e:
+            logging.error(f"Erreur Emma Vendenheim Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
+
     def get_crozatier_contact_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
         """
         Récupère les données de conversions Contact spécifiquement pour Crozatier Dijon
@@ -3979,6 +4229,60 @@ class GoogleAdsConversionsService:
         except Exception as e:
             logging.error(f" Erreur lors de la récupération des conversions Emma Merignac Itinéraires pour {customer_id}: {e}")
             return directions_total, all_conversions
+
+    def get_emma_vendenheim_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
+        """
+        Récupère les données de conversions Itinéraires pour Emma Vendenheim.
+        Conversions: "Itinéraires" + "Local actions - Directions"
+        """
+        directions_total = 0
+        all_conversions = []
+
+        try:
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+            """
+
+            logging.info(f" Recherche des conversions EMMA VENDENHEIM ITINÉRAIRES pour le client {customer_id}")
+
+            response = self.auth_service.fetch_report_data(customer_id, query)
+
+            for row in response:
+                conversion_name = row.segments.conversion_action_name.lower().strip()
+
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    conversions_value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    conversions_value = row.metrics.all_conversions
+                else:
+                    conversions_value = 0
+
+                all_conversions.append({
+                    'name': row.segments.conversion_action_name,
+                    'id': row.segments.conversion_action,
+                    'conversions': conversions_value
+                })
+
+                is_match = any(target_name in conversion_name for target_name in self.EMMA_VENDENHEIM_DIRECTIONS_NAMES)
+
+                if is_match:
+                    directions_total += conversions_value
+                    logging.info(f"✅ CONVERSION EMMA VENDENHEIM ITINÉRAIRES: '{row.segments.conversion_action_name}' = {conversions_value}")
+
+            logging.info(f" Total Itinéraires Emma Vendenheim: {directions_total}")
+            return directions_total, [conv for conv in all_conversions
+                                      if any(t in conv['name'].lower() for t in self.EMMA_VENDENHEIM_DIRECTIONS_NAMES)]
+
+        except Exception as e:
+            logging.error(f" Erreur lors de la récupération des conversions Emma Vendenheim Itinéraires pour {customer_id}: {e}")
+            return directions_total, all_conversions
     
     def get_directions_conversions_data(self, customer_id: str, start_date: str, end_date: str) -> Tuple[int, List[Dict]]:
         """
@@ -4278,6 +4582,16 @@ class GoogleAdsConversionsService:
                 total_conversions, found_conversions = self.get_bedroom_contact_conversions_data(
                     customer_id, start_date, end_date
                 )
+            elif customer_id == "2288773609" or client_name == "Emma Perpignan":
+                logging.info(f"🌸 Utilisation de la logique spécifique Emma Perpignan pour {client_name}")
+                total_conversions, found_conversions = self.get_emma_perpignan_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "6470486244" or client_name == "Emma Vendenheim":
+                logging.info(f"🌷 Utilisation de la logique spécifique Emma Vendenheim pour {client_name}")
+                total_conversions, found_conversions = self.get_emma_vendenheim_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
             elif customer_id == "9360801546" or client_name == "Cuisine Plus Perpignan":
                 logging.info(f"🍽️ Utilisation de la logique spécifique Cuisine Plus Perpignan pour {client_name}")
                 # Récupérer les données de conversions Contact avec la logique Cuisine Plus Perpignan (pas de contact)
@@ -4316,7 +4630,11 @@ class GoogleAdsConversionsService:
                 )
             elif customer_id == "6090621431" or client_name == "Emma Merignac":
                 logging.info(f" Utilisation de la logique spécifique Emma Merignac pour {client_name}")
-                # Récupérer les données de conversions Contact avec la logique Emma Merignac
+                total_conversions, found_conversions = self.get_emma_merignac_contact_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "6470486244" or client_name == "Emma Vendenheim":
+                logging.info(f" Utilisation de la logique Emma Merignac pour {client_name}")
                 total_conversions, found_conversions = self.get_emma_merignac_contact_conversions_data(
                     customer_id, start_date, end_date
                 )
@@ -4478,6 +4796,16 @@ class GoogleAdsConversionsService:
                 total_conversions, found_conversions = self.get_bedroom_directions_conversions_data(
                     customer_id, start_date, end_date
                 )
+            elif customer_id == "2288773609" or client_name == "Emma Perpignan":
+                logging.info(f"🌸 Utilisation de la logique spécifique Emma Perpignan pour {client_name}")
+                total_conversions, found_conversions = self.get_emma_perpignan_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "6470486244" or client_name == "Emma Vendenheim":
+                logging.info(f"🌷 Utilisation de la logique spécifique Emma Vendenheim pour {client_name}")
+                total_conversions, found_conversions = self.get_emma_vendenheim_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
             elif customer_id == "3259500758" or client_name == "Crozatier Dijon":
                 logging.info(f"🏪 Utilisation de la logique spécifique Crozatier pour {client_name}")
                 # Récupérer les données de conversions Itinéraires avec la logique Crozatier
@@ -4522,8 +4850,12 @@ class GoogleAdsConversionsService:
                 )
             elif customer_id == "6090621431" or client_name == "Emma Merignac":
                 logging.info(f" Utilisation de la logique spécifique Emma Merignac pour {client_name}")
-                # Récupérer les données de conversions Itinéraires avec la logique Emma Merignac
                 total_conversions, found_conversions = self.get_emma_merignac_directions_conversions_data(
+                    customer_id, start_date, end_date
+                )
+            elif customer_id == "6470486244" or client_name == "Emma Vendenheim":
+                logging.info(f" Utilisation de la logique Emma Vendenheim pour {client_name}")
+                total_conversions, found_conversions = self.get_emma_vendenheim_directions_conversions_data(
                     customer_id, start_date, end_date
                 )
             elif customer_id == "7836791446" or client_name == "Meuble Rigaud" or client_name == "Meubles Rigaud":
@@ -4568,3 +4900,103 @@ class GoogleAdsConversionsService:
                 'success': False,
                 'error': str(e)
             }
+
+    def scrape_temps_passe_for_customer(
+        self,
+        customer_id: str,
+        client_name: str,
+        start_date: str,
+        end_date: str,
+        month: str,
+        action_name_substring: str,
+        sheet_column: str = "Temps passé Google",
+    ) -> Dict[str, Any]:
+        """
+        Scrape une conversion action spécifique (par sous-chaîne dans le nom)
+        et écrit le total dans la colonne du Sheet (par défaut 'Temps passé Google').
+
+        Args:
+            customer_id: ID Google Ads du client
+            client_name: Nom de l'onglet Sheet (et nom du client)
+            start_date, end_date: Période YYYY-MM-DD
+            month: Nom du mois pour la ligne du Sheet
+            action_name_substring: Sous-chaîne à matcher dans le nom de la conversion (insensible casse)
+            sheet_column: Nom exact de la colonne du Sheet (ligne 2) où écrire la valeur
+
+        Returns:
+            Dict {success, total_conversions, found_conversions}
+        """
+        try:
+            logging.info(f"⏱️  Scraping Temps passé '{action_name_substring}' pour {client_name} (ID: {customer_id})")
+
+            query = f"""
+            SELECT
+                segments.conversion_action_name,
+                segments.conversion_action,
+                metrics.all_conversions,
+                metrics.conversions
+            FROM campaign
+            WHERE
+                segments.date BETWEEN '{start_date}' AND '{end_date}'
+                AND metrics.all_conversions > 0
+            """
+
+            response = self.auth_service.fetch_report_data(customer_id, query)
+
+            needle = action_name_substring.lower().strip()
+            total_conversions = 0
+            found_conversions: List[Dict[str, Any]] = []
+
+            for row in response:
+                conv_name = (row.segments.conversion_action_name or "").strip()
+                conv_name_low = conv_name.lower()
+
+                if row.metrics.conversions and row.metrics.conversions > 0:
+                    value = row.metrics.conversions
+                elif row.metrics.all_conversions and row.metrics.all_conversions > 0:
+                    value = row.metrics.all_conversions
+                else:
+                    value = 0
+
+                if needle in conv_name_low:
+                    total_conversions += value
+                    found_conversions.append({
+                        "name": conv_name,
+                        "id": row.segments.conversion_action,
+                        "conversions": value,
+                    })
+                    logging.info(f"⏱️  CONVERSION TEMPS PASSÉ: {conv_name} = {value}")
+
+            logging.info(f"⏱️  Total Temps passé pour {client_name}: {total_conversions}")
+
+            # Écriture dans le Sheet
+            available_sheets = self.sheets_service.get_worksheet_names()
+            if client_name not in available_sheets:
+                logging.error(f"Onglet '{client_name}' non trouvé dans le Google Sheet")
+                return {"success": False, "total_conversions": total_conversions, "found_conversions": found_conversions}
+
+            row_number = self.sheets_service.get_row_for_month(client_name, month)
+            if row_number is None:
+                logging.error(f"Mois '{month}' non trouvé dans l'onglet '{client_name}'")
+                return {"success": False, "total_conversions": total_conversions, "found_conversions": found_conversions}
+
+            column_letter = self.sheets_service.get_column_for_metric(client_name, sheet_column)
+            if column_letter is None:
+                logging.error(f"Colonne '{sheet_column}' non trouvée dans l'onglet '{client_name}'")
+                return {"success": False, "total_conversions": total_conversions, "found_conversions": found_conversions}
+
+            cell_range = f"{column_letter}{row_number}"
+            ok = self.sheets_service.update_single_cell(client_name, cell_range, total_conversions)
+
+            if ok:
+                logging.info(f"✅ Temps passé Google écrit: {total_conversions} → {client_name}!{cell_range}")
+
+            return {
+                "success": ok,
+                "total_conversions": total_conversions,
+                "found_conversions": found_conversions,
+            }
+
+        except Exception as e:
+            logging.error(f"❌ Erreur scrape_temps_passe_for_customer ({client_name}): {e}")
+            return {"success": False, "error": str(e)}

@@ -58,6 +58,38 @@
   transform: none;
 }
 
+.generate-reports-button {
+  flex: 1;
+  min-width: 200px;
+  max-width: 400px;
+  padding: 12px 24px;
+  font-family: 'Proxima Nova', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  background-color: #dbbc32;
+  color: #0a0a0a;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.generate-reports-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.generate-reports-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.generate-reports-button:disabled {
+  background-color: #6c757d;
+  color: #adb5bd;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .status-indicators {
   display: flex;
   gap: 20px;

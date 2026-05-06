@@ -70,7 +70,7 @@ class TemplateLyleoo(BaseTemplate):
         month_fr = data.get("month_fr", "")
         prev_month_fr = data.get("previous_month_fr", "")
 
-        has_meta = self._has_data(m_curr)
+        has_meta = self._safe_get(m_curr, "Cout Facebook ADS") > 0
         has_history = history and len(history) >= 2
 
         # Slide 1 — Titre
@@ -93,7 +93,7 @@ class TemplateLyleoo(BaseTemplate):
                     ("Impressions Meta", "Impressions"),
                     ("Clics Meta", "Clics"),
                     ("CPC Meta", "CPC"),
-                ], "Meta Ads")
+                ], "Meta Ads - Facebook et Instagram")
 
         # Slide 4 — Interactions par campagne (placeholders)
         self._slide_interactions(month_fr, prev_month_fr)
@@ -167,7 +167,12 @@ class TemplateLyleoo(BaseTemplate):
                     "Stable vs mois précédent", Pt(14), accent,
                     bold=True, font_name="Calibri Light", alignment=PP_ALIGN.LEFT)
 
-        if tooltip_key and tooltip_key in METRIC_TOOLTIPS:
+        if sub_label:
+            self._add_textbox(
+                slide, x + Inches(0.25), y + Inches(1.85), w - Inches(0.5), Inches(0.3),
+                sub_label, Pt(10), PALETTE["text_secondary"],
+                italic=True, font_name="Calibri Light", alignment=PP_ALIGN.LEFT)
+        elif tooltip_key and tooltip_key in METRIC_TOOLTIPS:
             self._add_textbox(
                 slide, x + Inches(0.25), y + Inches(1.85), w - Inches(0.5), Inches(0.6),
                 METRIC_TOOLTIPS[tooltip_key], Pt(10), PALETTE["text_secondary"],
@@ -184,6 +189,7 @@ class TemplateLyleoo(BaseTemplate):
                 slide, x, Inches(y), card_w,
                 label=m.get("label", ""),
                 value_str=m.get("value", "0"),
+                sub_label=m.get("sub_label"),
                 accent_color=m.get("accent"),
                 current=m.get("current"),
                 previous=m.get("previous"),
@@ -330,7 +336,7 @@ class TemplateLyleoo(BaseTemplate):
 
     def _slide_meta(self, m_curr, m_prev, month_fr):
         slide = self.prs.slides.add_slide(self.blank_layout)
-        self._modern_header(slide, "Détails Meta Ads", month_fr,
+        self._modern_header(slide, "Détails Meta Ads - Facebook et Instagram", month_fr,
                             accent_color=FUNCTIONAL_COLORS["meta_color"])
 
         blue = FUNCTIONAL_COLORS["meta_color"]
@@ -400,7 +406,7 @@ class TemplateLyleoo(BaseTemplate):
 
     def _slide_interactions(self, month_fr, prev_month_fr):
         slide = self.prs.slides.add_slide(self.blank_layout)
-        self._modern_header(slide, "Détails Meta Ads — Interactions", month_fr,
+        self._modern_header(slide, "Détails Meta Ads - Facebook et Instagram — Interactions", month_fr,
                             accent_color=FUNCTIONAL_COLORS["meta_color"])
 
         row_w = Inches(12)
@@ -459,6 +465,7 @@ class TemplateLyleoo(BaseTemplate):
 
         row1 = [
             {"label": "Total Interactions", "value": "—",
+             "sub_label": "Nombre total d'interactions sur les publications",
              "accent": PALETTE["gold"]},
             {"label": "Total des clics", "value": format_number(clics),
              "current": clics, "previous": clics_p, "tooltip": "Clics Meta",

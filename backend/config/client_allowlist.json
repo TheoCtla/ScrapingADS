@@ -4,7 +4,6 @@
   "last_updated": "2025-01-30",
   "allowlist": [
     "Alexander Sachs",
-    "Addario",
     "AvivA Melun",
     "AvivA Montigny",
     "AvivA Orgeval",
@@ -15,17 +14,16 @@
     "Emma Merignac",
     "Emma Nantes",
     "Emma Perpignan",
-    "EvoPro Informatique",
+    "Emma Vendenheim",
     "France Literie Aix",
     "France Literie Alès",
     "France Literie Annemasse",
     "France Literie Antibes Vallauris",
     "France Literie Champagne",
     "France Literie Dijon",
-    "France Literie Narbonne",
     "France Literie Perpignan",
     "France Literie Saint-Priest & Givors",
-    "Kaltea Chalon sur Saône",
+    "Kozeo",
     "Laserel Auxerre",
     "Laserel",
     "Laserel Nantes",
@@ -34,12 +32,14 @@
     "My Salon Aubière",
     "Place de la literie Toulouse",
     "Riviera Grass",
-    "Roche bobois Lyon Centre",
-    "Roche bobois Saint-Bonnet",
     "SUD GAZON SYNTHETIQUE",
+    "Tairmic",
     "Tousalon Perpignan",
     "Tousalon Toulouse",
-    "Univers Construction"
+    "Univers Construction",
+    "Emma Toulouse",
+    "Univers Gazon",
+    "Eco Système Durable"
   ],
   "mappings": {
     "A.G. Cryolipolyse": {
@@ -76,7 +76,8 @@
     },
     "AvivA Melun": {
       "googleAds": {
-        "customerId": null
+        "customerId": "4764263744",
+        "campaignFilter": "Melun"
       },
       "metaAds": {
         "adAccountId": "741870159968483"
@@ -92,7 +93,8 @@
     },
     "AvivA Orgeval": {
       "googleAds": {
-        "customerId": null
+        "customerId": "4764263744",
+        "campaignFilter": "Orgeval"
       },
       "metaAds": {
         "adAccountId": "741870159968483"
@@ -104,6 +106,16 @@
       },
       "metaAds": {
         "adAccountId": "964691284601571"
+      },
+      "googleAnalytics": {
+        "propertyId": "407081207",
+        "pages": [
+          { "path": "/", "sheetColumn": "Généraliste" },
+          { "path": "/canapes", "sheetColumn": "Canapés" },
+          { "path": "/sejour", "sheetColumn": "Séjour" },
+          { "path": "/fauteuils", "sheetColumn": "Fauteuils" },
+          { "path": "/chambre", "sheetColumn": "Chambre" }
+        ]
       }
     },
     "Denteva": {
@@ -134,6 +146,14 @@
       },
       "metaAds": {
         "adAccountId": "1050678126137875"
+      },
+      "googleAnalytics": {
+        "propertyId": "417148590",
+        "pages": [
+          { "path": "/", "sheetColumn": "Généraliste" },
+          { "path": "/lit-coffre", "sheetColumn": "Lit Coffre" },
+          { "path": "/lit-motorise", "sheetColumn": "Lit Motorisé" }
+        ]
       }
     },
     "France Literie Alès": {
@@ -150,6 +170,14 @@
       },
       "metaAds": {
         "adAccountId": "1226557254627350"
+      },
+      "googleAnalytics": {
+        "propertyId": "401241017",
+        "pages": [
+          { "path": "/", "sheetColumn": "Généraliste" },
+          { "path": "/lit-coffre", "sheetColumn": "Lit Coffre" },
+          { "path": "/lit-motorise", "sheetColumn": "Lit Motorisé" }
+        ]
       }
     },
     "France Literie Antibes Vallauris": {
@@ -158,6 +186,16 @@
       },
       "metaAds": {
         "adAccountId": "1264194895280191"
+      },
+      "googleAnalytics": {
+        "propertyId": "322853997",
+        "pages": [
+          { "path": "/", "sheetColumn": "Généraliste" },
+          { "path": "/lit-coffre", "sheetColumn": "Lit Coffre" },
+          { "path": "/lit-motorise", "sheetColumn": "Lit Motorisé" },
+          { "path": "/espace-prestige", "sheetColumn": "Prestige" },
+          { "path": "/convertible", "sheetColumn": "Convertibles" }
+        ]
       }
     },
     "France Literie Dijon": {
@@ -166,6 +204,14 @@
       },
       "metaAds": {
         "adAccountId": "4804441896258734"
+      },
+      "googleAnalytics": {
+        "propertyId": "447443601",
+        "pages": [
+          { "path": "/", "sheetColumn": "Généraliste" },
+          { "path": "/lit-coffre", "sheetColumn": "Lit Coffre" },
+          { "path": "/lit-motorise", "sheetColumn": "Lit Motorisé" }
+        ]
       }
     },
     "France Literie Narbonne": {
@@ -182,6 +228,23 @@
       },
       "metaAds": {
         "adAccountId": "404861145553220"
+      },
+      "googleAnalytics": {
+        "propertyId": "427241928",
+        "pages": [
+          { "path": "/", "sheetColumn": "Généraliste" },
+          { "path": "/lit-coffre", "sheetColumn": "Lit Coffre" },
+          { "path": "/lit-motorise", "sheetColumn": "Lit Motorisé" },
+          { "path": "/espace-prestige", "sheetColumn": "Prestige" }
+        ]
+      }
+    },
+    "Kaltea Chalon sur Saône": {
+      "googleAds": {
+        "customerId": "1189918252"
+      },
+      "metaAds": {
+        "adAccountId": "1151327286789161"
       }
     },
     "Kaltea Aubagne": {
@@ -244,6 +307,14 @@
       },
       "metaAds": {
         "adAccountId": "841001567338427"
+      },
+      "googleAnalytics": {
+        "propertyId": "406590865",
+        "pages": [
+          { "path": "/", "sheetColumn": "Généraliste" },
+          { "path": "/salle-a-manger", "sheetColumn": "Salle à manger" },
+          { "path": "/fauteuils", "sheetColumn": "Fauteuils" }
+        ]
       }
     },
     "My Salon Aubière": {
@@ -260,6 +331,14 @@
       },
       "metaAds": {
         "adAccountId": "740892074941237"
+      },
+      "googleAnalytics": {
+        "propertyId": "492563950",
+        "pages": [
+          { "path": "/", "sheetColumn": "Généraliste" },
+          { "path": "/lit-coffre", "sheetColumn": "Lit Coffre" },
+          { "path": "/lit-electrique", "sheetColumn": "Lit Électrique" }
+        ]
       }
     },
     "Sagne Cuisines": {
@@ -298,6 +377,14 @@
       },
       "metaAds": {
         "adAccountId": "603826845514419"
+      },
+      "googleAnalytics": {
+        "propertyId": "468041740",
+        "pages": [
+          { "path": "/", "sheetColumn": "Généraliste" },
+          { "path": "/convertibles", "sheetColumn": "Convertibles" },
+          { "path": "/canapes", "sheetColumn": "Canapés" }
+        ]
       }
     },
     "Tousalon Toulouse": {
@@ -306,6 +393,14 @@
       },
       "metaAds": {
         "adAccountId": "3598406686959980"
+      },
+      "googleAnalytics": {
+        "propertyId": "492058642",
+        "pages": [
+          { "path": "/", "sheetColumn": "Généraliste" },
+          { "path": "/convertibles", "sheetColumn": "Convertibles" },
+          { "path": "/canapes", "sheetColumn": "Canapés" }
+        ]
       }
     },
     "Flamme&Creation": {
@@ -322,6 +417,14 @@
       },
       "metaAds": {
         "adAccountId": "5102698196465857"
+      },
+      "googleAnalytics": {
+        "propertyId": "317034003",
+        "pages": [
+          { "path": "/", "sheetColumn": "Généraliste" },
+          { "path": "/lit-coffre", "sheetColumn": "Lit Coffre" },
+          { "path": "/lit-motorise", "sheetColumn": "Lit Motorisé" }
+        ]
       }
     },
     "France Literie Champagne": {
@@ -330,6 +433,14 @@
       },
       "metaAds": {
         "adAccountId": "1515127362804437"
+      },
+      "googleAnalytics": {
+        "propertyId": "497714716",
+        "pages": [
+          { "path": "/", "sheetColumn": "Généraliste" },
+          { "path": "/lit-coffre", "sheetColumn": "Lit Coffre" },
+          { "path": "/lit-motorise", "sheetColumn": "Lit Motorisé" }
+        ]
       }
     },
     "Bedroom Perpignan": {
@@ -405,6 +516,38 @@
       },
       "metaAds": {
         "adAccountId": "2745829635771139"
+      }
+    },
+    "Emma Vendenheim": {
+      "googleAds": {
+        "customerId": "6470486244"
+      },
+      "metaAds": {
+        "adAccountId": "1647522246681958"
+      }
+    },
+    "Emma Toulouse": {
+      "googleAds": {
+        "customerId": "8788853042"
+      },
+      "metaAds": {
+        "adAccountId": "1548241199574613"
+      }
+    },
+    "Univers Gazon": {
+      "googleAds": {
+        "customerId": "4547872409"
+      },
+      "metaAds": {
+        "adAccountId": "1266526128683463"
+      }
+    },
+    "Eco Système Durable": {
+      "googleAds": {
+        "customerId": "4331061074"
+      },
+      "metaAds": {
+        "adAccountId": "1685166909314872"
       }
     }
   },

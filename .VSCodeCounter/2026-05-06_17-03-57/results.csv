@@ -1,0 +1,117 @@
+"filename", "language", "Python", "Markdown", "Shell Script", "JSON", "pip requirements", "YAML", "Docker", "HTML", "XML", "JavaScript", "TypeScript JSX", "TypeScript", "CSS", "JSON with Comments", "comment", "blank", "total"
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/Dockerfile", "Docker", 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 6, 6, 19
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/README.md", "Markdown", 0, 82, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 109
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/__init__.py", "Python", 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/common/__init__.py", "Python", 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/common/auth_utils.py", "Python", 71, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 18, 97
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/common/services/__init__.py", "Python", 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/common/services/client_resolver.py", "Python", 119, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 34, 155
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/common/services/google_drive.py", "Python", 212, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 56, 281
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/common/services/google_sheets.py", "Python", 158, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 39, 201
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/common/services/leads_scraper.py", "Python", 330, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 56, 403
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/common/services/light_scraper.py", "Python", 151, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 182
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/common/utils/__init__.py", "Python", 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/common/utils/concurrency_manager.py", "Python", 105, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 20, 135
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/common/utils/memory_manager.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/config/__init__.py", "Python", 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/config/client_allowlist.json", "JSON", 0, 0, 0, 560, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 560
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/config/client_mappings.json", "JSON", 0, 0, 0, 155, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 155
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/config/meta_mappings.json", "JSON", 0, 0, 0, 118, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 118
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/config/settings.py", "Python", 74, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 24, 112
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/google_ads_wrapper/__init__.py", "Python", 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/google_ads_wrapper/services/__init__.py", "Python", 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/google_ads_wrapper/services/authentication.py", "Python", 79, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 95
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/google_ads_wrapper/services/conversions.py", "Python", 3791, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 378, 834, 5003
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/google_ads_wrapper/services/google_ads_creative.py", "Python", 305, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 67, 390
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/google_ads_wrapper/services/reports.py", "Python", 257, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 64, 352
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/google_ads_wrapper/utils/__init__.py", "Python", 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/google_ads_wrapper/utils/mappings.py", "Python", 134, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 41, 186
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/google_analytics/__init__.py", "Python", 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/google_analytics/services/__init__.py", "Python", 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/google_analytics/services/authentication.py", "Python", 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 33
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/google_analytics/services/reports.py", "Python", 65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 79
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/google_analytics/utils/__init__.py", "Python", 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/main.py", "Python", 1188, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 180, 283, 1651
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/meta/__init__.py", "Python", 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/meta/services/__init__.py", "Python", 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/meta/services/authentication.py", "Python", 229, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 53, 294
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/meta/services/meta_ads_creative.py", "Python", 259, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 26, 70, 355
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/meta/services/reports.py", "Python", 795, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 82, 167, 1044
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/meta/utils/__init__.py", "Python", 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/meta/utils/mappings.py", "Python", 112, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 28, 143
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/reports/__init__.py", "Python", 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/reports/charts.py", "Python", 487, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 38, 102, 627
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/reports/data_reader.py", "Python", 351, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 73, 441
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/reports/drive_report_service.py", "Python", 105, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 127
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/reports/generator.py", "Python", 158, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 38, 204
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/reports/styles.py", "Python", 201, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 41, 270
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/reports/template_router.py", "Python", 147, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 33, 186
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/reports/templates/__init__.py", "Python", 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/reports/templates/base.py", "Python", 301, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 37, 54, 392
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/reports/templates/template_bedroom.py", "Python", 124, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 32, 169
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/reports/templates/template_cuisinistes.py", "Python", 783, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 52, 143, 978
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/reports/templates/template_denteva.py", "Python", 345, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 83, 458
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/reports/templates/template_emma.py", "Python", 414, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 95, 545
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/reports/templates/template_evopro.py", "Python", 530, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 120, 700
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/reports/templates/template_laserel.py", "Python", 397, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 37, 92, 526
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/reports/templates/template_leadgen.py", "Python", 452, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 97, 585
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/reports/templates/template_litiers.py", "Python", 654, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81, 131, 866
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/reports/templates/template_lyleoo.py", "Python", 384, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 91, 508
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/reports/templates/template_sachs.py", "Python", 554, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 45, 126, 725
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/requirements.txt", "pip requirements", 0, 0, 0, 0, 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 60, 33, 120
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/run.py", "Python", 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 5, 29
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/test_france_literie_narbonne.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/test_france_literie_perpignan.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/tests/test_client_resolver.py", "Python", 169, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 45, 232
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/tests/test_emma_active_filters.py", "Python", 67, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 35, 104
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/backend/tests/test_performance.py", "Python", 206, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 56, 287
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/eslint.config.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 0, 2, 24
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/index.html", "HTML", 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 1, 3, 24
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/package-lock.json", "JSON", 0, 0, 0, 1480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1481
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/package.json", "JSON", 0, 0, 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 24
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/public/site.webmanifest", "JSON", 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 25
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/public/vite.svg", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/App.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 0, 3, 10, 79
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/App.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 19, 0, 0, 0, 0, 3, 22
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/assets/react.svg", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/ExportDrive/ExportDrive.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 423, 0, 6, 67, 496
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/ExportDrive/ExportDrive.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 131, 0, 0, 0, 46, 23, 200
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/HomePage/HomePage.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 123, 0, 1, 24, 148
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/HomePage/HomePage.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 0, 0, 0, 0, 6, 37
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/ScrapingRapports/ScrapingRapports.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 570, 0, 0, 0, 86, 118, 774
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/SuccessModal/SuccessModal.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 191, 0, 7, 30, 228
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/SuccessModal/SuccessModal.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 0, 0, 0, 0, 9, 99
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/google/GoogleCustomersSelect/GoogleCustomersSelect.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 152, 0, 2, 26, 180
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/google/GoogleCustomersSelect/GoogleCustomersSelect.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 104, 0, 0, 0, 9, 16, 129
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/google/GoogleDownloadButton/DownloadButton.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/google/GoogleDownloadButton/DownloadButton.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 0, 0, 0, 0, 2, 23
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/google/GoogleMetricsSelector/MetricsSelector.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 125, 0, 2, 25, 152
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/google/GoogleMetricsSelector/MetricsSelector.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81, 0, 0, 0, 0, 11, 92
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/meta/MetaAccountsSelect/MetaAccountsSelect.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 150, 0, 2, 25, 177
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/meta/MetaAccountsSelect/MetaAccountsSelect.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 102, 0, 0, 0, 8, 16, 126
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/meta/MetaMetricsSelector/MetaMetricsSelector.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 82, 0, 2, 12, 96
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/meta/MetaMetricsSelector/MetaMetricsSelector.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 70, 0, 0, 0, 2, 10, 82
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/unified/BulkScrapingProgress/BulkScrapingProgress.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 161, 0, 0, 31, 192
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/unified/BulkScrapingProgress/BulkScrapingProgress.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 92, 0, 0, 0, 0, 11, 103
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/unified/BulkScrapingProgress/__tests__/BulkScrapingProgress.test.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 55, 0, 0, 0, 0, 11, 66
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/unified/ClientSelector/ClientSelector.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 135, 0, 2, 26, 163
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/unified/ClientSelector/ClientSelector.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 174, 0, 0, 0, 13, 26, 213
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/unified/DateRangePicker/DateRangePicker.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 0, 1, 6, 57
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/unified/DateRangePicker/DateRangePicker.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 93, 0, 0, 0, 5, 12, 110
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/unified/ReportHeader/ReportHeader.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 1, 1, 12
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/unified/ReportHeader/ReportHeader.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0, 0, 2, 14
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/unified/UnifiedDownloadButton/UnifiedDownloadButton.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 0, 1, 18, 146
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/components/unified/UnifiedDownloadButton/UnifiedDownloadButton.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 72, 0, 0, 0, 0, 9, 81
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/config/quotas.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 9, 9, 58
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/index.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 62, 0, 0, 8, 70
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/main.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 3, 17
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/src/vite-env.d.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/tsconfig.app.json", "JSON", 0, 0, 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 28
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/tsconfig.json", "JSON with Comments", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 1, 8
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/tsconfig.node.json", "JSON", 0, 0, 0, 21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 26
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/frontend/vite.config.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 1, 2, 8
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/gunicorn.conf.py", "Python", 41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 14, 64
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/render.yaml", "YAML", 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/start_project.sh", "Shell Script", 0, 0, 119, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 62, 181
+"/Users/theocatala/Documents/Tarmaac/Projets/scrappingRapport/vercel.json", "JSON", 0, 0, 0, 21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21
+"Total", "-", 15388, 82, 119, 2425, 27, 33, 7, 20, 2, 22, 1731, 45, 1857, 7, 1696, 4213, 27674

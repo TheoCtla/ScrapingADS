@@ -6,38 +6,45 @@ interface UnifiedDownloadButtonProps {
   onClick: () => void;
   hasGoogleSelection: boolean;
   hasMetaSelection: boolean;
+  hasAnalyticsSelection?: boolean;
   onBulkScraping?: () => void;
   bulkScrapingLoading?: boolean;
   hasAuthorizedClients?: boolean;
   hasAnyMetrics?: boolean;
+  onGenerateReports?: () => void;
+  generateReportsLoading?: boolean;
 }
 
-const UnifiedDownloadButton: React.FC<UnifiedDownloadButtonProps> = ({ 
-  loading, 
-  onClick, 
-  hasGoogleSelection, 
+const UnifiedDownloadButton: React.FC<UnifiedDownloadButtonProps> = ({
+  loading,
+  onClick,
+  hasGoogleSelection,
   hasMetaSelection,
+  hasAnalyticsSelection = false,
   onBulkScraping,
   bulkScrapingLoading = false,
   hasAuthorizedClients = false,
-  hasAnyMetrics = false
+  hasAnyMetrics = false,
+  onGenerateReports,
+  generateReportsLoading = false
 }) => {
-  const hasSelection = hasGoogleSelection || hasMetaSelection;
+  const hasSelection = hasGoogleSelection || hasMetaSelection || hasAnalyticsSelection;
   const isDisabled = loading || !hasSelection;
 
   const getButtonText = () => {
     if (loading) {
       return 'Envoi en cours...';
     }
-    
+
     if (!hasSelection) {
       return 'Sélectionne au moins un compte';
     }
-    
-    let platforms = [];
+
+    const platforms: string[] = [];
     if (hasGoogleSelection) platforms.push('Google');
     if (hasMetaSelection) platforms.push('Meta');
-    
+    if (hasAnalyticsSelection) platforms.push('Analytics');
+
     return `Envoyer au Sheet (${platforms.join(' + ')})`;
   };
 
@@ -51,20 +58,20 @@ const UnifiedDownloadButton: React.FC<UnifiedDownloadButtonProps> = ({
         >
           {getButtonText()}
         </button>
-        {/* hasAuthorizedClients && (
+        {onGenerateReports && (
           <button
-            className="bulk-scraping-button"
-            onClick={onBulkScraping}
-            disabled={bulkScrapingLoading || !hasAnyMetrics}
+            className="generate-reports-button"
+            onClick={onGenerateReports}
+            disabled={generateReportsLoading}
           >
-            {bulkScrapingLoading ? 'Scraping en cours...' : 'Scraper tous les clients'}
+            {generateReportsLoading ? 'Génération en cours...' : 'Générer tous les rapports PPTX'}
           </button>
-        ) */}
+        )}
       </div>
       
       {!hasSelection && (
         <p className="help-text">
-          Sélectionne au moins un compte Google ou Meta pour commencer
+          Sélectionne au moins un compte Google, Meta ou Analytics pour commencer
         </p>
       )}
     </div>

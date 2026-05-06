@@ -115,8 +115,8 @@ class TemplateModern(BaseTemplate):
         prev_month_fr = data.get("previous_month_fr", "")
 
         # Détection des sections avec données réelles
-        has_google = self._has_data(g_curr)
-        has_meta = self._has_data(m_curr)
+        has_google = self._safe_get(g_curr, "Cout Google ADS") > 0
+        has_meta = self._safe_get(m_curr, "Cout Facebook ADS") > 0
         has_microsoft = self._has_data(ms_curr)
         has_itineraires = self._get_iti(c_curr) > 0
         has_contacts = self._safe_get(c_curr, "Contact Meta") > 0 or self._safe_get(g_curr, "Contact") > 0
@@ -145,8 +145,12 @@ class TemplateModern(BaseTemplate):
                     ("Total CPC moyen", "CPC Moyen"),
                 ], "Google Ads")
 
-        # Analytics
-        self._slide_analytics(gen_curr, gen_prev, history, month_fr, prev_month_fr)
+        # Analytics (pas pour My Salon ni France Literie Alès)
+        is_my_salon = "my salon" in client.lower()
+        is_ales = "alès" in client.lower()
+        if not is_my_salon and not is_ales:
+            analytics_data = data.get("analytics", {})
+            self._slide_analytics(gen_curr, gen_prev, history, month_fr, prev_month_fr, analytics_data)
 
         # Meta Ads (slide + évolution)
         if has_meta:
@@ -157,7 +161,7 @@ class TemplateModern(BaseTemplate):
                     ("Impressions Meta", "Impressions"),
                     ("Clics Meta", "Clics"),
                     ("CPC Meta", "CPC"),
-                ], "Meta Ads")
+                ], "Meta Ads - Facebook et Instagram")
 
         # Microsoft Ads (slide + évolution)
         if has_microsoft:
@@ -263,8 +267,8 @@ class TemplateModern(BaseTemplate):
         if sub_label:
             self._add_textbox(
                 slide, x + Inches(0.25), y + Inches(1.85), w - Inches(0.5), Inches(0.3),
-                sub_label, Pt(9), PALETTE["text_secondary"],
-                font_name="Calibri Light", alignment=PP_ALIGN.LEFT)
+                sub_label, Pt(10), PALETTE["text_secondary"],
+                italic=True, font_name="Calibri Light", alignment=PP_ALIGN.LEFT)
 
     def _add_3col_headers(self, slide, x, y, row_w, m2_label, m1_label, m_label):
         """En-t\u00eates 3 colonnes de mois."""
@@ -336,6 +340,7 @@ class TemplateModern(BaseTemplate):
                 slide, x, Inches(y), card_w,
                 label=m.get("label", ""),
                 value_str=m.get("value", "0"),
+                sub_label=m.get("sub_label"),
                 accent_color=m.get("accent"),
                 current=m.get("current"),
                 previous=m.get("previous"),
@@ -442,7 +447,10 @@ class TemplateModern(BaseTemplate):
         clics = self._safe_get(gen_curr, "Clics All")
         clics_p = self._safe_get(gen_prev, "Clics All")
 
-        # Ligne 1 : Diffusion totale + Total des clics
+        conv = self._safe_get(gen_curr, "Cout par conversion majeure")
+        conv_p = self._safe_get(gen_prev, "Cout par conversion majeure")
+
+        # Ligne 1 : Diffusion totale + Total des clics + Coût/conversion
         row1 = [
             {"label": "Diffusion totale", "value": format_number(diff),
              "current": diff, "previous": diff_p, "tooltip": "Diffusion All",
@@ -450,9 +458,11 @@ class TemplateModern(BaseTemplate):
             {"label": "Total des clics", "value": format_number(clics),
              "current": clics, "previous": clics_p, "tooltip": "Clics All",
              "accent": PALETTE["gold"]},
+            {"label": "Coût / conversion", "value": format_currency(conv),
+             "current": conv, "previous": conv_p,
+             "sub_label": "Coût par calcul d'itinéraires et contacts",
+             "accent": PALETTE["gold"]},
         ]
-        self._hero_row(slide, row1, y=1.3, n_cols=2)
-
         # Ligne 2 : Itinéraires + Contacts (adaptatif)
         row2 = []
         if has_itineraires:
@@ -460,16 +470,21 @@ class TemplateModern(BaseTemplate):
             iti_p = self._get_iti(c_prev)
             row2.append({"label": "Itinéraires", "value": format_number(iti),
                          "current": iti, "previous": iti_p,
+                         "sub_label": "Nombre de clics trackés sur les boutons itinéraires",
                          "accent": PALETTE["gold"]})
         if has_contacts:
             contact = self._safe_get(g_curr, "Contact") + self._safe_get(c_curr, "Contact Meta")
             contact_p = self._safe_get(c_prev, "Contact Meta")
             row2.append({"label": "Contacts", "value": format_number(contact),
                          "current": contact, "previous": contact_p,
+                         "sub_label": "Nombre de clics trackés sur les boutons contacts",
                          "accent": PALETTE["gold"]})
 
         if row2:
+            self._hero_row(slide, row1, y=1.3, n_cols=3)
             self._hero_row(slide, row2, y=4.2, n_cols=len(row2))
+        else:
+            self._hero_row(slide, row1, y=2.5, n_cols=3)
 
     # ──────────────────────────────────────────
     # Slide 3 - R\u00e9partition & \u00c9volution
@@ -482,7 +497,17 @@ class TemplateModern(BaseTemplate):
 
     def _slide_evo_conversions(self, history, has_itineraires, has_contacts):
         slide = self.prs.slides.add_slide(self.blank_layout)
-        self._modern_header(slide, "Conversions — Évolution", accent_color=PALETTE["gold"])
+        self._modern_header(slide, "Évolution", accent_color=PALETTE["gold"])
+
+        # Grille 2×2 : Coûts, Coût/conversion en haut — Itinéraires, Contacts en bas
+        positions = [
+            (Inches(0.3), Inches(1.2)),
+            (Inches(6.8), Inches(1.2)),
+            (Inches(0.3), Inches(4.2)),
+            (Inches(6.8), Inches(4.2)),
+        ]
+        chart_w = Inches(6)
+        chart_h = Inches(2.8)
 
         # Trouver la bonne clé itinéraires dans l'historique
         iti_key = None
@@ -492,27 +517,18 @@ class TemplateModern(BaseTemplate):
                     iti_key = k
                     break
 
-        charts_to_draw = []
+        charts_to_draw = [
+            ("COUT ALL", "Coûts"),
+            ("Cout par conversion majeure", "Coût / conversion"),
+        ]
         if iti_key:
             charts_to_draw.append((iti_key, "Itinéraires"))
         if has_contacts:
             charts_to_draw.append(("Contact", "Contacts"))
 
-        if len(charts_to_draw) == 2:
-            positions = [
-                (Inches(0.3), Inches(2.0)),
-                (Inches(6.8), Inches(2.0)),
-            ]
-            chart_w = Inches(6)
-            chart_h = Inches(4)
-        else:
-            positions = [
-                ((SLIDE_WIDTH - Inches(8)) / 2, Inches(2.0)),
-            ]
-            chart_w = Inches(8)
-            chart_h = Inches(4)
-
         for i, (key, title) in enumerate(charts_to_draw):
+            if i >= 4:
+                break
             has_data = any(self._safe_get(h, key) > 0 for h in history)
             if has_data:
                 with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
@@ -593,44 +609,99 @@ class TemplateModern(BaseTemplate):
     # Analytics
     # ──────────────────────────────────────────
 
-    def _slide_analytics(self, gen_curr, gen_prev, history, month_fr, prev_month_fr):
+    def _data_row_2col(self, slide, x, y, row_w, label, val_m, val_m1, bar_color):
+        """Ligne data 2-colonnes (mois M-1 + mois M) — utilisée par la slide Analytics."""
+        row_h = Inches(0.55)
+
+        bg = slide.shapes.add_shape(
+            MSO_SHAPE.ROUNDED_RECTANGLE, x, y, row_w, row_h)
+        bg.fill.solid()
+        bg.fill.fore_color.rgb = hex_to_rgb("111111")
+        bg.line.fill.background()
+        bg.adjustments[0] = 0.08
+
+        bar = slide.shapes.add_shape(
+            MSO_SHAPE.RECTANGLE,
+            x + Inches(0.02), y + Inches(0.08), Inches(0.04), row_h - Inches(0.16))
+        bar.fill.solid()
+        bar.fill.fore_color.rgb = hex_to_rgb(bar_color)
+        bar.line.fill.background()
+
+        self._add_textbox(slide, x + Inches(0.2), y + Inches(0.1),
+            Inches(4.5), Inches(0.35),
+            label, Pt(13), PALETTE["white"],
+            bold=True, font_name="Calibri Light", alignment=PP_ALIGN.LEFT)
+
+        col_w = Inches(2)
+        self._add_textbox(slide, x + row_w * 0.55, y + Inches(0.1),
+            col_w, Inches(0.35),
+            val_m1, Pt(15), PALETTE["text_secondary"],
+            font_name="Calibri Light", alignment=PP_ALIGN.CENTER)
+        self._add_textbox(slide, x + row_w * 0.78, y + Inches(0.1),
+            col_w, Inches(0.35),
+            val_m, Pt(15), PALETTE["white"],
+            bold=True, font_name="Calibri Light", alignment=PP_ALIGN.CENTER)
+
+    def _slide_analytics(self, gen_curr, gen_prev, history, month_fr, prev_month_fr, analytics_data=None):
         slide = self.prs.slides.add_slide(self.blank_layout)
-        self._modern_header(slide, "D\u00e9tails Analytics", accent_color=PALETTE["gold"])
+        self._modern_header(slide, "Détails Analytics", accent_color=PALETTE["gold"])
+
+        self._add_textbox(
+            slide, Inches(0.6), Inches(0.88), Inches(10), Inches(0.3),
+            "Nombre de vues par page de destination sur la période", Pt(11),
+            PALETTE["text_secondary"], italic=True, font_name="Calibri Light",
+            alignment=PP_ALIGN.LEFT)
 
         row_w = Inches(12)
         start_x = (SLIDE_WIDTH - row_w) / 2
-        start_y = Inches(1.4)
+        start_y = Inches(1.5)
 
-        # 3 colonnes de mois
-        prev_prev_month_fr = ""
-        if history and len(history) >= 3:
-            prev_prev_month_fr = history[-3].get("month_fr", "")
-        self._add_3col_headers(slide, start_x, start_y, row_w, prev_prev_month_fr, prev_month_fr, month_fr)
+        # 2 colonnes de mois (M-1 puis M)
+        col_w = Inches(2)
+        self._add_textbox(slide, start_x + row_w * 0.55, start_y, col_w, Inches(0.3),
+            prev_month_fr, Pt(10), PALETTE["text_secondary"],
+            bold=True, font_name="Calibri Light", alignment=PP_ALIGN.CENTER)
+        self._add_textbox(slide, start_x + row_w * 0.78, start_y, col_w, Inches(0.3),
+            month_fr, Pt(10), PALETTE["white"],
+            bold=True, font_name="Calibri Light", alignment=PP_ALIGN.CENTER)
 
-        for i, page in enumerate(LITIER_PAGES):
+        # Pages : data r\u00e9elle si dispo (config GA4 du client), sinon placeholders legacy
+        ga_pages = (analytics_data or {}).get("pages") or []
+        if ga_pages:
+            page_rows = [
+                (p["label"], p.get("current", 0), p.get("previous", 0))
+                for p in ga_pages
+            ]
+        else:
+            page_rows = [(p, None, None) for p in LITIER_PAGES]
+
+        for i, (label, val_curr, val_prev) in enumerate(page_rows):
             y = start_y + Inches(0.4) + i * Inches(0.72)
-            self._data_row_3col(slide, start_x, y, row_w,
-                label=page, val_m="\u2014", val_m1="\u2014", val_m2="\u2014",
-                bar_color=PALETTE["gold"])
+            if val_curr is None:
+                self._data_row_2col(slide, start_x, y, row_w,
+                    label=label, val_m="\u2014", val_m1="\u2014",
+                    bar_color=PALETTE["gold"])
+            else:
+                self._data_row_2col(slide, start_x, y, row_w,
+                    label=label,
+                    val_m=format_number(val_curr),
+                    val_m1=format_number(val_prev),
+                    bar_color=PALETTE["gold"])
 
-        sep_y = start_y + Inches(0.4) + len(LITIER_PAGES) * Inches(0.72) + Inches(0.25)
+        sep_y = start_y + Inches(0.4) + len(page_rows) * Inches(0.72) + Inches(0.25)
 
         diff = self._safe_get(gen_curr, "Diffusion All")
         diff_p = self._safe_get(gen_prev, "Diffusion All")
-        diff_pp = self._safe_get(history[-3], "Diffusion All") if history and len(history) >= 3 else 0
         clics = self._safe_get(gen_curr, "Clics All")
         clics_p = self._safe_get(gen_prev, "Clics All")
-        clics_pp = self._safe_get(history[-3], "Clics All") if history and len(history) >= 3 else 0
 
-        self._data_row_3col(slide, start_x, sep_y, row_w,
+        self._data_row_2col(slide, start_x, sep_y, row_w,
             label="Diffusion totale des publicit\u00e9s",
             val_m=format_number(diff), val_m1=format_number(diff_p),
-            val_m2=format_number(diff_pp),
             bar_color=PALETTE["gold"])
-        self._data_row_3col(slide, start_x, sep_y + Inches(0.72), row_w,
+        self._data_row_2col(slide, start_x, sep_y + Inches(0.72), row_w,
             label="Total des clics sur les publicit\u00e9s",
             val_m=format_number(clics), val_m1=format_number(clics_p),
-            val_m2=format_number(clics_pp),
             bar_color=PALETTE["gold"])
 
     # ──────────────────────────────────────────
@@ -639,7 +710,7 @@ class TemplateModern(BaseTemplate):
 
     def _slide_meta(self, m_curr, m_prev, gen_curr, gen_prev, month_fr):
         slide = self.prs.slides.add_slide(self.blank_layout)
-        self._modern_header(slide, "Meta Ads", month_fr, accent_color=FUNCTIONAL_COLORS["meta_color"])
+        self._modern_header(slide, "Détails Meta Ads - Facebook et Instagram", month_fr, accent_color=FUNCTIONAL_COLORS["meta_color"])
 
         blue = FUNCTIONAL_COLORS["meta_color"]
 
@@ -654,11 +725,11 @@ class TemplateModern(BaseTemplate):
         cpc_p = self._safe_get(m_prev, "CPC Meta")
         ctr = self._safe_get(m_curr, "CTR Meta")
         ctr_p = self._safe_get(m_prev, "CTR Meta")
-        cpl = self._safe_get(gen_curr, "Cout par conversion majeure")
-        cpl_p = self._safe_get(gen_prev, "Cout par conversion majeure")
+        cpl = self._safe_get(m_curr, "CPL Meta")
+        cpl_p = self._safe_get(m_prev, "CPL Meta")
 
         row1 = [
-            {"label": "Co\u00fbt", "value": format_currency(cout),
+            {"label": "Coût", "value": format_currency(cout),
              "current": cout, "previous": cout_p, "tooltip": "Cout Facebook ADS", "accent": blue},
             {"label": "Impressions", "value": format_number(impr),
              "current": impr, "previous": impr_p, "tooltip": "Impressions Meta", "accent": blue},
@@ -670,8 +741,10 @@ class TemplateModern(BaseTemplate):
              "current": cpc, "previous": cpc_p, "tooltip": "CPC Meta", "accent": blue},
             {"label": "CTR", "value": format_percentage(ctr),
              "current": ctr, "previous": ctr_p, "tooltip": "CTR Meta", "accent": blue},
-            {"label": "Co\u00fbt / conversion", "value": format_currency(cpl),
-             "current": cpl, "previous": cpl_p, "tooltip": "Cout par conversion majeure", "accent": blue},
+            {"label": "Coût par calcul d'itinéraires", "value": format_currency(cpl),
+             "current": cpl, "previous": cpl_p,
+             "sub_label": "Coût par calcul d'itinéraires Meta",
+             "accent": blue},
         ]
         self._hero_row(slide, row1, y=1.3, n_cols=3)
         self._hero_row(slide, row2, y=4.2, n_cols=3)
@@ -696,16 +769,20 @@ class TemplateModern(BaseTemplate):
         cpc_p = self._safe_get(ms_prev, "CPC Micro")
 
         row1 = [
-            {"label": "Co\u00fbt", "value": format_currency(cout) if cout else "\u2014",
-             "current": cout, "previous": cout_p, "accent": o},
             {"label": "Impressions", "value": format_number(impr) if impr else "\u2014",
-             "current": impr, "previous": impr_p, "accent": o},
+             "current": impr, "previous": impr_p,
+             "sub_label": "Nombre total d'impressions sur Microsoft", "accent": o},
+            {"label": "Clics", "value": format_number(clics) if clics else "\u2014",
+             "current": clics, "previous": clics_p,
+             "sub_label": "Nombre total de clics sur Microsoft", "accent": o},
         ]
         row2 = [
-            {"label": "Clics", "value": format_number(clics) if clics else "\u2014",
-             "current": clics, "previous": clics_p, "accent": o},
+            {"label": "Coût", "value": format_currency(cout) if cout else "\u2014",
+             "current": cout, "previous": cout_p,
+             "sub_label": "Coût total des campagnes sur Microsoft", "accent": o},
             {"label": "CPC Moyen", "value": format_currency(cpc) if cpc else "\u2014",
-             "current": cpc, "previous": cpc_p, "accent": o},
+             "current": cpc, "previous": cpc_p,
+             "sub_label": "Coût par clic moyen sur Microsoft", "accent": o},
         ]
         self._hero_row(slide, row1, y=1.3, n_cols=2)
         self._hero_row(slide, row2, y=4.2, n_cols=2)
@@ -732,7 +809,8 @@ class TemplateModern(BaseTemplate):
         ]
         if conv:
             row1.append({"label": "Coût / conversion", "value": format_currency(conv),
-                         "current": conv, "previous": conv_p, "tooltip": "Cout par conversion majeure",
+                         "current": conv, "previous": conv_p,
+                         "sub_label": "Coût total divisé par le nombre total de conversions (contacts + itinéraires)",
                          "accent": PALETTE["gold"]})
         self._hero_row(slide, row1, y=1.3, n_cols=len(row1))
 
@@ -755,6 +833,7 @@ class TemplateModern(BaseTemplate):
             cout_ms_p = self._safe_get(ms_prev, "Cout Microsoft ADS")
             row2.append({"label": "Microsoft Ads", "value": format_currency(cout_ms),
                          "current": cout_ms, "previous": cout_ms_p,
+                         "sub_label": "Budget total dépensé sur Microsoft Ads",
                          "accent": PALETTE["orange"]})
 
         if row2:

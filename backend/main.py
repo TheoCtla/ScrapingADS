@@ -11,7 +11,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import logging
 import gc
-from datetime import datetime
+import calendar
+from datetime import datetime, date
 from flask import Flask, request, send_file, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -38,6 +39,9 @@ from backend.google_ads_wrapper.utils.mappings import GoogleAdsMappingService
 from backend.meta.services.authentication import MetaAdsAuthService
 from backend.meta.services.reports import MetaAdsReportsService
 from backend.meta.utils.mappings import MetaAdsMappingService
+
+# Services Google Analytics 4
+from backend.google_analytics.services.reports import GoogleAnalyticsReportsService
 
 # Configuration du logging optimisée
 logging.basicConfig(
@@ -90,6 +94,8 @@ def get_service(service_name):
             _services[service_name] = MetaAdsReportsService()
         elif service_name == 'meta_mappings':
             _services[service_name] = MetaAdsMappingService()
+        elif service_name == 'ga_reports':
+            _services[service_name] = GoogleAnalyticsReportsService()
         elif service_name == 'sheets_service':
             _services[service_name] = GoogleSheetsService()
         elif service_name == 'client_resolver':
@@ -373,6 +379,9 @@ def export_unified_report():
     contact_enabled = data.get("contact", False)
     itineraire_enabled = data.get("itineraire", False)
 
+    # Paramètre Google Analytics
+    include_analytics = data.get("include_analytics", False)
+
     if not start_date or not end_date:
         return jsonify({"error": "Dates de début et fin requises"}), 400
 
@@ -393,9 +402,15 @@ def export_unified_report():
     google_customer_id = resolved_accounts["googleAds"]["customerId"] if resolved_accounts["googleAds"] else None
     meta_account_id = resolved_accounts["metaAds"]["adAccountId"] if resolved_accounts["metaAds"] else None
     meta_campaign_filter = resolved_accounts["metaAds"].get("campaignFilter") if resolved_accounts["metaAds"] else None
+    google_campaign_filter = resolved_accounts["googleAds"].get("campaignFilter") if resolved_accounts["googleAds"] else None
+    ga_config = resolved_accounts.get("googleAnalytics")
 
-    # Détection Emma (par nom et/ou par IDs connus)
-    is_emma = selected_client == "Emma Merignac" or google_customer_id == "6090621431" or meta_account_id == "2569730083369971"
+    # Détection Emma (par nom et/ou par IDs connus) — couvre Emma Merignac + Emma Toulouse
+    is_emma = (
+        selected_client in ("Emma Merignac", "Emma Toulouse")
+        or google_customer_id in ("6090621431", "8788853042")
+        or meta_account_id in ("2569730083369971", "1548241199574613")
+    )
     
     # Détection Roche Bobois Lyon Centre (contacts et recherches forcés à 0)
     is_roche_lyon = selected_client == "Roche bobois Lyon Centre" or google_customer_id == "3938194507"
@@ -414,6 +429,26 @@ def export_unified_report():
     
     # Détection Emma Nantes (campagnes actives uniquement)
     is_emma_nantes = selected_client == "Emma Nantes" or google_customer_id == "9686568792" or meta_account_id == "2281515502281464"
+
+    # Détection Laserel Auxerre / Nantes :
+    # - skip Contact/Itinéraires (Google + Meta)
+    # - scraping additionnel : "engaged_10s" Meta + custom conversion Google "Temps passé 10sec"
+    sel_low = (selected_client or "").lower()
+    is_laserel_auxerre = "laserel auxerre" in sel_low
+    is_laserel_nantes = "laserel nantes" in sel_low
+    is_laserel_branch = is_laserel_auxerre or is_laserel_nantes
+    # Conserve l'ancien nom pour compat des autres usages
+    is_laserel = is_laserel_branch
+
+    # Détection Alexander Sachs : pas de scraping Google Ads (rapport Meta uniquement)
+    is_sachs = selected_client == "Alexander Sachs"
+
+    # Détection Eco Système Durable : élargir le channel_filter Google Ads
+    # (compte avec campagnes VIDEO/DEMAND_GEN, exclues par défaut → chiffres incomplets sinon)
+    is_eco_systeme_durable = selected_client == "Eco Système Durable"
+
+    # Détection LyleOO : scraping Meta dédié (Interest/Retarget Facebook/Insta + Budget)
+    is_lyleoo = selected_client == "LyleOO" or meta_account_id == "2184991331836484"
 
     # Filtre nom campagne Meta par convention de nommage du client
     meta_campaign_name_filter = None
@@ -443,7 +478,11 @@ def export_unified_report():
         platform_warnings = []
 
         # ===== TRAITEMENT GOOGLE ADS =====
-        if google_customer_id and google_metrics:
+        # Sachs : on n'écrit aucune donnée Google dans le sheet (rapport Meta uniquement)
+        if is_sachs and google_metrics:
+            logging.info("Alexander Sachs détecté — skip total scraping Google Ads (rapport Meta uniquement)")
+            platform_warnings.append("Google Ads skip pour Alexander Sachs")
+        elif google_customer_id and google_metrics:
             logging.info(f" Traitement Google Ads pour '{selected_client}' (ID: {google_customer_id})")
             
             try:
@@ -457,15 +496,29 @@ def export_unified_report():
                     logging.info("Univers Construction détecté — filtrage campagnes Google: actives sur la période uniquement (impressions > 0)")
                 if is_emma_nantes:
                     logging.info("Emma Nantes détecté — filtrage campagnes Google: actives sur la période uniquement (impressions > 0)")
+                # Channel filter étendu pour les clients qui ont VIDEO/DEMAND_GEN
+                google_channel_filter = ["SEARCH", "PERFORMANCE_MAX", "DISPLAY"]
+                if is_eco_systeme_durable:
+                    google_channel_filter = ["SEARCH", "PERFORMANCE_MAX", "DISPLAY", "VIDEO", "DEMAND_GEN"]
+                    logging.info(f"Eco Système Durable détecté — channel_filter étendu: {google_channel_filter}")
+
                 response_data = google_reports.get_campaign_data(
                     google_customer_id,
                     start_date,
                     end_date,
-                    only_enabled=is_emma or is_riviera_grass or is_univers_construction or is_emma_nantes
+                    only_enabled=is_emma or is_riviera_grass or is_univers_construction or is_emma_nantes or bool(google_campaign_filter),
+                    channel_filter=google_channel_filter,
                 )
                 if is_emma:
                     logging.info(f"Emma Google — campagnes (après filtre): {len(response_data) if response_data else 0}")
-                
+
+                # Filtrer par nom de campagne Google si configuré
+                if google_campaign_filter and response_data:
+                    filter_lower = google_campaign_filter.lower()
+                    before_count = len(response_data)
+                    response_data = [row for row in response_data if filter_lower in row.campaign.name.lower()]
+                    logging.info(f"Google campaign filter '{google_campaign_filter}': {before_count} → {len(response_data)} campagnes")
+
                 if response_data:
                     # Calculer les métriques virtuelles
                     virtual_metrics = google_reports.calculate_channel_specific_metrics(response_data, google_metrics)
@@ -474,7 +527,10 @@ def export_unified_report():
                     if sheet_month:
                         google_mappings = get_service('google_mappings')
                         sheet_client_name = google_mappings.get_sheet_name_for_customer(google_customer_id)
-                        
+                        # Pour les comptes partagés avec campaignFilter, utiliser le nom du client sélectionné
+                        if google_campaign_filter and selected_client in available_sheets:
+                            sheet_client_name = selected_client
+
                         if sheet_client_name and sheet_client_name in available_sheets:
                             month_row = sheets_service.get_row_for_month(sheet_client_name, sheet_month)
                             
@@ -496,8 +552,8 @@ def export_unified_report():
                                     sheets_service.update_sheet_data(sheet_client_name, updates)
                                     successful_updates.append(f"Google - {sheet_client_name}: {len(updates)} cellules")
                                     
-                                    # Scraping additionnel si demandé
-                                    if contact_enabled:
+                                    # Scraping additionnel si demandé (skip pour Laserel : géré manuellement)
+                                    if contact_enabled and not is_laserel:
                                         try:
                                             google_conversions = get_service('google_conversions')
                                             google_conversions.scrape_contact_conversions_for_customer(
@@ -505,8 +561,8 @@ def export_unified_report():
                                             )
                                         except Exception as e:
                                             logging.error(f"Erreur scraping Contact Google {google_customer_id}: {e}")
-                                    
-                                    if itineraire_enabled:
+
+                                    if itineraire_enabled and not is_laserel:
                                         try:
                                             google_conversions = get_service('google_conversions')
                                             google_conversions.scrape_directions_conversions_for_customer(
@@ -514,6 +570,26 @@ def export_unified_report():
                                             )
                                         except Exception as e:
                                             logging.error(f"Erreur scraping Itinéraires Google {google_customer_id}: {e}")
+                                    if is_laserel and (contact_enabled or itineraire_enabled):
+                                        logging.info(f"Laserel Auxerre/Nantes — skip scraping Contact/Itinéraires Google (gérés manuellement)")
+
+                                    # Laserel Auxerre / Nantes : scraping conversion custom 'Temps passé 10sec' → colonne Temps passé Google
+                                    if is_laserel_auxerre or is_laserel_nantes:
+                                        action_substr = "auxerre temps passé 10sec" if is_laserel_auxerre else "nantes temps passé 10sec"
+                                        try:
+                                            google_conversions = get_service('google_conversions')
+                                            tp_result = google_conversions.scrape_temps_passe_for_customer(
+                                                google_customer_id, sheet_client_name, start_date, end_date, sheet_month,
+                                                action_name_substring=action_substr,
+                                                sheet_column="Temps passé Google",
+                                            )
+                                            if tp_result.get("success"):
+                                                successful_updates.append(f"Google Temps passé - {sheet_client_name}: {tp_result.get('total_conversions')}")
+                                            else:
+                                                failed_updates.append(f"Google Temps passé - {selected_client}: échec écriture")
+                                        except Exception as e:
+                                            logging.error(f"❌ Erreur scrape Temps passé Google {google_customer_id}: {e}")
+                                            failed_updates.append(f"Google Temps passé - {selected_client}: {e}")
                             else:
                                 failed_updates.append(f"Google - {selected_client}: Mois '{sheet_month}' non trouvé")
                         else:
@@ -666,26 +742,21 @@ def export_unified_report():
                     if metrics and sheet_month:
                         meta_mappings = get_service('meta_mappings')
                         google_mappings = get_service('google_mappings')
-                        
-                        # Essayer d'abord le mapping Google (plus précis)
-                        sheet_name = google_mappings.get_sheet_name_for_customer(google_customer_id) if google_customer_id else None
-                        
-                        # Si pas trouvé, essayer le mapping Meta
-                        if not sheet_name:
-                            mapped_sheet_name = meta_mappings.get_sheet_name_for_account(meta_account_id)
-                            
-                            # Si un filtre de campagne est configuré, cela signifie que plusieurs clients
-                            # partagent le même compte Meta. Dans ce cas, utiliser le nom du client sélectionné
-                            # plutôt que le mapping Meta pour éviter les conflits (ex: AvivA Melun vs AvivA Orgeval)
-                            if meta_campaign_filter or meta_campaign_name_filter:
-                                logging.info(f"Filtre campagne détecté - Utilisation du nom du client '{selected_client}' plutôt que le mapping Meta '{mapped_sheet_name}'")
-                                sheet_name = selected_client
-                            else:
-                                sheet_name = mapped_sheet_name
-                        
-                        # Si toujours pas trouvé, utiliser le nom du client comme fallback
-                        if not sheet_name:
+
+                        # Si un filtre campagne Meta est actif, c'est que plusieurs clients
+                        # partagent le même compte Meta (ex: AvivA Melun/Orgeval, Roche Bobois,
+                        # Création contemporaine). On écrit alors directement dans l'onglet du
+                        # client sélectionné, sans consulter les mappings.
+                        if meta_campaign_filter or meta_campaign_name_filter:
                             sheet_name = selected_client
+                            logging.info(f"Filtre campagne Meta actif → écriture dans l'onglet '{selected_client}'")
+                        else:
+                            # Comportement standard : mapping Google d'abord, puis Meta, puis fallback
+                            sheet_name = google_mappings.get_sheet_name_for_customer(google_customer_id) if google_customer_id else None
+                            if not sheet_name:
+                                sheet_name = meta_mappings.get_sheet_name_for_account(meta_account_id)
+                            if not sheet_name:
+                                sheet_name = selected_client
                             
                         meta_metrics_mapping = meta_mappings.get_meta_metrics_mapping()
                         
@@ -694,18 +765,26 @@ def export_unified_report():
                             
                             if month_row:
                                 updates = []
-                                
+
+                                # Colonnes à ne pas écrire pour Laserel (gérées manuellement)
+                                LASEREL_SKIP_COLUMNS = {"Contact Meta", "Recherche de lieux"}
+
                                 # Ne traiter que les métriques sélectionnées par l'utilisateur
                                 for selected_metric in meta_metrics:
                                     # Convertir la valeur frontend vers le nom de colonne
                                     column_name = meta_metrics_mapping.get(selected_metric)
-                                    
+
                                     if column_name and column_name in metrics:
+                                        # Skip Contact Meta + Recherche de lieux pour Laserel
+                                        if is_laserel and column_name in LASEREL_SKIP_COLUMNS:
+                                            logging.info(f"Laserel détecté — skip écriture '{column_name}' (gérée manuellement)")
+                                            continue
+
                                         # Récupérer la valeur directement depuis les métriques calculées
                                         metric_value = metrics[column_name]
-                                        
+
                                         column_letter = sheets_service.get_column_for_metric(sheet_name, column_name)
-                                        
+
                                         if column_letter:
                                             updates.append({
                                                 'range': f"{column_letter}{month_row}",
@@ -718,6 +797,97 @@ def export_unified_report():
                                     successful_updates.append(f"Meta - {sheet_name}: {len(updates)} cellules")
                                 else:
                                     failed_updates.append(f"Meta - {selected_client}: Aucune colonne trouvée")
+
+                                # Laserel Auxerre / Nantes : scraping action custom 'engaged_10s' → colonne Temps passé
+                                if is_laserel_auxerre or is_laserel_nantes:
+                                    action_type = "auxerre_engaged_10s" if is_laserel_auxerre else "nantes_engaged_10s"
+                                    try:
+                                        tp_total = meta_reports.get_action_total_for_account(
+                                            meta_account_id, start_date, end_date, action_type
+                                        )
+                                        col_letter_tp = sheets_service.get_column_for_metric(sheet_name, "Temps passé")
+                                        if col_letter_tp:
+                                            sheets_service.update_single_cell(sheet_name, f"{col_letter_tp}{month_row}", tp_total)
+                                            successful_updates.append(f"Meta Temps passé - {sheet_name}: {tp_total}")
+                                            logging.info(f"⏱️  Meta Temps passé ({action_type}): {tp_total} → {col_letter_tp}{month_row}")
+                                        else:
+                                            logging.warning(f"⚠️ Colonne 'Temps passé' non trouvée dans '{sheet_name}'")
+                                            failed_updates.append(f"Meta Temps passé - {selected_client}: colonne non trouvée")
+                                    except Exception as e:
+                                        logging.error(f"❌ Erreur scrape engaged_10s Meta {meta_account_id}: {e}")
+                                        failed_updates.append(f"Meta Temps passé - {selected_client}: {e}")
+
+                                # Scraping spécifique LyleOO : Interest/Retarget Facebook/Insta + Budget
+                                if is_lyleoo and month_row:
+                                    try:
+                                        ly_data = meta_reports.get_lyleoo_interest_retarget_data(
+                                            meta_account_id, start_date, end_date
+                                        )
+                                        ly_columns = [
+                                            ("Interest Facebook", ly_data["interest_facebook"]),
+                                            ("Interest Insta", ly_data["interest_insta"]),
+                                            ("Interest Budget", ly_data["interest_budget"]),
+                                            ("Retarget Facebook", ly_data["retarget_facebook"]),
+                                            ("Retarget Insta", ly_data["retarget_insta"]),
+                                            ("Retarget Budget", ly_data["retarget_budget"]),
+                                        ]
+                                        ly_updates = []
+                                        for col_name, val in ly_columns:
+                                            col_letter = sheets_service.get_column_for_metric(sheet_name, col_name)
+                                            if col_letter:
+                                                ly_updates.append({
+                                                    'range': f"{col_letter}{month_row}",
+                                                    'value': val,
+                                                })
+                                                logging.info(f"  🦄 {col_name}: {val} → {col_letter}{month_row}")
+                                            else:
+                                                logging.warning(f"  ⚠️ Colonne LyleOO '{col_name}' non trouvée dans '{sheet_name}'")
+                                        if ly_updates:
+                                            sheets_service.update_sheet_data(sheet_name, ly_updates)
+                                            successful_updates.append(f"Meta LyleOO - {sheet_name}: {len(ly_updates)} cellules")
+                                    except Exception as e:
+                                        logging.error(f"❌ Erreur scraping LyleOO Interest/Retarget: {e}")
+                                        failed_updates.append(f"Meta LyleOO - {selected_client}: {e}")
+
+                                # Scraping par campagne spécifique (Sachs)
+                                if is_sachs and month_row:
+                                    try:
+                                        # Lire les headers ligne 3 pour les colonnes campagnes
+                                        row3_range = f"'{sheet_name}'!3:3"
+                                        row3_result = sheets_service.service.spreadsheets().values().get(
+                                            spreadsheetId=sheets_service.sheet_id,
+                                            range=row3_range
+                                        ).execute()
+                                        row3_headers = row3_result.get("values", [[]])[0] if row3_result.get("values") else []
+
+                                        def col_letter_from_row3(col_name):
+                                            for idx, h in enumerate(row3_headers):
+                                                if h and h.strip() == col_name.strip():
+                                                    return sheets_service._index_to_column_letter(idx)
+                                            return None
+
+                                        sachs_campaigns = {
+                                            "follower": {"Montant": "spend", "Ajout au panier": "add_to_cart", "CTR": "ctr"},
+                                            "drive": {"Montant DTS": "spend", "Itinéraires": "search", "CTR DTS": "ctr"},
+                                            "interaction": {"Montant SP": "spend", "CTR SP": "ctr"},
+                                        }
+                                        for camp_filter, col_mapping in sachs_campaigns.items():
+                                            camp_data = meta_reports.get_campaign_specific_metrics(
+                                                meta_account_id, start_date, end_date, camp_filter)
+                                            for col_name, data_key in col_mapping.items():
+                                                value = camp_data.get(data_key, 0)
+                                                if data_key == "ctr":
+                                                    value = f"{value}%"  # Le sheet stocke avec %, le PPTX affiche tel quel
+                                                col_letter = col_letter_from_row3(col_name)
+                                                if col_letter:
+                                                    sheets_service.update_single_cell(sheet_name, f"{col_letter}{month_row}", value)
+                                                    logging.info(f"  Sachs {camp_filter} — {col_name}: {value} → {col_letter}{month_row}")
+                                                else:
+                                                    logging.warning(f"  ⚠️ Colonne '{col_name}' non trouvée en ligne 3 pour Sachs")
+                                        successful_updates.append(f"Meta Sachs campagnes - {sheet_name}")
+                                    except Exception as e:
+                                        logging.error(f"❌ Erreur scraping campagnes Sachs: {e}")
+                                        failed_updates.append(f"Meta Sachs campagnes - {selected_client}: {e}")
                             else:
                                 failed_updates.append(f"Meta - {selected_client}: Mois '{sheet_month}' non trouvé")
                         else:
@@ -741,6 +911,83 @@ def export_unified_report():
         elif meta_metrics and not meta_account_id:
             platform_warnings.append("Meta Ads non configuré pour ce client")
 
+        # ========================================
+        # GOOGLE ANALYTICS - Vues de pages
+        # ========================================
+        if include_analytics and ga_config and sheet_month:
+            try:
+                ga_property_id = ga_config.get("propertyId")
+                ga_pages = ga_config.get("pages", [])
+
+                if not ga_property_id or not ga_pages:
+                    platform_warnings.append("Analytics: configuration incomplète pour ce client")
+                else:
+                    # Forcer la plage de dates GA au mois COMPLET dérivé de start_date,
+                    # pour éviter les off-by-one (ex: 2026-03-30 au lieu de 2026-03-31)
+                    # quand l'utilisateur ajuste manuellement les dates dans le frontend.
+                    try:
+                        sd = datetime.strptime(start_date, "%Y-%m-%d").date()
+                        ga_start = date(sd.year, sd.month, 1).isoformat()
+                        ga_end = date(sd.year, sd.month, calendar.monthrange(sd.year, sd.month)[1]).isoformat()
+                    except (ValueError, TypeError):
+                        ga_start, ga_end = start_date, end_date
+
+                    if (ga_start, ga_end) != (start_date, end_date):
+                        logging.info(
+                            f"📊 GA4 — plage normalisée au mois complet : "
+                            f"{start_date}→{end_date} ⇒ {ga_start}→{ga_end}"
+                        )
+
+                    logging.info(f"📊 Scraping GA4 pour {selected_client} (property={ga_property_id}, {len(ga_pages)} pages)")
+
+                    ga_reports = get_service('ga_reports')
+                    paths = [p["path"] for p in ga_pages]
+                    page_views = ga_reports.get_page_views(ga_property_id, paths, ga_start, ga_end)
+
+                    # Résoudre l'onglet de destination (mêmes règles que Meta)
+                    google_mappings = get_service('google_mappings')
+                    meta_mappings_svc = get_service('meta_mappings')
+                    ga_sheet_name = google_mappings.get_sheet_name_for_customer(google_customer_id) if google_customer_id else None
+                    if not ga_sheet_name and meta_account_id:
+                        ga_sheet_name = meta_mappings_svc.get_sheet_name_for_account(meta_account_id)
+                    if not ga_sheet_name:
+                        ga_sheet_name = selected_client
+
+                    if ga_sheet_name and ga_sheet_name in available_sheets:
+                        month_row = sheets_service.get_row_for_month(ga_sheet_name, sheet_month)
+
+                        if month_row:
+                            updates = []
+                            for page in ga_pages:
+                                column_name = page["sheetColumn"]
+                                value = page_views.get(page["path"], 0)
+                                column_letter = sheets_service.get_column_for_metric(ga_sheet_name, column_name)
+
+                                if column_letter:
+                                    updates.append({
+                                        'range': f"{column_letter}{month_row}",
+                                        'value': value
+                                    })
+                                    logging.info(f"  GA {column_name}: {value} → {column_letter}{month_row}")
+                                else:
+                                    logging.warning(f"  ⚠️ Colonne GA '{column_name}' non trouvée dans l'onglet '{ga_sheet_name}'")
+
+                            if updates:
+                                sheets_service.update_sheet_data(ga_sheet_name, updates)
+                                successful_updates.append(f"Analytics - {ga_sheet_name}: {len(updates)} cellules")
+                            else:
+                                failed_updates.append(f"Analytics - {selected_client}: Aucune colonne trouvée")
+                        else:
+                            failed_updates.append(f"Analytics - {selected_client}: Mois '{sheet_month}' non trouvé")
+                    else:
+                        failed_updates.append(f"Analytics - {selected_client}: Onglet '{ga_sheet_name}' introuvable")
+
+            except Exception as e:
+                logging.error(f"Erreur Google Analytics pour {selected_client}: {e}")
+                failed_updates.append(f"Analytics - {selected_client}: Erreur API - {str(e)[:100]}")
+        elif include_analytics and not ga_config:
+            platform_warnings.append("Google Analytics non configuré pour ce client")
+
         # Log des résultats
         if successful_updates:
             logging.info(f"Mises à jour réussies: {successful_updates}")
@@ -748,6 +995,29 @@ def export_unified_report():
             logging.warning(f" Échecs: {failed_updates}")
         if platform_warnings:
             logging.info(f"ℹ️ Avertissements plateformes: {platform_warnings}")
+
+        # Scraping leads automatique pour les clients leadgen
+        LEADS_CLIENTS = {
+            "kozeo": "kozeo",
+            "riviera grass": "riviera_grass",
+            "sud gazon": "sud_gazon",
+            "univers construction": "univers_construction",
+            "tairmic": "tairmic",
+            "eco système durable": "eco_systeme_durable",
+            "univers gazon": "univers_gazon",
+        }
+        sel_lower = (selected_client or "").lower()
+        for keyword, client_key in LEADS_CLIENTS.items():
+            if keyword in sel_lower:
+                try:
+                    from backend.common.services.leads_scraper import _scrape_leads_client
+                    leads_result = _scrape_leads_client(sheets_service, client_key, reference_month=None)
+                    successful_updates.append(f"Leads {selected_client}: {leads_result['updates_count']} cellules")
+                    logging.info(f"✅ Leads scrapés automatiquement pour '{selected_client}'")
+                except Exception as e:
+                    logging.error(f"❌ Erreur scraping leads auto pour '{selected_client}': {e}")
+                    failed_updates.append(f"Leads {selected_client}: {e}")
+                break
 
         # Nettoyage mémoire après traitement
         gc.collect()
@@ -1299,8 +1569,9 @@ def generate_report():
 
         data = request.get_json(silent=True) or {}
         filter_name = data.get("filter")
+        filter_template = data.get("template")
 
-        result = generate_all_reports(filter_name=filter_name)
+        result = generate_all_reports(filter_name=filter_name, filter_template=filter_template)
 
         summary = result["summary"]
         status_code = 200 if summary["errors"] == 0 else 207
@@ -1309,6 +1580,58 @@ def generate_report():
 
     except Exception as e:
         logging.error(f"Erreur génération rapports: {e}", exc_info=True)
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/scrape-leads", methods=["POST"])
+def scrape_leads():
+    """
+    Scrape les leads depuis les sheets leads clients et écrit les résultats
+    dans le sheet principal.
+    """
+    try:
+        from backend.common.services.google_sheets import GoogleSheetsService
+        from backend.common.services.leads_scraper import (
+            scrape_leads_kozeo, scrape_leads_riviera, scrape_leads_sud_gazon,
+            scrape_leads_univers, scrape_leads_tairmic, scrape_leads_eco_systeme_durable,
+            scrape_leads_univers_gazon,
+        )
+
+        sheets_service = GoogleSheetsService()
+
+        data = request.get_json(silent=True) or {}
+        month = data.get("month")  # Optionnel, ex: "February 2026"
+        client = data.get("client")  # Optionnel, ex: "kozeo" ou "riviera"
+
+        results = []
+        if client == "kozeo":
+            results.append(scrape_leads_kozeo(sheets_service, reference_month=month))
+        elif client == "riviera":
+            results.append(scrape_leads_riviera(sheets_service, reference_month=month))
+        elif client == "sudgazon":
+            results.append(scrape_leads_sud_gazon(sheets_service, reference_month=month))
+        elif client == "univers":
+            results.append(scrape_leads_univers(sheets_service, reference_month=month))
+        elif client == "tairmic":
+            results.append(scrape_leads_tairmic(sheets_service, reference_month=month))
+        elif client == "ecosysteme":
+            results.append(scrape_leads_eco_systeme_durable(sheets_service, reference_month=month))
+        elif client == "universgazon":
+            results.append(scrape_leads_univers_gazon(sheets_service, reference_month=month))
+        else:
+            # Tous les clients
+            results.append(scrape_leads_kozeo(sheets_service, reference_month=month))
+            results.append(scrape_leads_riviera(sheets_service, reference_month=month))
+            results.append(scrape_leads_sud_gazon(sheets_service, reference_month=month))
+            results.append(scrape_leads_univers(sheets_service, reference_month=month))
+            results.append(scrape_leads_tairmic(sheets_service, reference_month=month))
+            results.append(scrape_leads_eco_systeme_durable(sheets_service, reference_month=month))
+            results.append(scrape_leads_univers_gazon(sheets_service, reference_month=month))
+
+        return jsonify({"success": True, "results": results}), 200
+
+    except Exception as e:
+        logging.error(f"Erreur scraping leads: {e}", exc_info=True)
         return jsonify({"error": str(e)}), 500
 
 

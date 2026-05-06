@@ -48,6 +48,7 @@ class APIConfig:
     GOOGLE_SCOPES = [
         'https://www.googleapis.com/auth/spreadsheets',
         'https://www.googleapis.com/auth/drive',
+        'https://www.googleapis.com/auth/analytics.readonly',
     ]
     
     # Google Drive API

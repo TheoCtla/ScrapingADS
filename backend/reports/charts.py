@@ -502,3 +502,125 @@ def create_plotly_evolution_chart(
         fig.update_yaxes(range=[0, max(values) * 1.25])
 
     fig.write_image(output_path, format="png", scale=2)
+
+
+# ──────────────────────────────────────────────
+# 7. Plotly — Dual axis chart (coûts + leads)
+# ──────────────────────────────────────────────
+
+def create_plotly_dual_axis_chart(
+    history: List[Dict[str, Any]],
+    cost_key: str,
+    leads_key: str,
+    chart_title: str,
+    output_path: str,
+    cost_color: str = "#FFC107",
+    leads_color: str = "#FFFFFF",
+) -> None:
+    """
+    Chart Plotly double axe : coûts (axe gauche) + leads (axe droite).
+    """
+    import plotly.graph_objects as go
+    from plotly.subplots import make_subplots
+
+    if not history:
+        return
+
+    months = [entry.get("month_fr", "") for entry in history]
+    costs = [_safe_float(entry.get(cost_key, 0)) for entry in history]
+    leads = [_safe_float(entry.get(leads_key, 0)) for entry in history]
+
+    c = f"#{cost_color}" if cost_color and not cost_color.startswith("#") else (cost_color or "#FFC107")
+    l = f"#{leads_color}" if leads_color and not leads_color.startswith("#") else (leads_color or "#FFFFFF")
+
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+
+    # Courbe coûts (axe gauche)
+    fig.add_trace(go.Scatter(
+        x=months,
+        y=costs,
+        mode="lines+markers+text",
+        name="Coûts",
+        line=dict(color=c, width=3, shape="spline"),
+        marker=dict(color=c, size=10, line=dict(color="white", width=2)),
+        fill="tozeroy",
+        fillcolor=f"rgba({int(c[1:3], 16)}, {int(c[3:5], 16)}, {int(c[5:7], 16)}, 0.08)",
+        text=[_format_bar_value(v) for v in costs],
+        textposition="top center",
+        textfont=dict(color=c, size=13, family="Calibri"),
+        hoverinfo="skip",
+    ), secondary_y=False)
+
+    # Courbe leads (axe droite)
+    fig.add_trace(go.Scatter(
+        x=months,
+        y=leads,
+        mode="lines+markers+text",
+        name="Leads",
+        line=dict(color=l, width=3, shape="spline", dash="dot"),
+        marker=dict(color=l, size=10, line=dict(color=l, width=2)),
+        text=[_format_bar_value(v) for v in leads],
+        textposition="bottom center",
+        textfont=dict(color=l, size=13, family="Calibri"),
+        hoverinfo="skip",
+    ), secondary_y=True)
+
+    fig.update_layout(
+        title=dict(
+            text=chart_title,
+            font=dict(color="white", size=16, family="Calibri"),
+            x=0.5,
+        ),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#B0B0B0", family="Calibri"),
+        xaxis=dict(
+            showgrid=False,
+            tickfont=dict(color="#B0B0B0", size=12),
+            linecolor="#3D3D3D",
+            range=[-0.4, len(months) - 0.6],
+        ),
+        margin=dict(l=70, r=70, t=50, b=40),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=-0.25,
+            xanchor="center",
+            x=0.5,
+            font=dict(color="white", size=11),
+        ),
+        width=750,
+        height=420,
+    )
+
+    # Axe gauche (coûts)
+    fig.update_yaxes(
+        title_text="Coûts",
+        title_font=dict(color=c, size=12),
+        showgrid=True,
+        gridcolor="rgba(61, 61, 61, 0.5)",
+        gridwidth=1,
+        zeroline=False,
+        tickfont=dict(color=c, size=11),
+        linecolor="#3D3D3D",
+        rangemode="tozero",
+        secondary_y=False,
+    )
+    if costs and max(costs) > 0:
+        fig.update_yaxes(range=[0, max(costs) * 1.3], secondary_y=False)
+
+    # Axe droite (leads)
+    fig.update_yaxes(
+        title_text="Leads",
+        title_font=dict(color=l, size=12),
+        showgrid=False,
+        zeroline=False,
+        tickfont=dict(color=l, size=11),
+        linecolor="#3D3D3D",
+        rangemode="tozero",
+        secondary_y=True,
+    )
+    if leads and max(leads) > 0:
+        fig.update_yaxes(range=[0, max(leads) * 1.3], secondary_y=True)
+
+    fig.write_image(output_path, format="png", scale=2)

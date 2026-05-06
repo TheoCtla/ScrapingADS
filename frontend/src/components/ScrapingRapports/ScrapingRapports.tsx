@@ -95,6 +95,7 @@ const ScrapingRapports: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [contactEnabled, setContactEnabled] = useState<boolean>(true);
   const [itineraireEnabled, setItineraireEnabled] = useState<boolean>(true);
+  const [includeAnalytics, setIncludeAnalytics] = useState<boolean>(true);
   const [cuisinistesSelected, setCuisinistesSelected] = useState<boolean>(false);
   const [litiersSelected, setLitiersSelected] = useState<boolean>(false);
   // Liste des métriques Google Ads personnalisées par canal
@@ -277,18 +278,14 @@ const ScrapingRapports: React.FC = () => {
     // Déterminer le type d'envoi basé sur les plateformes disponibles
     const hasGoogle = clientInfo?.google_ads?.configured && selectedGoogleMetrics.length > 0;
     const hasMeta = clientInfo?.meta_ads?.configured && selectedMetaMetrics.length > 0;
-    let sendType = '';
-    if (hasGoogle && hasMeta) {
-      sendType = 'Google + Meta';
-    } else if (hasGoogle) {
-      sendType = 'Google uniquement';
-    } else if (hasMeta) {
-      sendType = 'Meta uniquement';
-    } else {
-      sendType = 'Aucune plateforme configurée';
-    }
-    
-    if (sendType === 'Aucune plateforme configurée') {
+    const hasAnalytics = clientInfo?.google_analytics?.configured && includeAnalytics;
+    const platforms = [
+      hasGoogle ? 'Google' : null,
+      hasMeta ? 'Meta' : null,
+      hasAnalytics ? 'Analytics' : null,
+    ].filter(Boolean);
+
+    if (platforms.length === 0) {
       alert('Aucune plateforme configurée pour ce client ou aucune métrique sélectionnée');
       return;
     }
@@ -302,13 +299,14 @@ const ScrapingRapports: React.FC = () => {
         sheet_month: sheetMonth,
         contact: contactEnabled,
         itineraire: itineraireEnabled,
-        
+        include_analytics: includeAnalytics,
+
         // NOUVEAU: Client sélectionné
         selected_client: selectedClient,
-        
+
         // Paramètres Google Ads
         google_metrics: selectedGoogleMetrics.map((m: { value: string }) => m.value),
-        
+
         // Paramètres Meta Ads
         meta_metrics: selectedMetaMetrics.map((m: { value: string }) => m.value),
       };
@@ -367,6 +365,7 @@ const ScrapingRapports: React.FC = () => {
       sheetMonth,
       contactEnabled,
       itineraireEnabled,
+      includeAnalytics,
       selectedGoogleMetrics: selectedGoogleMetrics.map((m: { value: string }) => m.value),
       selectedMetaMetrics: selectedMetaMetrics.map((m: { value: string }) => m.value),
     };
@@ -383,13 +382,14 @@ const ScrapingRapports: React.FC = () => {
         sheet_month: context.sheetMonth,
         contact: context.contactEnabled,
         itineraire: context.itineraireEnabled,
-        
+        include_analytics: context.includeAnalytics,
+
         // Client sélectionné
         selected_client: clientName,
-        
+
         // Paramètres Google Ads
         google_metrics: context.selectedGoogleMetrics,
-        
+
         // Paramètres Meta Ads
         meta_metrics: context.selectedMetaMetrics,
       };
@@ -576,6 +576,36 @@ const ScrapingRapports: React.FC = () => {
     }
   };
 
+  // État pour la génération des rapports PPTX
+  const [generateReportsLoading, setGenerateReportsLoading] = useState(false);
+
+  // Fonction pour générer tous les rapports PPTX
+  const handleGenerateReports = async () => {
+    setGenerateReportsLoading(true);
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5050'}/generate-report`);
+      const summary = response.data.summary;
+      const reports = response.data.reports;
+      const errors = reports.filter((r: { status: string }) => r.status === 'error');
+
+      let message = `Rapports générés !\n\n` +
+        `Total : ${summary.total}\n` +
+        `Succès : ${summary.success}\n` +
+        `Erreurs : ${summary.errors}`;
+
+      if (errors.length > 0) {
+        message += '\n\nErreurs :\n' + errors.map((e: { client: string; error: string }) => `- ${e.client}: ${e.error}`).join('\n');
+      }
+
+      alert(message);
+    } catch (error: unknown) {
+      const axiosError = error as { message?: string };
+      alert('Erreur lors de la génération des rapports: ' + (axiosError.message || 'Erreur inconnue'));
+    } finally {
+      setGenerateReportsLoading(false);
+    }
+  };
+
   // Fonction d'annulation
   const handleCancelBulkScraping = () => {
     console.log('🛑 Demande d\'annulation du scraping en masse');
@@ -636,6 +666,9 @@ const ScrapingRapports: React.FC = () => {
             <div>
               <strong>Meta Ads:</strong> {clientInfo.meta_ads.configured ? 'Configuré' : 'Non configuré'}
             </div>
+            <div>
+              <strong>Analytics:</strong> {clientInfo.google_analytics?.configured ? `Configuré (${clientInfo.google_analytics.pages_count} pages)` : 'Non configuré'}
+            </div>
           </div>
         </div>
       )}
@@ -643,12 +676,43 @@ const ScrapingRapports: React.FC = () => {
       <div style={{ display: 'flex', gap: '20px', margin: '20px 0' }}>
         <div style={{ flex: 2, padding: '15px', border: '2px solid #dbbc32'}}>
           <h3 style={{ margin: '0 0 2px 0', color: '#dbbc32' }}>SECTION GOOGLE ADS</h3>
-          
-          <MetricsSelector 
+
+          <MetricsSelector
             availableMetrics={availableGoogleMetrics}
             selectedMetrics={selectedGoogleMetrics}
             onMetricsChange={setSelectedGoogleMetrics}
           />
+
+          <div style={{ marginTop: '15px', paddingTop: '15px', borderTop: '1px solid #dbbc32' }}>
+            <label
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                color: '#dbbc32',
+                cursor: clientInfo?.google_analytics?.configured ? 'pointer' : 'not-allowed',
+                opacity: clientInfo?.google_analytics?.configured ? 1 : 0.4,
+                fontSize: '14px',
+              }}
+              title={
+                clientInfo?.google_analytics?.configured
+                  ? `Inclure ${clientInfo.google_analytics.pages_count} page(s) GA4`
+                  : 'Aucune propriété GA4 configurée pour ce client'
+              }
+            >
+              <input
+                type="checkbox"
+                checked={includeAnalytics}
+                onChange={(e) => setIncludeAnalytics(e.target.checked)}
+                disabled={!clientInfo?.google_analytics?.configured}
+                style={{ accentColor: '#dbbc32', cursor: 'inherit' }}
+              />
+              <strong>Google Analytics</strong>
+              {clientInfo?.google_analytics?.configured && (
+                <span style={{ opacity: 0.7 }}>({clientInfo.google_analytics.pages_count} pages)</span>
+              )}
+            </label>
+          </div>
         </div>
         
         <div style={{ flex: 1, padding: '15px', border: '2px solid #dbbc32', maxWidth: '500px' }}>
@@ -665,18 +729,21 @@ const ScrapingRapports: React.FC = () => {
       
       {/* Avertissement Sud Gazon */}
       <div style={{ margin: '0 0 20px 0', padding: '10px', backgroundColor: '#3d1a1a', border: '1px solid #ff4444', color: '#ffaaaa', fontSize: '14px', borderRadius: '4px' }}>
-        ⚠️ <strong>ATTENTION SUD GAZON :</strong> Traitement MANUEL requis pour la partie META ADS (pas d'accès API).
+        <strong>ATTENTION SUD GAZON :</strong> Traitement MANUEL requis pour la partie META ADS (pas d'accès au BM).
       </div>
 
-      <UnifiedDownloadButton 
+      <UnifiedDownloadButton
         loading={loading}
         onClick={handleUnifiedDownload}
         hasGoogleSelection={clientInfo?.google_ads?.configured && selectedGoogleMetrics.length > 0}
         hasMetaSelection={clientInfo?.meta_ads?.configured && selectedMetaMetrics.length > 0}
+        hasAnalyticsSelection={clientInfo?.google_analytics?.configured && includeAnalytics}
         onBulkScraping={handleBulkScraping}
         bulkScrapingLoading={bulkScrapingState.isProcessing}
         hasAuthorizedClients={authorizedClients.length > 0}
-        hasAnyMetrics={selectedGoogleMetrics.length > 0 || selectedMetaMetrics.length > 0}
+        hasAnyMetrics={selectedGoogleMetrics.length > 0 || selectedMetaMetrics.length > 0 || (clientInfo?.google_analytics?.configured && includeAnalytics)}
+        onGenerateReports={handleGenerateReports}
+        generateReportsLoading={generateReportsLoading}
       />
       
       {/* Composant de progression pour le scraping en masse */}

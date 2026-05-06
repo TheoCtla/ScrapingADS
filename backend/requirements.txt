@@ -25,6 +25,12 @@ google-api-core>=2.18.0
 # Google API Client pour Sheets
 google-api-python-client==2.108.0
 
+# ========================================
+# GOOGLE ANALYTICS DATA API (GA4)
+# ========================================
+
+google-analytics-data==0.18.16
+
 # Authentification Google
 google-auth==2.23.4
 google-auth-oauthlib==1.1.0

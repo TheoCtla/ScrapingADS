@@ -105,6 +105,7 @@ def _generate_single_report(
 def generate_all_reports(
     month: Optional[str] = None,
     filter_name: Optional[str] = None,
+    filter_template: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Génère les rapports PPTX pour tous les onglets visibles du Sheet
@@ -114,7 +115,7 @@ def generate_all_reports(
         month: Mois cible en anglais (ex: 'February 2026').
                Si None, calcule automatiquement M-1.
         filter_name: Filtre optionnel sur le nom de l'onglet (case-insensitive).
-                     Ex: 'toulouse' ne génère que les onglets contenant 'toulouse'.
+        filter_template: Filtre optionnel sur le nom de la route/template (ex: 'autres').
     """
     target_month = month or _compute_target_month()
     folder_name = _compute_drive_folder_name() if month is None else None
@@ -141,8 +142,12 @@ def generate_all_reports(
     if filter_name:
         filter_lower = filter_name.lower()
         visible_sheets = [s for s in visible_sheets if filter_lower in s.lower()]
-        logging.info(f"{len(visible_sheets)} onglets après filtre '{filter_name}'")
-    else:
+        logging.info(f"{len(visible_sheets)} onglets après filtre nom '{filter_name}'")
+    if filter_template:
+        filter_tpl_lower = filter_template.lower()
+        visible_sheets = [s for s in visible_sheets if get_route_name(s) == filter_tpl_lower]
+        logging.info(f"{len(visible_sheets)} onglets après filtre template '{filter_template}'")
+    if not filter_name and not filter_template:
         logging.info(f"{len(visible_sheets)} onglets visibles trouvés")
 
     results: List[Dict[str, Any]] = []

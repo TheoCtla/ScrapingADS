@@ -79,8 +79,8 @@ class TemplateEmma(BaseTemplate):
         client = data.get("client", "")
         month_fr = data.get("month_fr", "")
 
-        has_google = self._has_data(g_curr)
-        has_meta = self._has_data(m_curr)
+        has_google = self._safe_get(g_curr, "Cout Google ADS") > 0
+        has_meta = self._safe_get(m_curr, "Cout Facebook ADS") > 0
         has_history = history and len(history) >= 2
         has_itineraires = self._get_iti(c_curr) > 0
         has_appels = self._safe_get(c_curr, "Appels Téléphoniques") > 0
@@ -91,10 +91,6 @@ class TemplateEmma(BaseTemplate):
 
         # Slide 2 — Récap
         self._slide_recap(gen_curr, gen_prev, g_curr, g_prev, m_curr, m_prev, month_fr)
-
-        # Slide 2b — Évolution conversions
-        if has_history and (has_itineraires or has_appels):
-            self._slide_evo_conversions(history, has_itineraires, has_appels)
 
         # Slide 3 — Google Ads
         if has_google:
@@ -116,11 +112,15 @@ class TemplateEmma(BaseTemplate):
                     ("Impressions Meta", "Impressions"),
                     ("Clics Meta", "Clics"),
                     ("CPC Meta", "CPC"),
-                ], "Meta Ads")
+                ], "Meta Ads - Facebook et Instagram")
 
         # Slide 5 — Synthèse
         self._slide_synthese(gen_curr, gen_prev, c_curr, c_prev, month_fr,
                              has_itineraires, has_appels)
+
+        # Slide 5b — Évolution conversions
+        if has_history and (has_itineraires or has_appels):
+            self._slide_evo_conversions(history, has_itineraires, has_appels)
 
         # Slide 6 — Fin
         self._end_slide()
@@ -188,7 +188,12 @@ class TemplateEmma(BaseTemplate):
                     "Stable vs mois précédent", Pt(14), accent,
                     bold=True, font_name="Calibri Light", alignment=PP_ALIGN.LEFT)
 
-        if tooltip_key and tooltip_key in METRIC_TOOLTIPS:
+        if sub_label:
+            self._add_textbox(
+                slide, x + Inches(0.25), y + Inches(1.85), w - Inches(0.5), Inches(0.3),
+                sub_label, Pt(10), PALETTE["text_secondary"],
+                italic=True, font_name="Calibri Light", alignment=PP_ALIGN.LEFT)
+        elif tooltip_key and tooltip_key in METRIC_TOOLTIPS:
             self._add_textbox(
                 slide, x + Inches(0.25), y + Inches(1.85), w - Inches(0.5), Inches(0.6),
                 METRIC_TOOLTIPS[tooltip_key], Pt(10), PALETTE["text_secondary"],
@@ -205,6 +210,7 @@ class TemplateEmma(BaseTemplate):
                 slide, x, Inches(y), card_w,
                 label=m.get("label", ""),
                 value_str=m.get("value", "0"),
+                sub_label=m.get("sub_label"),
                 accent_color=m.get("accent"),
                 current=m.get("current"),
                 previous=m.get("previous"),
@@ -430,7 +436,7 @@ class TemplateEmma(BaseTemplate):
 
     def _slide_meta(self, m_curr, m_prev, month_fr):
         slide = self.prs.slides.add_slide(self.blank_layout)
-        self._modern_header(slide, "Détails Meta Ads", month_fr,
+        self._modern_header(slide, "Détails Meta Ads - Facebook et Instagram", month_fr,
                             accent_color=FUNCTIONAL_COLORS["meta_color"])
 
         blue = FUNCTIONAL_COLORS["meta_color"]
@@ -489,7 +495,8 @@ class TemplateEmma(BaseTemplate):
         if conv:
             row1.append({"label": "Coût / conversion", "value": format_currency(conv),
                          "current": conv, "previous": conv_p,
-                         "tooltip": "Cout par conversion majeure", "accent": PALETTE["gold"]})
+                         "sub_label": "Coût total divisé par le nombre total de conversions (contacts + itinéraires)",
+                         "accent": PALETTE["gold"]})
         self._hero_row(slide, row1, y=1.3, n_cols=len(row1))
 
         # Ligne 2 : appels + itinéraires
@@ -499,12 +506,14 @@ class TemplateEmma(BaseTemplate):
             appels_p = self._safe_get(c_prev, "Appels Téléphoniques")
             row2.append({"label": "Appels téléphoniques", "value": format_number(appels),
                          "current": appels, "previous": appels_p,
+                         "sub_label": "Nombre de clics trackés sur les boutons contacts",
                          "accent": PALETTE["gold"]})
         if has_itineraires:
             iti = self._get_iti(c_curr)
             iti_p = self._get_iti(c_prev)
             row2.append({"label": "Itinéraires", "value": format_number(iti),
                          "current": iti, "previous": iti_p,
+                         "sub_label": "Nombre de clics trackés sur les boutons itinéraires",
                          "accent": PALETTE["gold"]})
 
         if row2:
