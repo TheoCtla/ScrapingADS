@@ -473,7 +473,7 @@ class TemplateLaserel(BaseTemplate):
         conv = self._safe_get(gen_curr, "Cout par conversion majeure")
         conv_p = self._safe_get(gen_prev, "Cout par conversion majeure")
 
-        conv_tooltip = "Coût total divisé par le nombre total de conversions (formulaires + appels)" if is_laserel_main else "Coût total divisé par le nombre total de conversions (appels)"
+        conv_tooltip = "Coût total divisé par le nombre total de conversions (temps passé sur le site)"
 
         # Ligne 1 : métriques générales
         row1 = [
