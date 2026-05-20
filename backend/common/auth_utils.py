@@ -56,10 +56,13 @@ def get_user_credentials(scopes: List[str]) -> Credentials:
             # Lance un serveur local pour recevoir le callback
             creds = flow.run_local_server(port=0)
         
-        # 3. Sauvegarder le nouveau token
-        with open(token_path, 'w') as token_file:
-            token_file.write(creds.to_json())
+        # 3. Sauvegarder le nouveau token (best-effort : /etc/secrets est en lecture seule sur Render)
+        try:
+            with open(token_path, 'w') as token_file:
+                token_file.write(creds.to_json())
             logging.info(f"💾 Nouveau token sauvegardé dans {token_path}")
+        except OSError as e:
+            logging.warning(f"⚠️ Token non sauvegardé sur disque ({token_path}) : {e}. Refresh en mémoire OK.")
 
     return creds
 

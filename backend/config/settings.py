@@ -55,7 +55,7 @@ class APIConfig:
     GOOGLE_DRIVE_FOLDER_ID = os.getenv("GOOGLE_DRIVE_FOLDER_ID")
     
     # Auth Token Path (for OAuth2)
-    GOOGLE_TOKEN_PATH = str(CONFIG_DIR / "token.json")
+    GOOGLE_TOKEN_PATH = get_config_path("GOOGLE_TOKEN_PATH", str(CONFIG_DIR / "token.json"))
 
 class FlaskConfig:
     """Configuration Flask"""
