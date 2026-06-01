@@ -1583,6 +1583,35 @@ def generate_report():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/generate-report/single", methods=["POST"])
+def generate_report_single():
+    """
+    Génère le rapport PPTX pour un seul client (= un onglet du Sheet)
+    et l'uploade sur Google Drive.
+    Body: { "client": "<nom_onglet>", "month": "<optionnel, ex: 'February 2026'>" }
+    """
+    try:
+        from backend.reports.generator import generate_single_report
+
+        data = request.get_json(silent=True) or {}
+        client_name = (data.get("client") or "").strip()
+        month = data.get("month")
+
+        if not client_name:
+            return jsonify({"error": "Le champ 'client' est requis"}), 400
+
+        result = generate_single_report(client_name=client_name, month=month)
+
+        summary = result["summary"]
+        status_code = 200 if summary["errors"] == 0 else 207
+
+        return jsonify(result), status_code
+
+    except Exception as e:
+        logging.error(f"Erreur génération rapport unique: {e}", exc_info=True)
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/scrape-leads", methods=["POST"])
 def scrape_leads():
     """
