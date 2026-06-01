@@ -48,7 +48,12 @@ const ScrapingRapports: React.FC = () => {
   
   // État pour la modal de succès
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [successData, setSuccessData] = useState({
+  const [successData, setSuccessData] = useState<{
+    message: string;
+    successfulUpdates: number;
+    failedUpdates: number;
+    driveLink?: string;
+  }>({
     message: '',
     successfulUpdates: 0,
     failedUpdates: 0
@@ -576,68 +581,53 @@ const ScrapingRapports: React.FC = () => {
     }
   };
 
-  // État pour la génération des rapports PPTX
+  // État pour la génération du rapport PPTX
   const [generateReportsLoading, setGenerateReportsLoading] = useState(false);
-  const [generateReportsProgress, setGenerateReportsProgress] = useState('');
 
-  // Fonction pour générer les rapports PPTX, client par client.
-  // On boucle côté frontend (1 requête courte par client) plutôt qu'un seul
-  // gros appel : en prod (Render), un appel unique bloquerait l'unique worker
-  // trop longtemps, le health check /healthz échouerait et Render redémarrerait
-  // le service en plein traitement (génération coupée après ~5 clients).
+  // Génère le rapport PPTX du SEUL client sélectionné dans la liste déroulante,
+  // pour le mois choisi dans le sélecteur de date. Une requête courte = aucun
+  // risque de blocage du worker / OOM en prod.
   const handleGenerateReports = async () => {
+    if (!selectedClient) {
+      alert('Sélectionne un client dans la liste déroulante.');
+      return;
+    }
+
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5050';
     setGenerateReportsLoading(true);
-    setGenerateReportsProgress('Récupération de la liste des clients...');
-
-    type ReportResult = { client: string; status: string; error?: string; reason?: string };
 
     try {
-      // 1. Récupérer la liste des clients à traiter
-      const targetsResponse = await axios.post(`${apiUrl}/generate-report/targets`, {});
-      const clients: string[] = targetsResponse.data.clients || [];
+      const response = await axios.post(`${apiUrl}/generate-report`, {
+        client: selectedClient,
+        month: sheetMonth,
+      });
+      const report = response.data.report as {
+        client: string;
+        status: string;
+        filename?: string;
+        drive_link?: string;
+        reason?: string;
+        error?: string;
+      };
 
-      if (clients.length === 0) {
-        alert('Aucun client à générer.');
-        return;
+      if (report.status === 'success') {
+        setSuccessData({
+          message: `Rapport généré pour ${report.client} (${sheetMonth}) : ${report.filename}`,
+          successfulUpdates: 1,
+          failedUpdates: 0,
+          driveLink: report.drive_link,
+        });
+        setShowSuccessModal(true);
+      } else if (report.status === 'skipped') {
+        alert(`Client ignoré : ${report.reason || 'template non implémenté'}`);
+      } else {
+        alert(`Erreur lors de la génération : ${report.error || 'erreur inconnue'}`);
       }
-
-      // 2. Générer chaque client séquentiellement (requêtes courtes)
-      const results: ReportResult[] = [];
-      for (let i = 0; i < clients.length; i++) {
-        const client = clients[i];
-        setGenerateReportsProgress(`Génération ${i + 1}/${clients.length} : ${client}`);
-        try {
-          const response = await axios.post(`${apiUrl}/generate-report`, { client });
-          results.push(response.data.report as ReportResult);
-        } catch (clientError: unknown) {
-          const axiosError = clientError as { message?: string };
-          results.push({ client, status: 'error', error: axiosError.message || 'Erreur inconnue' });
-        }
-      }
-
-      // 3. Résumé
-      const success = results.filter(r => r.status === 'success').length;
-      const skipped = results.filter(r => r.status === 'skipped').length;
-      const errors = results.filter(r => r.status === 'error');
-
-      let message = `Rapports générés !\n\n` +
-        `Total : ${results.length}\n` +
-        `Succès : ${success}\n` +
-        `Ignorés : ${skipped}\n` +
-        `Erreurs : ${errors.length}`;
-
-      if (errors.length > 0) {
-        message += '\n\nErreurs :\n' + errors.map(e => `- ${e.client}: ${e.error}`).join('\n');
-      }
-
-      alert(message);
     } catch (error: unknown) {
       const axiosError = error as { message?: string };
-      alert('Erreur lors de la génération des rapports: ' + (axiosError.message || 'Erreur inconnue'));
+      alert('Erreur lors de la génération du rapport : ' + (axiosError.message || 'Erreur inconnue'));
     } finally {
       setGenerateReportsLoading(false);
-      setGenerateReportsProgress('');
     }
   };
 
@@ -779,13 +769,8 @@ const ScrapingRapports: React.FC = () => {
         hasAnyMetrics={selectedGoogleMetrics.length > 0 || selectedMetaMetrics.length > 0 || (clientInfo?.google_analytics?.configured && includeAnalytics)}
         onGenerateReports={handleGenerateReports}
         generateReportsLoading={generateReportsLoading}
+        hasSelectedClient={!!selectedClient}
       />
-
-      {generateReportsProgress && (
-        <div style={{ margin: '10px 0', padding: '10px', backgroundColor: '#1a2a3d', border: '1px solid #4488ff', color: '#aaccff', fontSize: '14px', borderRadius: '4px' }}>
-          {generateReportsProgress}
-        </div>
-      )}
 
       {/* Composant de progression pour le scraping en masse */}
       <BulkScrapingProgress
@@ -806,6 +791,7 @@ const ScrapingRapports: React.FC = () => {
         message={successData.message}
         successfulUpdates={successData.successfulUpdates}
         failedUpdates={successData.failedUpdates}
+        link={successData.driveLink}
       />
     </div>
   );

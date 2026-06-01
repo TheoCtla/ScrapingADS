@@ -141,32 +141,6 @@ def _filter_visible_sheets(
     return visible_sheets
 
 
-def list_report_targets(
-    month: Optional[str] = None,
-    filter_name: Optional[str] = None,
-    filter_template: Optional[str] = None,
-) -> Dict[str, Any]:
-    """
-    Retourne la liste des onglets (clients) à traiter, sans rien générer.
-
-    Permet au frontend de récupérer la liste puis d'appeler la génération
-    client par client (une requête courte par client), évitant ainsi de
-    bloquer l'unique worker Gunicorn en prod.
-    """
-    target_month, folder_name = _resolve_month_and_folder(month)
-
-    from backend.common.services.google_sheets import GoogleSheetsService
-    sheets_service = GoogleSheetsService()
-    clients = _filter_visible_sheets(sheets_service, filter_name, filter_template)
-
-    return {
-        "month": target_month,
-        "drive_folder": folder_name,
-        "clients": clients,
-        "total": len(clients),
-    }
-
-
 def generate_one_report(
     sheet_name: str,
     month: Optional[str] = None,
@@ -181,14 +155,24 @@ def generate_one_report(
 
     from backend.common.services.google_sheets import GoogleSheetsService
     from backend.reports.drive_report_service import DriveReportService
+    from backend.reports.data_reader import _resolve_worksheet_name
 
     sheets_service = GoogleSheetsService()
     drive_service = DriveReportService()
+
+    # Le nom reçu vient de la liste déroulante (allowlist) et peut différer
+    # légèrement du nom de l'onglet réel (ex: 'Emma Nantes' vs
+    # 'Emma Nantes - RITEILE SAS'). On résout vers le vrai nom d'onglet.
+    available_sheets = sheets_service.get_worksheet_names()
+    resolved_name = _resolve_worksheet_name(sheet_name, available_sheets) or sheet_name
+    if resolved_name != sheet_name:
+        logging.info(f"Client '{sheet_name}' → onglet '{resolved_name}'")
+
     drive_folder_id = drive_service.find_or_create_month_folder(folder_name)
 
     try:
         result = _generate_single_report(
-            sheet_name=sheet_name,
+            sheet_name=resolved_name,
             month=target_month,
             sheets_service=sheets_service,
             drive_service=drive_service,

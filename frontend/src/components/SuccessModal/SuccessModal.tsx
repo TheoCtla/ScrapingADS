@@ -7,6 +7,7 @@ interface SuccessModalProps {
   message: string;
   successfulUpdates: number;
   failedUpdates: number;
+  link?: string;
 }
 
 const SuccessModal: React.FC<SuccessModalProps> = ({
@@ -14,7 +15,8 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
   onClose,
   message,
   successfulUpdates,
-  failedUpdates
+  failedUpdates,
+  link
 }) => {
   if (!isOpen) return null;
 
@@ -86,6 +88,16 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
         </div>
         
         <div className="modal-footer">
+          {link && (
+            <a
+              className="modal-button primary"
+              href={link}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Ouvrir le rapport Drive
+            </a>
+          )}
           <button className="modal-button primary" onClick={onClose}>
             Fermer
           </button>

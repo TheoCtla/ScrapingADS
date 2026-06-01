@@ -1558,42 +1558,13 @@ def export_to_drive():
 # RAPPORTS PPTX
 # ================================
 
-@app.route("/generate-report/targets", methods=["POST"])
-def generate_report_targets():
-    """
-    Retourne la liste des clients (onglets visibles) à traiter, sans rien générer.
-
-    Le frontend récupère cette liste puis appelle /generate-report client par
-    client : chaque requête reste courte et ne bloque pas l'unique worker
-    Gunicorn, ce qui évite que Render redémarre le service en plein traitement.
-    """
-    try:
-        from backend.reports.generator import list_report_targets
-
-        data = request.get_json(silent=True) or {}
-        filter_name = data.get("filter")
-        filter_template = data.get("template")
-        month = data.get("month")
-
-        result = list_report_targets(
-            month=month,
-            filter_name=filter_name,
-            filter_template=filter_template,
-        )
-        return jsonify(result), 200
-
-    except Exception as e:
-        logging.error(f"Erreur liste des clients à générer: {e}", exc_info=True)
-        return jsonify({"error": str(e)}), 500
-
-
 @app.route("/generate-report", methods=["POST"])
 def generate_report():
     """
     Génère les rapports PPTX et les uploade sur Google Drive.
 
     - Si un `client` est fourni : génère uniquement ce client (requête courte,
-      mode utilisé par le frontend en boucle, compatible prod Render).
+      mode utilisé par le bouton du frontend, compatible prod Render).
     - Sinon : génère tous les clients en une seule requête (rétro-compatibilité,
       pratique en local où il n'y a ni health check ni timeout).
     """
