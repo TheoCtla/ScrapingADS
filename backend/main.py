@@ -1558,19 +1558,61 @@ def export_to_drive():
 # RAPPORTS PPTX
 # ================================
 
-@app.route("/generate-report", methods=["POST"])
-def generate_report():
+@app.route("/generate-report/targets", methods=["POST"])
+def generate_report_targets():
     """
-    Génère les rapports PPTX pour tous les clients (onglets visibles du Sheet)
-    et les uploade sur Google Drive dans le dossier du mois.
+    Retourne la liste des clients (onglets visibles) à traiter, sans rien générer.
+
+    Le frontend récupère cette liste puis appelle /generate-report client par
+    client : chaque requête reste courte et ne bloque pas l'unique worker
+    Gunicorn, ce qui évite que Render redémarre le service en plein traitement.
     """
     try:
-        from backend.reports.generator import generate_all_reports
+        from backend.reports.generator import list_report_targets
 
         data = request.get_json(silent=True) or {}
         filter_name = data.get("filter")
         filter_template = data.get("template")
+        month = data.get("month")
 
+        result = list_report_targets(
+            month=month,
+            filter_name=filter_name,
+            filter_template=filter_template,
+        )
+        return jsonify(result), 200
+
+    except Exception as e:
+        logging.error(f"Erreur liste des clients à générer: {e}", exc_info=True)
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/generate-report", methods=["POST"])
+def generate_report():
+    """
+    Génère les rapports PPTX et les uploade sur Google Drive.
+
+    - Si un `client` est fourni : génère uniquement ce client (requête courte,
+      mode utilisé par le frontend en boucle, compatible prod Render).
+    - Sinon : génère tous les clients en une seule requête (rétro-compatibilité,
+      pratique en local où il n'y a ni health check ni timeout).
+    """
+    try:
+        from backend.reports.generator import generate_all_reports, generate_one_report
+
+        data = request.get_json(silent=True) or {}
+        client = data.get("client")
+        filter_name = data.get("filter")
+        filter_template = data.get("template")
+        month = data.get("month")
+
+        # Mode un seul client : requête courte, ne bloque pas le worker en prod
+        if client:
+            result = generate_one_report(sheet_name=client, month=month)
+            status_code = 200 if result.get("status") != "error" else 207
+            return jsonify({"report": result}), status_code
+
+        # Mode tous les clients (un seul gros appel) : à éviter en prod
         result = generate_all_reports(filter_name=filter_name, filter_template=filter_template)
 
         summary = result["summary"]

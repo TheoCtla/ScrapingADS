@@ -102,6 +102,113 @@ def _generate_single_report(
     }
 
 
+def _resolve_month_and_folder(month: Optional[str]) -> tuple:
+    """
+    Détermine le mois cible et le nom du dossier Drive associé.
+
+    Si month est None, on calcule automatiquement M-1.
+    Retourne (target_month, folder_name).
+    """
+    target_month = month or _compute_target_month()
+
+    if month is None:
+        folder_name = _compute_drive_folder_name()
+    else:
+        from backend.reports.data_reader import _parse_month
+        dt = _parse_month(target_month)
+        folder_name = dt.strftime("%Y-%m") if dt else "rapports"
+
+    return target_month, folder_name
+
+
+def _filter_visible_sheets(
+    sheets_service,
+    filter_name: Optional[str] = None,
+    filter_template: Optional[str] = None,
+) -> List[str]:
+    """Liste les onglets visibles du Sheet après application des filtres optionnels."""
+    visible_sheets = sheets_service.get_visible_worksheet_names()
+    if filter_name:
+        filter_lower = filter_name.lower()
+        visible_sheets = [s for s in visible_sheets if filter_lower in s.lower()]
+        logging.info(f"{len(visible_sheets)} onglets après filtre nom '{filter_name}'")
+    if filter_template:
+        filter_tpl_lower = filter_template.lower()
+        visible_sheets = [s for s in visible_sheets if get_route_name(s) == filter_tpl_lower]
+        logging.info(f"{len(visible_sheets)} onglets après filtre template '{filter_template}'")
+    if not filter_name and not filter_template:
+        logging.info(f"{len(visible_sheets)} onglets visibles trouvés")
+    return visible_sheets
+
+
+def list_report_targets(
+    month: Optional[str] = None,
+    filter_name: Optional[str] = None,
+    filter_template: Optional[str] = None,
+) -> Dict[str, Any]:
+    """
+    Retourne la liste des onglets (clients) à traiter, sans rien générer.
+
+    Permet au frontend de récupérer la liste puis d'appeler la génération
+    client par client (une requête courte par client), évitant ainsi de
+    bloquer l'unique worker Gunicorn en prod.
+    """
+    target_month, folder_name = _resolve_month_and_folder(month)
+
+    from backend.common.services.google_sheets import GoogleSheetsService
+    sheets_service = GoogleSheetsService()
+    clients = _filter_visible_sheets(sheets_service, filter_name, filter_template)
+
+    return {
+        "month": target_month,
+        "drive_folder": folder_name,
+        "clients": clients,
+        "total": len(clients),
+    }
+
+
+def generate_one_report(
+    sheet_name: str,
+    month: Optional[str] = None,
+) -> Dict[str, Any]:
+    """
+    Génère le rapport PPTX d'UN seul client et l'uploade sur Drive.
+
+    Utilisé par l'endpoint appelé en boucle par le frontend : chaque requête
+    reste courte, ce qui garde le worker disponible pour le health check Render.
+    """
+    target_month, folder_name = _resolve_month_and_folder(month)
+
+    from backend.common.services.google_sheets import GoogleSheetsService
+    from backend.reports.drive_report_service import DriveReportService
+
+    sheets_service = GoogleSheetsService()
+    drive_service = DriveReportService()
+    drive_folder_id = drive_service.find_or_create_month_folder(folder_name)
+
+    try:
+        result = _generate_single_report(
+            sheet_name=sheet_name,
+            month=target_month,
+            sheets_service=sheets_service,
+            drive_service=drive_service,
+            drive_folder_id=drive_folder_id,
+        )
+        if result["status"] == "success":
+            logging.info(f"[OK] {sheet_name} → {result['filename']}")
+        else:
+            logging.info(f"[SKIP] {sheet_name} → {result.get('reason', '')}")
+        return result
+    except Exception as e:
+        logging.error(f"[ERREUR] {sheet_name}: {e}", exc_info=True)
+        return {
+            "client": sheet_name,
+            "route": get_route_name(sheet_name),
+            "status": "error",
+            "error": str(e),
+        }
+
+
 def generate_all_reports(
     month: Optional[str] = None,
     filter_name: Optional[str] = None,
@@ -117,13 +224,7 @@ def generate_all_reports(
         filter_name: Filtre optionnel sur le nom de l'onglet (case-insensitive).
         filter_template: Filtre optionnel sur le nom de la route/template (ex: 'autres').
     """
-    target_month = month or _compute_target_month()
-    folder_name = _compute_drive_folder_name() if month is None else None
-
-    if folder_name is None:
-        from backend.reports.data_reader import _parse_month
-        dt = _parse_month(target_month)
-        folder_name = dt.strftime("%Y-%m") if dt else "rapports"
+    target_month, folder_name = _resolve_month_and_folder(month)
 
     logging.info(f"Génération des rapports pour '{target_month}' → dossier '{folder_name}'")
 
@@ -138,17 +239,7 @@ def generate_all_reports(
     drive_folder_id = drive_service.find_or_create_month_folder(folder_name)
 
     # Lister les onglets visibles
-    visible_sheets = sheets_service.get_visible_worksheet_names()
-    if filter_name:
-        filter_lower = filter_name.lower()
-        visible_sheets = [s for s in visible_sheets if filter_lower in s.lower()]
-        logging.info(f"{len(visible_sheets)} onglets après filtre nom '{filter_name}'")
-    if filter_template:
-        filter_tpl_lower = filter_template.lower()
-        visible_sheets = [s for s in visible_sheets if get_route_name(s) == filter_tpl_lower]
-        logging.info(f"{len(visible_sheets)} onglets après filtre template '{filter_template}'")
-    if not filter_name and not filter_template:
-        logging.info(f"{len(visible_sheets)} onglets visibles trouvés")
+    visible_sheets = _filter_visible_sheets(sheets_service, filter_name, filter_template)
 
     results: List[Dict[str, Any]] = []
 

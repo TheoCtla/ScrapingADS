@@ -578,23 +578,57 @@ const ScrapingRapports: React.FC = () => {
 
   // État pour la génération des rapports PPTX
   const [generateReportsLoading, setGenerateReportsLoading] = useState(false);
+  const [generateReportsProgress, setGenerateReportsProgress] = useState('');
 
-  // Fonction pour générer tous les rapports PPTX
+  // Fonction pour générer les rapports PPTX, client par client.
+  // On boucle côté frontend (1 requête courte par client) plutôt qu'un seul
+  // gros appel : en prod (Render), un appel unique bloquerait l'unique worker
+  // trop longtemps, le health check /healthz échouerait et Render redémarrerait
+  // le service en plein traitement (génération coupée après ~5 clients).
   const handleGenerateReports = async () => {
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5050';
     setGenerateReportsLoading(true);
+    setGenerateReportsProgress('Récupération de la liste des clients...');
+
+    type ReportResult = { client: string; status: string; error?: string; reason?: string };
+
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5050'}/generate-report`);
-      const summary = response.data.summary;
-      const reports = response.data.reports;
-      const errors = reports.filter((r: { status: string }) => r.status === 'error');
+      // 1. Récupérer la liste des clients à traiter
+      const targetsResponse = await axios.post(`${apiUrl}/generate-report/targets`, {});
+      const clients: string[] = targetsResponse.data.clients || [];
+
+      if (clients.length === 0) {
+        alert('Aucun client à générer.');
+        return;
+      }
+
+      // 2. Générer chaque client séquentiellement (requêtes courtes)
+      const results: ReportResult[] = [];
+      for (let i = 0; i < clients.length; i++) {
+        const client = clients[i];
+        setGenerateReportsProgress(`Génération ${i + 1}/${clients.length} : ${client}`);
+        try {
+          const response = await axios.post(`${apiUrl}/generate-report`, { client });
+          results.push(response.data.report as ReportResult);
+        } catch (clientError: unknown) {
+          const axiosError = clientError as { message?: string };
+          results.push({ client, status: 'error', error: axiosError.message || 'Erreur inconnue' });
+        }
+      }
+
+      // 3. Résumé
+      const success = results.filter(r => r.status === 'success').length;
+      const skipped = results.filter(r => r.status === 'skipped').length;
+      const errors = results.filter(r => r.status === 'error');
 
       let message = `Rapports générés !\n\n` +
-        `Total : ${summary.total}\n` +
-        `Succès : ${summary.success}\n` +
-        `Erreurs : ${summary.errors}`;
+        `Total : ${results.length}\n` +
+        `Succès : ${success}\n` +
+        `Ignorés : ${skipped}\n` +
+        `Erreurs : ${errors.length}`;
 
       if (errors.length > 0) {
-        message += '\n\nErreurs :\n' + errors.map((e: { client: string; error: string }) => `- ${e.client}: ${e.error}`).join('\n');
+        message += '\n\nErreurs :\n' + errors.map(e => `- ${e.client}: ${e.error}`).join('\n');
       }
 
       alert(message);
@@ -603,6 +637,7 @@ const ScrapingRapports: React.FC = () => {
       alert('Erreur lors de la génération des rapports: ' + (axiosError.message || 'Erreur inconnue'));
     } finally {
       setGenerateReportsLoading(false);
+      setGenerateReportsProgress('');
     }
   };
 
@@ -745,7 +780,13 @@ const ScrapingRapports: React.FC = () => {
         onGenerateReports={handleGenerateReports}
         generateReportsLoading={generateReportsLoading}
       />
-      
+
+      {generateReportsProgress && (
+        <div style={{ margin: '10px 0', padding: '10px', backgroundColor: '#1a2a3d', border: '1px solid #4488ff', color: '#aaccff', fontSize: '14px', borderRadius: '4px' }}>
+          {generateReportsProgress}
+        </div>
+      )}
+
       {/* Composant de progression pour le scraping en masse */}
       <BulkScrapingProgress
         isVisible={bulkScrapingState.isProcessing || bulkScrapingState.completedClients.length > 0 || bulkScrapingState.failedClients.length > 0}
