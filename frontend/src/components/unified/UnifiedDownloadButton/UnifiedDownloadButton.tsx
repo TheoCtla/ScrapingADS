@@ -13,9 +13,6 @@ interface UnifiedDownloadButtonProps {
   hasAnyMetrics?: boolean;
   onGenerateReports?: () => void;
   generateReportsLoading?: boolean;
-  onGenerateSingleReport?: () => void;
-  generateSingleReportLoading?: boolean;
-  hasSelectedClient?: boolean;
 }
 
 const UnifiedDownloadButton: React.FC<UnifiedDownloadButtonProps> = ({
@@ -29,10 +26,7 @@ const UnifiedDownloadButton: React.FC<UnifiedDownloadButtonProps> = ({
   hasAuthorizedClients = false,
   hasAnyMetrics = false,
   onGenerateReports,
-  generateReportsLoading = false,
-  onGenerateSingleReport,
-  generateSingleReportLoading = false,
-  hasSelectedClient = false
+  generateReportsLoading = false
 }) => {
   const hasSelection = hasGoogleSelection || hasMetaSelection || hasAnalyticsSelection;
   const isDisabled = loading || !hasSelection;
@@ -71,16 +65,6 @@ const UnifiedDownloadButton: React.FC<UnifiedDownloadButtonProps> = ({
             disabled={generateReportsLoading}
           >
             {generateReportsLoading ? 'Génération en cours...' : 'Générer tous les rapports PPTX'}
-          </button>
-        )}
-        {onGenerateSingleReport && (
-          <button
-            className="generate-reports-button"
-            onClick={onGenerateSingleReport}
-            disabled={generateSingleReportLoading || !hasSelectedClient}
-            title={!hasSelectedClient ? 'Sélectionne un client' : undefined}
-          >
-            {generateSingleReportLoading ? 'Génération en cours...' : 'Générer le rapport PPTX (client sélectionné)'}
           </button>
         )}
       </div>

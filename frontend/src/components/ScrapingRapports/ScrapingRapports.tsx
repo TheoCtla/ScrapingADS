@@ -578,41 +578,6 @@ const ScrapingRapports: React.FC = () => {
 
   // État pour la génération des rapports PPTX
   const [generateReportsLoading, setGenerateReportsLoading] = useState(false);
-  const [generateSingleReportLoading, setGenerateSingleReportLoading] = useState(false);
-
-  // Génération du rapport PPTX pour le client sélectionné uniquement
-  const handleGenerateSingleReport = async () => {
-    if (!selectedClient) {
-      alert('Sélectionne d\'abord un client.');
-      return;
-    }
-    setGenerateSingleReportLoading(true);
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:5050'}/generate-report/single`,
-        { client: selectedClient }
-      );
-      const report = response.data.reports?.[0];
-      const summary = response.data.summary;
-
-      let message = `Rapport pour "${selectedClient}" — mois ${summary?.month || ''}\n\n`;
-      if (report?.status === 'success') {
-        message += `Succès : ${report.filename}\nLien Drive : ${report.drive_link}`;
-      } else if (report?.status === 'skipped') {
-        message += `Skippé : ${report.reason || 'template non implémenté'}`;
-      } else if (report?.status === 'error') {
-        message += `Erreur : ${report.error || 'erreur inconnue'}`;
-      } else {
-        message += 'Aucun rapport retourné.';
-      }
-      alert(message);
-    } catch (error: unknown) {
-      const axiosError = error as { message?: string; response?: { data?: { error?: string } } };
-      alert('Erreur lors de la génération du rapport: ' + (axiosError.response?.data?.error || axiosError.message || 'Erreur inconnue'));
-    } finally {
-      setGenerateSingleReportLoading(false);
-    }
-  };
 
   // Fonction pour générer tous les rapports PPTX
   const handleGenerateReports = async () => {
@@ -779,9 +744,6 @@ const ScrapingRapports: React.FC = () => {
         hasAnyMetrics={selectedGoogleMetrics.length > 0 || selectedMetaMetrics.length > 0 || (clientInfo?.google_analytics?.configured && includeAnalytics)}
         onGenerateReports={handleGenerateReports}
         generateReportsLoading={generateReportsLoading}
-        onGenerateSingleReport={handleGenerateSingleReport}
-        generateSingleReportLoading={generateSingleReportLoading}
-        hasSelectedClient={!!selectedClient}
       />
       
       {/* Composant de progression pour le scraping en masse */}
